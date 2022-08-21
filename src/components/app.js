@@ -5,6 +5,8 @@ import Cookies from "js-cookie"
 import Auth from './pages/auth';
 import Home from './pages/home';
 
+import Loader from "../../static/assets/images/BeaneaterLoader.gif"
+
 export const UserContext = createContext({})
 
 export default class App extends Component {
@@ -67,25 +69,26 @@ export default class App extends Component {
 
   render() {
     return (
-      <div className='app'>
-        <UserContext.Provider value={{
-          user: this.state.user,
-          setUser: this.setUser,
-          logoutUser: this.logoutUser
-        }}>
-            {this.state.loading
-            ?
-            <h1>Loading...</h1>
-            : 
-            <Switch>
-              {this.state.user.id ? <Redirect exact from="/auth" to="/" /> : null}
-              <Route path="/auth" component={Auth} />
+      <UserContext.Provider value={{
+        user: this.state.user,
+        setUser: this.setUser,
+        logoutUser: this.logoutUser
+      }}>
+        <div className='app'>
+          <h1 id='app-header'>What's For Dinner?</h1>
+          {this.state.loading
+          ?
+          <img src={Loader} alt="Loading" />
+          : 
+          <Switch>
+            {this.state.user.id ? <Redirect exact from="/auth" to="/" /> : null}
+            <Route path="/auth" component={Auth} />
 
-              {this.state.user.id ? null : <Redirect from="/" to="/auth" />}
-              <Route exact path="/" component={Home} />
-            </Switch>}
-        </UserContext.Provider>
-      </div>
+            {this.state.user.id ? null : <Redirect from="/" to="/auth" />}
+            <Route exact path="/" component={Home} />
+          </Switch>}
+        </div>
+      </UserContext.Provider>
     );
   }
 }

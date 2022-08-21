@@ -1,0 +1,16 @@
+$lightest: #E3F3FB;
+$light: #CCE7F4;
+$normal: #B4D9EB;
+$dark: #9BC9DF;
+$darkest: #82B7D0;
+$complementary-lightest: #FFF3E6;
+$complementary-light: #FFEBD3;
+$complementary-normal: #FFE2C0;
+$complementary-dark: #FFD9AD;
+$complementary-darkest: #FFD09A;
+
+@mixin flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

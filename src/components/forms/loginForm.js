@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 
+import Loader from "../../../static/assets/images/EclipseLoader.gif"
+
 export default function LoginForm(props) {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
@@ -75,8 +77,8 @@ export default function LoginForm(props) {
             />
             <button type="submit">Login</button>
             <div className="loading-error-wrapper">
-                {loading ? <p>Loading...</p> : null}
-                {error ? <p>{error}</p> : null}
+                {loading ? <p><img src={Loader} alt="Loading" /></p> : null}
+                {error ? <p className='error'>{error}</p> : null}
             </div>
         </form>
     )

@@ -95,8 +95,8 @@ export default function RegisterForm(props) {
             />
             <button type="submit">Register</button>
             <div className="loading-error-wrapper">
-                {loading ? <p>Loading...</p> : null}
-                {error ? <p>{error}</p> : null}
+                {loading ? <p><img src={Loader} alt="Loading" /></p> : null}
+                {error ? <p className='error'>{error}</p> : null}
             </div>
         </form>
     )

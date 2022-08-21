@@ -23,13 +23,15 @@ export default function Auth(props) {
     }
 
     return (
-        <div className='auth-wrapper'>
-            <div className={`auth-button ${form === 'login' ? 'active' : 'inactive'}`}
-                onClick={() => setForm("login")}
-            >Login</div>
-            <div className={`auth-button ${form === 'register' ? 'active' : 'inactive'}`}
-                onClick={() => setForm("register")}
-            >Register</div>
+        <div className='page-wrapper auth-page-wrapper'>
+            <div className="auth-buttons-wrapper">
+                <div className={`auth-button auth-button-1 ${form === 'login' ? 'active' : 'inactive'}`}
+                    onClick={() => setForm("login")}
+                >Login</div>
+                <div className={`auth-button auth-button-2 ${form === 'register' ? 'active' : 'inactive'}`}
+                    onClick={() => setForm("register")}
+                >Register</div>
+            </div>
             {renderform()}
         </div>
     )
