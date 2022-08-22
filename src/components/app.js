@@ -2,6 +2,7 @@ import React, { Component, createContext } from 'react';
 import { Switch, Route, Redirect } from 'react-router';
 import Cookies from "js-cookie"
 
+import Navbar from './utils/navbar';
 import Auth from './pages/auth';
 import Home from './pages/home';
 
@@ -75,7 +76,7 @@ export default class App extends Component {
         logoutUser: this.logoutUser
       }}>
         <div className='app'>
-          <h1 id='app-header'>What's For Dinner?</h1>
+          <Navbar />
           {this.state.loading
           ?
           <img src={Loader} alt="Loading" />

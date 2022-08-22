@@ -1,0 +1,74 @@
+.navbar-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    #app-header {
+        text-align: center;
+        margin: 5px 0px;
+        font-size: 21px;
+        font-family: 'Dancing Script', cursive;
+        color: $complementary-darkest;
+    }
+
+    .user-menu-wrapper {
+        display: flex;
+        align-items: center;
+        color: $darkest;
+        margin-left: auto;
+
+        .username {
+            font-weight: bold;
+            text-overflow: ellipsis;
+        }
+
+        .menu {
+            margin-left: 5px;
+            font-size: 21px;
+
+            &.active {
+                color: $complementary-darkest;
+            }
+        }
+
+        .menu-wrapper {
+            @include flex;
+            opacity: 0;
+            height: 0px;
+            width: calc(100% - 40px);
+            position: fixed;
+            top: 34.8px;
+            right: 20px;
+            background-color: $normal;
+            border: 2px solid $complementary-darkest;
+            border-radius: 5px 5px 0px 0px;
+            overflow: hidden;
+            z-index: 1000;
+
+            &.active {
+                opacity: 1;
+                height: calc(100% - 54.8px);
+            }
+
+            a, div {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: black;
+                font-weight: bold;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: $complementary-lightest;
+                }
+            }
+
+            a {
+                border-bottom: 2px solid $darkest;
+            }
+        }
+    }
+}

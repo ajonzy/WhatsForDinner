@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 
+import LoadingError from '../utils/loadingError'
+
 export default function RegisterForm(props) {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
@@ -94,10 +96,7 @@ export default function RegisterForm(props) {
                 required
             />
             <button type="submit">Register</button>
-            <div className="loading-error-wrapper">
-                {loading ? <p><img src={Loader} alt="Loading" /></p> : null}
-                {error ? <p className='error'>{error}</p> : null}
-            </div>
+            <LoadingError loading={loading} error={error} />
         </form>
     )
 }
