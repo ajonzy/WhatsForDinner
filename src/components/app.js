@@ -6,6 +6,7 @@ import Cookies from "js-cookie"
 import Navbar from './utils/navbar';
 import Auth from './pages/auth';
 import Home from './pages/home';
+import Meals from './pages/meals';
 
 import Loader from "../../static/assets/images/BeaneaterLoader.gif"
 
@@ -95,6 +96,7 @@ export default class App extends Component {
 
                 {this.state.user.id ? null : <Redirect from="/" to="/auth" />}
                 <Route exact path="/" component={Home} />
+                <Route path="/meals" component={Meals} />
               </AnimatedSwitch>
           </div>}
         </div>
