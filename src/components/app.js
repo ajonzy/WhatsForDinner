@@ -1,5 +1,6 @@
 import React, { Component, createContext } from 'react';
-import { Switch, Route, Redirect } from 'react-router';
+import { Route, Redirect } from 'react-router';
+import { AnimatedSwitch } from 'react-router-transition'
 import Cookies from "js-cookie"
 
 import Navbar from './utils/navbar';
@@ -81,13 +82,21 @@ export default class App extends Component {
           ?
           <img src={Loader} alt="Loading" />
           : 
-          <Switch>
-            {this.state.user.id ? <Redirect exact from="/auth" to="/" /> : null}
-            <Route path="/auth" component={Auth} />
+          <div className="content-wrapper">
+            <div className="content-wrapper-bg">
+            </div>
+              <AnimatedSwitch
+                atEnter={{ opacity: 0 }}
+                atLeave={{ opacity: 0 }}
+                atActive={{ opacity: 1 }}
+              >
+                {this.state.user.id ? <Redirect exact from="/auth" to="/" /> : null}
+                <Route path="/auth" component={Auth} />
 
-            {this.state.user.id ? null : <Redirect from="/" to="/auth" />}
-            <Route exact path="/" component={Home} />
-          </Switch>}
+                {this.state.user.id ? null : <Redirect from="/" to="/auth" />}
+                <Route exact path="/" component={Home} />
+              </AnimatedSwitch>
+          </div>}
         </div>
       </UserContext.Provider>
     );

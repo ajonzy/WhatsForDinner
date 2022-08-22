@@ -19,6 +19,26 @@ a {
     padding: 20px;
     padding-top: 0px;
     @include flex;
+
+    .content-wrapper {
+        width: 100%;
+        max-width: 800px;
+        height: 100%;
+        background-color: $lightest;
+        position: relative;
+
+        .content-wrapper-bg {
+            height: 100%;
+            width: 100%;
+            height: 100%;
+            background-image: url(../../static/assets/images/foodBackground.png);
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: .1;
+            position: absolute;
+        }
+    }
 }
 
 .page-wrapper {
@@ -27,8 +47,8 @@ a {
     overflow: scroll;
     padding: 10px;
     border: 1px solid $darkest;
-    background-color: $lightest;
     border-radius: 5px;
+    position: absolute;
     @include flex;
 
     &::-webkit-scrollbar {
@@ -68,6 +88,7 @@ a {
     button {
         border-color: $complementary-darkest;
         background-color: $complementary-dark;
+        cursor: pointer;
 
         &:active {
             outline: none;

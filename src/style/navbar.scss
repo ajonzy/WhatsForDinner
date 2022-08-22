@@ -1,5 +1,6 @@
 .navbar-wrapper {
     width: 100%;
+    max-width: 800px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -37,18 +38,21 @@
             opacity: 0;
             height: 0px;
             width: calc(100% - 40px);
+            max-width: 800px;
             position: fixed;
-            top: 34.8px;
-            right: 20px;
+            top: 41.6px;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
             background-color: $normal;
             border: 2px solid $complementary-darkest;
-            border-radius: 5px 5px 0px 0px;
+            border-radius: 5px;
             overflow: hidden;
             z-index: 1000;
 
             &.active {
                 opacity: 1;
-                height: calc(100% - 54.8px);
+                height: calc(100% - 61.6px);
             }
 
             a, div {
