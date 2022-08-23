@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { UserContext } from '../app'
 
@@ -58,8 +59,8 @@ export default function Meals(props) {
             </div>
         ))
 
-        sharedMeals.sort((mealA, mealB) => mealA.key > mealB.key ? -1 : 1)
-        meals.sort((mealA, mealB) => mealA.key > mealB.key ? -1 : 1)
+        sharedMeals.sort((mealA, mealB) => parseInt(mealA.key.split("-")[1]) > parseInt(mealB.key.split("-")[1]) ? -1 : 1)
+        meals.sort((mealA, mealB) => parseInt(mealA.key.split("-")[1]) > parseInt(mealB.key.split("-")[1]) ? -1 : 1)
 
         return sharedMeals.concat(meals)
     }
@@ -67,7 +68,7 @@ export default function Meals(props) {
     return (
         <div className='page-wrapper meals-page-wrapper'>
             <div className="options-wrapper">
-                <button>Add Meal</button>
+                <Link to="/meals/add"><button>Add Meal</button></Link>
                 <input type="text"
                     placeholder='Search: meal names, difficulty, etc.'
                     onChange={handleFilter}

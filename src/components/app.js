@@ -7,6 +7,7 @@ import Navbar from './utils/navbar';
 import Auth from './pages/auth';
 import Home from './pages/home';
 import Meals from './pages/meals';
+import AddMeal from './pages/addMeal';
 
 import Loader from "../../static/assets/images/BeaneaterLoader.gif"
 
@@ -96,7 +97,8 @@ export default class App extends Component {
 
                 {this.state.user.id ? null : <Redirect from="/" to="/auth" />}
                 <Route exact path="/" component={Home} />
-                <Route path="/meals" component={Meals} />
+                <Route exact path="/meals" component={Meals} />
+                <Route path="/meals/add" component={AddMeal} />
               </AnimatedSwitch>
           </div>}
         </div>

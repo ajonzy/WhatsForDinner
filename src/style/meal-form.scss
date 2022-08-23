@@ -1,0 +1,49 @@
+.meal-form-wrapper {
+    .difficulty-wrapper {
+        text-align: center;
+
+        .difficulty{
+            font-size: 30px;
+            line-height: .5em;
+            cursor: pointer;
+        }
+
+        .difficulty-inactive {
+            opacity: .5;
+        }
+
+        .difficulty-active {
+            opacity: 1;
+            color: $complementary-darkest;
+        }
+    }
+
+    .image-wrapper {
+        text-align: center;
+
+        img {
+            width: 100%;
+        }
+
+        .options-wrapper {
+            font-size: 24px;
+
+            svg {
+                margin: 5px;
+            }
+        }
+    }
+
+    .categories-wrapper {
+        width: 100%;
+
+        .category-wrapper {
+            width: 100%;
+        }
+
+        .alt-button {
+            border-color: $darkest;
+            background-color: $normal;
+        }
+    }
+}
