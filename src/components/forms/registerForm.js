@@ -95,7 +95,7 @@ export default function RegisterForm(props) {
                 onChange={event => setEmail(event.target.value)}
                 required
             />
-            <button type="submit">Register</button>
+            <button type="submit" disabled={loading}>Register</button>
             <LoadingError loading={loading} error={error} />
         </form>
     )

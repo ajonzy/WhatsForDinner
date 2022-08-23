@@ -75,7 +75,7 @@ export default function LoginForm(props) {
                 onChange={event => setPassword(event.target.value)}
                 required
             />
-            <button type="submit">Login</button>
+            <button type="submit" disabled={loading}>Login</button>
             <LoadingError loading={loading} error={error} />
         </form>
     )

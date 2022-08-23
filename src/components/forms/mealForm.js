@@ -41,11 +41,15 @@ export default function MealForm(props) {
     const handleSubmit = async event => {
         event.preventDefault()
 
+        setError("")
+        
         if (name === "" || categories.filter(category => category === "").length > 0) {
             setError("Please fill out all required fields (including open categories).")
+            document.querySelector(".page-wrapper").scrollTo({top: document.querySelector(".page-wrapper").scrollHeight, behavior: 'smooth'})
         }
         else {
             setLoading(true)
+            document.querySelector(".page-wrapper").scrollTo({top: document.querySelector(".page-wrapper").scrollHeight, behavior: 'smooth'})
 
             let image_url = null
             if (image) {
@@ -116,56 +120,58 @@ export default function MealForm(props) {
                 return false
             }
 
-            const categoryData = []
-            for (let category of categories) {
-                if (!user.categories.map(category => category.name).includes(category)) {
-                    data = await fetch("https://whatsfordinnerapi.herokuapp.com/category/add", {
-                        method: "POST",
-                        headers: { "content-type": "application/json" },
-                        body: JSON.stringify({
+            const newCategories = categories.filter(category => !user.categories.map(category => category.name).includes(category))
+            const existingCategories = user.categories.filter(category => categories.includes(category.name))
+            const categoryData = [...existingCategories]
+            if (newCategories.length > 0) {
+                data = await fetch("https://whatsfordinnerapi.herokuapp.com/category/add/multiple", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(newCategories.map(category => {
+                        return {
                             name: category,
                             user_id: user.id
-                        })
-                    })
-                    .then(response => response.json())
-                    .catch(error => {
-                        return { catchError: error }
-                    }) 
-                    if (data.status === 400) {
-                        setError("An error occured... Please try again later.")
-                        console.log(data)
-                        setLoading(false)
-                        return false
-                    }
-                    else if (data.catchError) {
-                        setError("An error occured... Please try again later.")
-                        setLoading(false)
-                        console.log("Error adding category: ", error)
-                        return false
-                    }
-                    else if (data.status === 200) {
-                        categoryData.push(data.data)
-                    }
-                    else {
-                        setError("An error occured... Please try again later.")
-                        console.log(data)
-                        setLoading(false)
-                        return false
-                    }
+                        }
+                    }))
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                }) 
+                console.log(data)
+                if (data.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding category: ", error)
+                    return false
+                }
+                else if (data.status === 200) {
+                    categoryData.push(...data.data)
                 }
                 else {
-                    categoryData.push(user.categories.filter(category => category.name)[0])
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
                 }
             }
 
-            for (let category of categoryData) {
-                data = await fetch("https://whatsfordinnerapi.herokuapp.com/category/attach", {
+            if (categoryData.length > 0) {
+                data = await fetch("https://whatsfordinnerapi.herokuapp.com/category/attach/multiple", {
                     method: "POST",
                     headers: { "content-type": "application/json" },
-                    body: JSON.stringify({
-                        meal_id: newData.id,
-                        category_id: category.id
-                    })
+                    body: JSON.stringify(categoryData.map(category => {
+                        return {
+                            meal_id: newData.id,
+                            category_id: category.id
+                        }
+                    }))
                 })
                 .then(response => response.json())
                 .catch(error => {
@@ -184,7 +190,7 @@ export default function MealForm(props) {
                     return false
                 }
                 else if (data.status === 200) {
-                    newData = data.data.meal
+                    newData = data.data.meals[0]
                 }
                 else {
                     setError("An error occured... Please try again later.")
@@ -260,12 +266,12 @@ export default function MealForm(props) {
                             onChange={event => setCategories(categories.map((existingCategory, existingIndex) => existingIndex === index ? event.target.value : existingCategory))}
                             required
                         />
-                        <button type='button' className='alt-button' onClick={() => setCategories(categories.filter((_, existingIndex) => existingIndex !== index))}>Remove Category</button>
+                        <button type='button' disabled={loading} className='alt-button' onClick={() => setCategories(categories.filter((_, existingIndex) => existingIndex !== index))}>Remove Category</button>
                     </div>
                 ))}
-                <button type='button' className='alt-button' onClick={() => setCategories([...categories, ""])}>Add Category (optional)</button>
+                <button type='button' disabled={loading} className='alt-button' onClick={() => setCategories([...categories, ""])}>Add Category (optional)</button>
             </div>
-            <button type="submit">Add Meal</button>
+            <button type="submit" disabled={loading}>Add Meal</button>
             <LoadingError loading={loading} error={error} />
         </form>
     )
