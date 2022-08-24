@@ -271,6 +271,7 @@ export default function MealForm(props) {
                 ))}
                 <button type='button' disabled={loading} className='alt-button' onClick={() => setCategories([...categories, ""])}>Add Category (optional)</button>
             </div>
+            <div className='spacer-40' />
             <button type="submit" disabled={loading}>Add Meal</button>
             <LoadingError loading={loading} error={error} />
         </form>

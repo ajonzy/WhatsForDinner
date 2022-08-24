@@ -105,6 +105,11 @@ textarea {
     @include flex;
     width: 100%;
 
+    .alt-button {
+        border-color: $darkest;
+        background-color: $normal;
+    }
+
     .loading-error-wrapper {
         display: flex;
         justify-content: center;
