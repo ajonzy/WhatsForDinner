@@ -83,7 +83,7 @@ export default function MealForm(props) {
             }
 
             let newData = {}
-            let data = await fetch("https://whatsfordinnerapi.herokuapp.com/meal/add", {
+            let data = await fetch("https://whatsforsupperapi.herokuapp.com/meal/add", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
@@ -124,7 +124,7 @@ export default function MealForm(props) {
             const existingCategories = user.categories.filter(category => categories.includes(category.name))
             const categoryData = [...existingCategories]
             if (newCategories.length > 0) {
-                data = await fetch("https://whatsfordinnerapi.herokuapp.com/category/add/multiple", {
+                data = await fetch("https://whatsforsupperapi.herokuapp.com/category/add/multiple", {
                     method: "POST",
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify(newCategories.map(category => {
@@ -162,7 +162,7 @@ export default function MealForm(props) {
             }
 
             if (categoryData.length > 0) {
-                data = await fetch("https://whatsfordinnerapi.herokuapp.com/category/attach/multiple", {
+                data = await fetch("https://whatsforsupperapi.herokuapp.com/category/attach/multiple", {
                     method: "POST",
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify(categoryData.map(category => {

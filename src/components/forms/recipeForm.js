@@ -60,7 +60,7 @@ export default function RecipeForm(props) {
 
         let stepsectionsData = []
         if (stepsections.length > 0) {
-            const data = await fetch("https://whatsfordinnerapi.herokuapp.com/stepsection/add/multiple", {
+            const data = await fetch("https://whatsforsupperapi.herokuapp.com/stepsection/add/multiple", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify(stepsections.map(stepsection => {
@@ -114,7 +114,7 @@ export default function RecipeForm(props) {
                 }))
             })
 
-            const data = await fetch("https://whatsfordinnerapi.herokuapp.com/step/add/multiple", {
+            const data = await fetch("https://whatsforsupperapi.herokuapp.com/step/add/multiple", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify(formattedSteps.map(step => {
@@ -155,7 +155,7 @@ export default function RecipeForm(props) {
 
         let ingredientsData = []
         if (ingredients.length > 0) {
-            const data = await fetch("https://whatsfordinnerapi.herokuapp.com/ingredient/add/multiple", {
+            const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify(ingredients.map(ingredient => {
@@ -195,7 +195,7 @@ export default function RecipeForm(props) {
         }
 
         let mealData = {}
-        const data = await fetch(`https://whatsfordinnerapi.herokuapp.com/meal/get/${props.meal.id}`)
+        const data = await fetch(`https://whatsforsupperapi.herokuapp.com/meal/get/${props.meal.id}`)
         .then(response => response.json())
         .catch(error => {
             return { catchError: error }

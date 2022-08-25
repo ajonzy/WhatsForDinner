@@ -9,6 +9,7 @@ import Home from './pages/home';
 import Meals from './pages/meals';
 import AddMeal from './pages/addMeal';
 import Meal from './pages/meal';
+import Mealplans from './pages/mealplans';
 
 import Loader from "../../static/assets/images/BeaneaterLoader.gif"
 
@@ -38,7 +39,7 @@ export default class App extends Component {
       user: {},
       loading: true
     })
-    fetch(`https://whatsfordinnerapi.herokuapp.com/user/logout/single/${token}`, { method: "DELETE" })
+    fetch(`https://whatsforsupperapi.herokuapp.com/user/logout/single/${token}`, { method: "DELETE" })
     .then(response => response.json())
     .then(data => {
       if (data.status === 200) {
@@ -54,7 +55,7 @@ export default class App extends Component {
   componentDidMount() {
     const token = Cookies.get("token")
     if (token) {
-      fetch(`https://whatsfordinnerapi.herokuapp.com//user/get/token/${token}`)
+      fetch(`https://whatsforsupperapi.herokuapp.com//user/get/token/${token}`)
       .then(response => response.json())
       .then(data => {
         if (data.status === 403) {
@@ -100,6 +101,7 @@ export default class App extends Component {
                     <Route exact path="/meals" component={Meals} />
                     <Route path="/meals/add" component={AddMeal} />
                     <Route path="/meals/view/:id" component={Meal} />
+                    <Route path="/mealplans" component={Mealplans} />
                   </AnimatedSwitch>
               </div>
             )

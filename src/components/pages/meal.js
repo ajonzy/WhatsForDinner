@@ -52,7 +52,7 @@ export default function Meal(props) {
 
         if (confirm) {
             setDeleteLoading(true)
-            fetch(`https://whatsfordinnerapi.herokuapp.com/meal/delete/${meal.id}`, { method: "DELETE" })
+            fetch(`https://whatsforsupperapi.herokuapp.com/meal/delete/${meal.id}`, { method: "DELETE" })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 200) {
@@ -82,7 +82,7 @@ export default function Meal(props) {
         setCopyLoading(true)
 
         let newData = {}
-        let data = await fetch("https://whatsfordinnerapi.herokuapp.com/meal/add", {
+        let data = await fetch("https://whatsforsupperapi.herokuapp.com/meal/add", {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({
@@ -120,7 +120,7 @@ export default function Meal(props) {
         }
 
         if (meal.recipe.stepsections.length > 0) {
-            const data = await fetch("https://whatsfordinnerapi.herokuapp.com/stepsection/add/multiple", {
+            const data = await fetch("https://whatsforsupperapi.herokuapp.com/stepsection/add/multiple", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify(meal.recipe.stepsections.map(stepsection => {
@@ -158,7 +158,7 @@ export default function Meal(props) {
         }
 
         if (meal.recipe.steps.length > 0) {
-            const data = await fetch("https://whatsfordinnerapi.herokuapp.com/step/add/multiple", {
+            const data = await fetch("https://whatsforsupperapi.herokuapp.com/step/add/multiple", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify(meal.recipe.steps.map(step => {
@@ -198,7 +198,7 @@ export default function Meal(props) {
         }
 
         if (meal.recipe.ingredients.length > 0) {
-            const data = await fetch("https://whatsfordinnerapi.herokuapp.com/ingredient/add/multiple", {
+            const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify(meal.recipe.ingredients.map(ingredient => {
@@ -238,7 +238,7 @@ export default function Meal(props) {
         }
 
         let unshareData = {}
-        data = await fetch(`https://whatsfordinnerapi.herokuapp.com/meal/unshare/${meal.id}/${user.id}`, { method: "DELETE" })
+        data = await fetch(`https://whatsforsupperapi.herokuapp.com/meal/unshare/${meal.id}/${user.id}`, { method: "DELETE" })
         .then(response => response.json())
         .catch(error => {
             return { catchError: error }
@@ -270,7 +270,7 @@ export default function Meal(props) {
 
         if (confirm) {
             setDeleteLoading(true)
-            fetch(`https://whatsfordinnerapi.herokuapp.com/meal/unshare/${meal.id}/${user.id}`, { method: "DELETE" })
+            fetch(`https://whatsforsupperapi.herokuapp.com/meal/unshare/${meal.id}/${user.id}`, { method: "DELETE" })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 200) {

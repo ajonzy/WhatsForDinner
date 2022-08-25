@@ -19,7 +19,7 @@ export default function LoginForm(props) {
         else {
             setLoading(true)
 
-            fetch("https://whatsfordinnerapi.herokuapp.com/user/login", {
+            fetch("https://whatsforsupperapi.herokuapp.com/user/login", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({

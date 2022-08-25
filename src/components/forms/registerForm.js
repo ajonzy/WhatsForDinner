@@ -24,7 +24,7 @@ export default function RegisterForm(props) {
         else {
             setLoading(true)
 
-            fetch("https://whatsfordinnerapi.herokuapp.com/user/add", {
+            fetch("https://whatsforsupperapi.herokuapp.com/user/add", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({

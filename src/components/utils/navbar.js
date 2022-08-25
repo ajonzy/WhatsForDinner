@@ -11,7 +11,7 @@ export default function Navbar(props) {
 
     return (
         <div className='navbar-wrapper'>
-            <Link to="/"><h1 id='app-header' onClick={() => setMenuOpen(false)}>What's&nbsp;For&nbsp;Dinner?</h1></Link>
+            <Link to="/"><h1 id='app-header' onClick={() => setMenuOpen(false)}>What's&nbsp;For&nbsp;Supper?</h1></Link>
             {user.id 
                 ? (
                     <div className="user-menu-wrapper">
