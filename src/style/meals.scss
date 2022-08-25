@@ -1,11 +1,7 @@
 .meals-page-wrapper {
-    .options-wrapper {
-        width: 100%;
-    }
 
     .meals-wrapper {
         @include flex;
-        width: 100%;
 
         .meal-wrapper, .meal-wrapper-shared {
             display: flex;
@@ -58,12 +54,6 @@
 
             .shared-by {
                 color: $darkest;
-            }
-        }
-
-        &.shared-inactive {
-            .meal-wrapper {
-                width: 100%;
             }
         }
 

@@ -8,6 +8,10 @@ body {
     transition: .2s;
 }
 
+div {
+    width: 100%;
+}
+
 a {
     color: black;
     text-decoration: none;
@@ -29,6 +33,17 @@ button {
     border-color: $complementary-darkest;
     background-color: $complementary-dark;
     cursor: pointer;
+
+    &.alt-button {
+        border-color: $darkest;
+        background-color: $normal;
+    }
+
+    &.dangerous-button {
+        border-color: $darkest;
+        background-color: $normal;
+        color: red;
+    }
 
     &:active {
         outline: none;
@@ -64,7 +79,6 @@ textarea {
     @include flex;
 
     .content-wrapper {
-        width: 100%;
         max-width: 800px;
         height: 100%;
         background-color: $lightest;
@@ -72,7 +86,6 @@ textarea {
 
         .content-wrapper-bg {
             height: 100%;
-            width: 100%;
             height: 100%;
             background-image: url(../../static/assets/images/foodBackground.png);
             background-size: contain;
@@ -85,7 +98,6 @@ textarea {
 }
 
 .page-wrapper {
-    width: 100%;
     height: 100%;
     overflow: scroll;
     padding: 10px;
@@ -104,23 +116,4 @@ textarea {
 .form-wrapper {
     @include flex;
     width: 100%;
-
-    .alt-button {
-        border-color: $darkest;
-        background-color: $normal;
-    }
-
-    .loading-error-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        img {
-            width: 30px;
-        }
-
-        .error {
-            color: red;
-        }
-    }
 }

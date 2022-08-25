@@ -1,4 +1,45 @@
+.spacer-30 {
+    width: 30px;
+    height: 30px;
+}
+
 .spacer-40 {
     width: 40px;
     height: 40px;
+}
+
+.loading-error-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    img {
+        width: 30px !important;
+    }
+
+    .error {
+        color: red;
+    }
+}
+
+.confirm-loading-error-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    img {
+        width: 30px !important;
+    }
+
+    .confirm, .error {
+        color: red;
+    }
+}
+
+.not-found, .no-content {
+    color: $darkest;
+    font-weight: bold;
+    text-align: center;
 }

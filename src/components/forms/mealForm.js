@@ -138,7 +138,6 @@ export default function MealForm(props) {
                 .catch(error => {
                     return { catchError: error }
                 }) 
-                console.log(data)
                 if (data.status === 400) {
                     setError("An error occured... Please try again later.")
                     console.log(data)

@@ -105,8 +105,9 @@ export default function RecipeForm(props) {
                 return { ...step, number: count }
             })
 
-            stepsections.map((stepsection, index) => {
+            stepsections.forEach((stepsection, index) => {
                 const stepsectionData = stepsectionsData.filter(stepsectionData => stepsectionData.title === stepsection.title)[0]
+                let count = 0
                 formattedSteps = formattedSteps.concat(steps.filter(step => step.stepsection === index).map(step => {
                     count++
                     return { ...step, number: count, stepsection_id: stepsectionData.id }

@@ -8,6 +8,7 @@ import Auth from './pages/auth';
 import Home from './pages/home';
 import Meals from './pages/meals';
 import AddMeal from './pages/addMeal';
+import Meal from './pages/meal';
 
 import Loader from "../../static/assets/images/BeaneaterLoader.gif"
 
@@ -81,26 +82,28 @@ export default class App extends Component {
         <div className='app'>
           <Navbar />
           {this.state.loading
-          ?
-          <img src={Loader} alt="Loading" />
-          : 
-          <div className="content-wrapper">
-            <div className="content-wrapper-bg">
-            </div>
-              <AnimatedSwitch
-                atEnter={{ opacity: 0 }}
-                atLeave={{ opacity: 0 }}
-                atActive={{ opacity: 1 }}
-              >
-                {this.state.user.id ? <Redirect exact from="/auth" to="/" /> : null}
-                <Route path="/auth" component={Auth} />
+            ? <img src={Loader} alt="Loading" />
+            : (
+              <div className="content-wrapper">
+                <div className="content-wrapper-bg">
+                </div>
+                  <AnimatedSwitch
+                    atEnter={{ opacity: 0 }}
+                    atLeave={{ opacity: 0 }}
+                    atActive={{ opacity: 1 }}
+                  >
+                    {this.state.user.id ? <Redirect exact from="/auth" to="/" /> : null}
+                    <Route path="/auth" component={Auth} />
 
-                {this.state.user.id ? null : <Redirect from="/" to="/auth" />}
-                <Route exact path="/" component={Home} />
-                <Route exact path="/meals" component={Meals} />
-                <Route path="/meals/add" component={AddMeal} />
-              </AnimatedSwitch>
-          </div>}
+                    {this.state.user.id ? null : <Redirect from="/" to="/auth" />}
+                    <Route exact path="/" component={Home} />
+                    <Route exact path="/meals" component={Meals} />
+                    <Route path="/meals/add" component={AddMeal} />
+                    <Route path="/meals/view/:id" component={Meal} />
+                  </AnimatedSwitch>
+              </div>
+            )
+          }
         </div>
       </UserContext.Provider>
     );

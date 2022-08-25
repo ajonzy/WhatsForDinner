@@ -28,12 +28,12 @@ export default function Meals(props) {
     const renderMeals = () => {
         if (user.meals.length === 0) {
             return (
-                <div>No meals here yet... Get adding!</div>
+                <div className='no-content'>No meals here yet... Get adding!</div>
             )
         }
 
         const sharedMeals = sharedMealsList.map(meal => (
-            <div key={`meal-${meal.id}`} className="meal-wrapper-shared">
+            <div key={`meal-${meal.id}`} className="meal-wrapper-shared" onClick={() => props.history.push(`/meals/view/${meal.id}`)}>
                 <p className='shared-by'>Shared by: {meal.user_username}</p>
                 <p className='name'>{meal.name}</p>
                 {meal.difficulty > 0 ? <p className='difficulty'>Difficulty: <span>{"★".repeat(meal.difficulty)}</span></p> : null}
@@ -43,19 +43,22 @@ export default function Meals(props) {
         ))
 
         const meals = mealsList.map(meal => (
-            <div key={`meal-${meal.id}`} className="meal-wrapper">
+            <div key={`meal-${meal.id}`} className="meal-wrapper" onClick={() => props.history.push(`/meals/view/${meal.id}`)}>
                 <p className='name'>{meal.name}</p>
                 {meal.difficulty > 0 ? <p className='difficulty'>Difficulty: <span>{"★".repeat(meal.difficulty)}</span></p> : null}
                 {meal.image_url ? <img src={meal.image_url} alt="" /> : null}
                 {meal.description ? <p className='description'>{meal.description}</p> : null}
                 {meal.categories.length > 0 
-                    ? <div className="meal-categories-wrapper">
-                        {"Category: "}
-                        {meal.categories.map((category, index) => (
-                            <p key={`category-${meal.name}-${category}-${index}`}>{category.name}{index === meal.categories.length - 1 ? null : ", "}</p>
-                        ))}
-                       </div>
-                    : null}
+                    ? (
+                        <div className="meal-categories-wrapper">
+                            {"Category: "}
+                            {meal.categories.map((category, index) => (
+                                <p key={`category-${meal.name}-${category}-${index}`}>{category.name}{index === meal.categories.length - 1 ? null : ", "}</p>
+                            ))}
+                        </div>
+                    )
+                    : null
+                }
             </div>
         ))
 

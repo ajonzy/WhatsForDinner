@@ -1,5 +1,4 @@
 .navbar-wrapper {
-    width: 100%;
     max-width: 800px;
     display: flex;
     justify-content: center;
@@ -15,16 +14,18 @@
 
     .user-menu-wrapper {
         display: flex;
+        justify-content: right;
         align-items: center;
         color: $darkest;
-        margin-left: auto;
 
         .username {
+            width: auto;
             font-weight: bold;
             text-overflow: ellipsis;
         }
 
         .menu {
+            width: auto;
             margin-left: 5px;
             font-size: 21px;
 
