@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUpload, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faUpload, faTimesCircle, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 import TextareaAutosize from 'react-textarea-autosize'
 
 import LoadingError from '../utils/loadingError'
@@ -45,11 +45,11 @@ export default function MealForm(props) {
         
         if (name === "" || categories.filter(category => category === "").length > 0) {
             setError("Please fill out all required fields (including open categories).")
-            document.querySelector(".page-wrapper").scrollTo({top: document.querySelector(".page-wrapper").scrollHeight, behavior: 'smooth'})
         }
         else {
             setLoading(true)
-            document.querySelector(".page-wrapper").scrollTo({top: document.querySelector(".page-wrapper").scrollHeight, behavior: 'smooth'})
+
+            const capitalize = string => string.length > 0 ? string[0].toUpperCase() + string.slice(1).toLowerCase() : ""
 
             let image_url = null
             if (image) {
@@ -87,9 +87,9 @@ export default function MealForm(props) {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
-                    name,
+                    name: capitalize(name),
                     difficulty,
-                    description,
+                    description: capitalize(description),
                     image_url,
                     user_id: user.id
                 })
@@ -120,8 +120,9 @@ export default function MealForm(props) {
                 return false
             }
 
-            const newCategories = categories.filter(category => !user.categories.map(category => category.name).includes(category))
-            const existingCategories = user.categories.filter(category => categories.includes(category.name))
+            const formmattedCategories = categories.map(category => capitalize(category))
+            const newCategories = formmattedCategories.filter(category => !user.categories.map(category => category.name).includes(category))
+            const existingCategories = user.categories.filter(category => formmattedCategories.includes(category.name))
             const categoryData = [...existingCategories]
             if (newCategories.length > 0) {
                 data = await fetch("https://whatsforsupperapi.herokuapp.com/category/add/multiple", {
@@ -129,7 +130,7 @@ export default function MealForm(props) {
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify(newCategories.map(category => {
                         return {
-                            name: category,
+                            name: capitalize(category),
                             user_id: user.id
                         }
                     }))
@@ -257,6 +258,7 @@ export default function MealForm(props) {
                 <img src={image} alt=""/>
             </div>
             <div className="categories-wrapper">
+                <label>Categories (optional)</label>
                 {categories.map((category, index) => (
                     <div className="category-wrapper" key={`category-${index}`}>
                         <input type="text"
@@ -265,10 +267,11 @@ export default function MealForm(props) {
                             onChange={event => setCategories(categories.map((existingCategory, existingIndex) => existingIndex === index ? event.target.value : existingCategory))}
                             required
                         />
-                        <button type='button' disabled={loading} className='alt-button' onClick={() => setCategories(categories.filter((_, existingIndex) => existingIndex !== index))}>Remove Category</button>
+                        
+                        <button type='button' disabled={loading} className='icon-button' onClick={() => setCategories(categories.filter((_, existingIndex) => existingIndex !== index))}><FontAwesomeIcon icon={faTimesCircle} /></button>
                     </div>
                 ))}
-                <button type='button' disabled={loading} className='alt-button' onClick={() => setCategories([...categories, ""])}>Add Category (optional)</button>
+                <button type='button' disabled={loading} className='alt-button' onClick={() => setCategories([...categories, ""])}>Add Category</button>
             </div>
             <div className='spacer-40' />
             <button type="submit" disabled={loading}>Add Meal</button>

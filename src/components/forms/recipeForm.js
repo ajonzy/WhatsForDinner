@@ -1,5 +1,7 @@
 import React, { useContext, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
 import LoadingError from '../utils/loadingError'
 
@@ -63,6 +65,8 @@ export default function RecipeForm(props) {
         else {
             setLoading(true)
 
+            const capitalize = string => string.length > 0 ? string[0].toUpperCase() + string.slice(1).toLowerCase() : ""
+
             let stepsectionsData = []
             if (stepsections.length > 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/stepsection/add/multiple", {
@@ -70,7 +74,7 @@ export default function RecipeForm(props) {
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify(stepsections.map(stepsection => {
                         return {
-                            title: stepsection.title,
+                            title: capitalize(stepsection.title),
                             recipe_id: props.meal.recipe.id
                         }
                     }))
@@ -111,7 +115,7 @@ export default function RecipeForm(props) {
                 })
 
                 stepsections.forEach((stepsection, index) => {
-                    const stepsectionData = stepsectionsData.filter(stepsectionData => stepsectionData.title === stepsection.title)[0]
+                    const stepsectionData = stepsectionsData.filter(stepsectionData => stepsectionData.title === capitalize(stepsection.title))[0]
                     let count = 0
                     formattedSteps = formattedSteps.concat(steps.filter(step => step.stepsection === index).map(step => {
                         count++
@@ -125,7 +129,7 @@ export default function RecipeForm(props) {
                     body: JSON.stringify(formattedSteps.map(step => {
                         return {
                             number: step.number,
-                            text: step.text,
+                            text: capitalize(step.text),
                             stepsection_id: step.stepsection_id,
                             recipe_id: props.meal.recipe.id
                         }
@@ -165,9 +169,9 @@ export default function RecipeForm(props) {
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify(ingredients.map(ingredient => {
                         return {
-                            name: ingredient.name,
-                            amount: ingredient.amount,
-                            category: ingredient.category,
+                            name: capitalize(ingredient.name),
+                            amount: capitalize(ingredient.amount),
+                            category: capitalize(ingredient.category),
                             recipe_id: props.meal.recipe.id
                         }
                     }))
@@ -220,6 +224,7 @@ export default function RecipeForm(props) {
             <h4>Ingredients</h4>
             {ingredients.map((ingredient, index) => (
                 <div className="ingredient-wrapper" key={`ingredient-${index}`}>
+                    <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
                     <input type="text" 
                         value={ingredient.amount}
                         placeholder="Amount"
@@ -237,7 +242,6 @@ export default function RecipeForm(props) {
                         placeholder="Category: produce, dairy, etc. (Optional)"
                         onChange={event => handleIngredientChangeCategory(event, ingredient)}
                     />
-                    <button type='button' disabled={loading} className='alt-button' onClick={() => handleIngredientDelete(index)}>Delete Ingredient</button>
                 </div>
             ))}
             <button type='button' disabled={loading} className='alt-button' onClick={() => setIngredients([...ingredients, { amount: "", name: "", category: "" }])}>Add Ingredient</button>
@@ -252,13 +256,14 @@ export default function RecipeForm(props) {
                         minRows="6"
                         required
                     />
-                    <button type='button' disabled={loading} className='alt-button' onClick={() => handleStepDelete(step)}>Delete Step</button>
+                    <button type='button' disabled={loading} className='icon-button' onClick={() => handleStepDelete(step)}><FontAwesomeIcon icon={faTimesCircle} /></button>
                 </div>
             ))}
             <button type='button' disabled={loading} className='alt-button' onClick={() => setSteps([...steps, { text: "" }])}>Add Step</button>
             <div className='spacer-40' />
             {stepsections.map((stepsection, index) => (
                 <div className="stepsection-wrapper" key={`stepsection-${index}`}>
+                    <button type='button' disabled={loading} className='icon-button' onClick={() => handleStepsectionDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
                     <input type="text" 
                         value = {stepsection.title}
                         placeholder = "Section Title"
@@ -274,11 +279,10 @@ export default function RecipeForm(props) {
                                 minRows="6"
                                 required
                             />
-                            <button type='button' disabled={loading} className='alt-button' onClick={() => handleStepDelete(step)}>Delete Step</button>
+                            <button type='button' disabled={loading} className='icon-button' onClick={() => handleStepDelete(step)}><FontAwesomeIcon icon={faTimesCircle} /></button>
                         </div>
                     ))}
                     <button type='button' disabled={loading} className='alt-button' onClick={() => setSteps([...steps, { text: "", stepsection: index }])}>Add Step</button>
-                    <button type='button' disabled={loading} className='alt-button' onClick={() => handleStepsectionDelete(index)}>Delete Section</button>
                 </div>
             ))}
             <button type='button' disabled={loading} className='alt-button' onClick={() => setStepsections([...stepsections, { title: "" }])}>Add Section</button>
