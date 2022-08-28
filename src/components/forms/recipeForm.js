@@ -56,167 +56,160 @@ export default function RecipeForm(props) {
         event.preventDefault()
 
         setError("")
-        setLoading(true)
 
-        let stepsectionsData = []
-        if (stepsections.length > 0) {
-            const data = await fetch("https://whatsforsupperapi.herokuapp.com/stepsection/add/multiple", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify(stepsections.map(stepsection => {
-                    return {
-                        title: stepsection.title,
-                        recipe_id: props.meal.recipe.id
-                    }
-                }))
-            })
-            .then(response => response.json())
-            .catch(error => {
-                return { catchError: error }
-            })  
-            if (data.status === 400) {
-                setError("An error occured... Please try again later.")
-                console.log(data)
-                setLoading(false)
-                return false
-            }
-            else if (data.catchError) {
-                setError("An error occured... Please try again later.")
-                setLoading(false)
-                console.log("Error adding stepsection: ", error)
-                return false
-            }
-            else if (data.status === 200) {
-                stepsectionsData = data.data
-            }
-            else {
-                setError("An error occured... Please try again later.")
-                console.log(data)
-                setLoading(false)
-                return false
-            }
-        }
-
-        let stepsData = []
-        if (steps.length > 0) {
-            let count = 0
-            let formattedSteps = steps.filter(step => step.stepsection === undefined).map(step => {
-                count++
-                return { ...step, number: count }
-            })
-
-            stepsections.forEach((stepsection, index) => {
-                const stepsectionData = stepsectionsData.filter(stepsectionData => stepsectionData.title === stepsection.title)[0]
-                let count = 0
-                formattedSteps = formattedSteps.concat(steps.filter(step => step.stepsection === index).map(step => {
-                    count++
-                    return { ...step, number: count, stepsection_id: stepsectionData.id }
-                }))
-            })
-
-            const data = await fetch("https://whatsforsupperapi.herokuapp.com/step/add/multiple", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify(formattedSteps.map(step => {
-                    return {
-                        number: step.number,
-                        text: step.text,
-                        stepsection_id: step.stepsection_id,
-                        recipe_id: props.meal.recipe.id
-                    }
-                }))
-            })
-            .then(response => response.json())
-            .catch(error => {
-                return { catchError: error }
-            })  
-            if (data.status === 400) {
-                setError("An error occured... Please try again later.")
-                console.log(data)
-                setLoading(false)
-                return false
-            }
-            else if (data.catchError) {
-                setError("An error occured... Please try again later.")
-                setLoading(false)
-                console.log("Error adding step: ", error)
-                return false
-            }
-            else if (data.status === 200) {
-                stepsData = data.data
-            }
-            else {
-                setError("An error occured... Please try again later.")
-                console.log(data)
-                setLoading(false)
-                return false
-            }
-        }
-
-        let ingredientsData = []
-        if (ingredients.length > 0) {
-            const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify(ingredients.map(ingredient => {
-                    return {
-                        name: ingredient.name,
-                        amount: ingredient.amount,
-                        category: ingredient.category,
-                        recipe_id: props.meal.recipe.id
-                    }
-                }))
-            })
-            .then(response => response.json())
-            .catch(error => {
-                return { catchError: error }
-            })  
-            if (data.status === 400) {
-                setError("An error occured... Please try again later.")
-                console.log(data)
-                setLoading(false)
-                return false
-            }
-            else if (data.catchError) {
-                setError("An error occured... Please try again later.")
-                setLoading(false)
-                console.log("Error adding ingredient: ", error)
-                return false
-            }
-            else if (data.status === 200) {
-                ingredientsData = data.data
-            }
-            else {
-                setError("An error occured... Please try again later.")
-                console.log(data)
-                setLoading(false)
-                return false
-            }
-        }
-
-        let mealData = {}
-        const data = await fetch(`https://whatsforsupperapi.herokuapp.com/meal/get/${props.meal.id}`)
-        .then(response => response.json())
-        .catch(error => {
-            return { catchError: error }
-        })  
-        if (data.catchError) {
-            setError("An error occured... Please try again later.")
-            setLoading(false)
-            console.log("Error adding ingredient: ", error)
-            return false
-        }
-        else if (data.id) {
-            mealData = data
+        if (!stepsections.every(stepsectionA => stepsections.filter(stepsectionB => stepsectionA.title === stepsectionB.title).length === 1)) {
+            setError("Sorry, each section must have a unique title.")
         }
         else {
-            setError("An error occured... Please try again later.")
-            console.log(data)
-            setLoading(false)
-            return false
-        }
+            setLoading(true)
 
-        props.handleSuccessfulSubmit(mealData)
+            let stepsectionsData = []
+            if (stepsections.length > 0) {
+                const data = await fetch("https://whatsforsupperapi.herokuapp.com/stepsection/add/multiple", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(stepsections.map(stepsection => {
+                        return {
+                            title: stepsection.title,
+                            recipe_id: props.meal.recipe.id
+                        }
+                    }))
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })  
+                if (data.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding stepsection: ", error)
+                    return false
+                }
+                else if (data.status === 200) {
+                    stepsectionsData = data.data
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+            }
+
+            let stepsData = []
+            if (steps.length > 0) {
+                let count = 0
+                let formattedSteps = steps.filter(step => step.stepsection === undefined).map(step => {
+                    count++
+                    return { ...step, number: count }
+                })
+
+                stepsections.forEach((stepsection, index) => {
+                    const stepsectionData = stepsectionsData.filter(stepsectionData => stepsectionData.title === stepsection.title)[0]
+                    let count = 0
+                    formattedSteps = formattedSteps.concat(steps.filter(step => step.stepsection === index).map(step => {
+                        count++
+                        return { ...step, number: count, stepsection_id: stepsectionData.id }
+                    }))
+                })
+
+                const data = await fetch("https://whatsforsupperapi.herokuapp.com/step/add/multiple", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(formattedSteps.map(step => {
+                        return {
+                            number: step.number,
+                            text: step.text,
+                            stepsection_id: step.stepsection_id,
+                            recipe_id: props.meal.recipe.id
+                        }
+                    }))
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })  
+                if (data.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding step: ", error)
+                    return false
+                }
+                else if (data.status === 200) {
+                    stepsData = data.data
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+            }
+
+            let ingredientsData = []
+            if (ingredients.length > 0) {
+                const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(ingredients.map(ingredient => {
+                        return {
+                            name: ingredient.name,
+                            amount: ingredient.amount,
+                            category: ingredient.category,
+                            recipe_id: props.meal.recipe.id
+                        }
+                    }))
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })  
+                if (data.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding ingredient: ", error)
+                    return false
+                }
+                else if (data.status === 200) {
+                    ingredientsData = data.data
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+            }
+
+            const meal = props.meal
+            stepsData.forEach(step => {
+                if (step.stepsection_id) {
+                    stepsectionsData.filter(stepsection => stepsection.id === step.stepsection_id)[0].steps.push(step)
+                }
+            })
+            meal.recipe.stepsections = stepsectionsData
+            meal.recipe.steps = stepsData
+            meal.recipe.ingredients = ingredientsData
+            props.handleSuccessfulSubmit(meal)
+        } 
     }
 
     return (
