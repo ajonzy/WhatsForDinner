@@ -1,4 +1,9 @@
+html {
+    height: -webkit-fill-available;
+}
+
 body {
+    height: -webkit-fill-available;
     margin: 0px;
     font-family: 'Bad Script', cursive;
 }
@@ -98,6 +103,7 @@ textarea {
 .app {
     width: 100vw;
     height: 100vh;
+    height: -webkit-fill-available;
     padding: 20px;
     padding-top: 0px;
     @include flex;

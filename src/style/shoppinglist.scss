@@ -1,0 +1,76 @@
+.shoppinglist-page-wrapper {
+    @include flex;
+
+    p {
+        margin: 0px;
+    }
+
+    .shared-by {
+        color: $darkest;
+    }
+
+    .created-on {
+        color: $darkest;
+        font-size: 12px;
+    }
+
+    .contains-gifts {
+        color: $darkest;
+    }
+
+    h3 {
+        color: $darkest;
+    }
+
+    .shoppinglist-ingredients-options-wrapper {
+        @include flex;
+        color: $darkest;
+        margin-bottom: 10px;
+
+        .ingredients-options-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            justify-items: center;
+
+            input[type=radio] {
+                display: none;
+            }
+
+            label {
+                @include flex;
+                
+                span {
+                    font-size: 25px;
+                    line-height: 0px;
+                }
+            }
+        }
+    }
+
+    .shoppinglist-ingredients-wrapper {
+        margin-top: 10px;
+        margin-bottom: 30px;
+
+        .category-name {
+            font-weight: bold;
+        }
+
+        .ingredient-wrapper {
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid $complementary-darkest;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            box-shadow: 0px 0px 4px 2px rgba(0,0,0,0.25);
+
+            span {
+                color: $complementary-darkest;
+            }
+
+            &.obtained {
+                text-decoration: line-through;
+            }
+        }
+    }
+}
