@@ -72,7 +72,7 @@ export default function Mealplans(props) {
             <div className="options-wrapper">
                 <Link to="/mealplans/add"><button>Add Mealplan</button></Link>
                 <input type="text"
-                    placeholder='Search: mealplan names, mealplans, etc.'
+                    placeholder='Search: mealplan names, meals, etc.'
                     onChange={handleFilter}
                 />
             </div>

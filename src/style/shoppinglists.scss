@@ -1,8 +1,8 @@
-.mealplans-page-wrapper {
-    .mealplans-wrapper {
+.shoppinglists-page-wrapper {
+    .shoppinglists-wrapper {
         @include flex;
 
-        .mealplan-wrapper, .mealplan-wrapper-shared {
+        .shoppinglist-wrapper, .shoppinglist-wrapper-shared {
             display: flex;
             flex-direction: column;
             padding: 10px;
@@ -22,28 +22,14 @@
                 font-size: 12px;
                 color: $darkest;
             }
-
-            .meal-wrapper {
-                display: flex;
-                justify-content: space-between;
-                padding: 10px;
-                border: 1px solid $complementary-darkest;
-                border-radius: 5px;
-                margin-top: 10px;
-                box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.25);
-
-                span {
-                    color: $complementary-darkest;
-                }
-            }
         }
 
-        .mealplan-wrapper {
+        .shoppinglist-wrapper {
             border: 1px solid $dark;
             align-items: flex-start;
         }
 
-        .mealplan-wrapper-shared {
+        .shoppinglist-wrapper-shared {
             border: 1px solid $complementary-dark;
             align-items: flex-end;
 
@@ -53,12 +39,12 @@
         }
 
         &.shared-active {
-            .mealplan-wrapper {
+            .shoppinglist-wrapper {
                 width: 90%;
                 align-self: flex-start;
             }
 
-            .mealplan-wrapper-shared {
+            .shoppinglist-wrapper-shared {
                 width: 90%;
                 align-self: flex-end;
             }
