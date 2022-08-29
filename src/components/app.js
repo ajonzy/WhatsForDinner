@@ -13,6 +13,7 @@ import Mealplans from './pages/mealplans';
 import AddMealplan from './pages/addMealplan';
 import Mealplan from './pages/mealplan';
 import Shoppinglists from './pages/shoppinglists';
+import AddShoppinglist from './pages/addShoppinglist';
 
 import Loader from "../../static/assets/images/BeaneaterLoader.gif"
 
@@ -108,6 +109,7 @@ export default class App extends Component {
                     <Route path="/mealplans/add" component={AddMealplan} />
                     <Route path="/mealplans/view/:id" component={Mealplan} />
                     <Route exact path="/shoppinglists" component={Shoppinglists} />
+                    <Route path="/shoppinglists/add" component={AddShoppinglist} />
                   </AnimatedSwitch>
               </div>
             )

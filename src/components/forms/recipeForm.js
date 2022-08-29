@@ -60,7 +60,7 @@ export default function RecipeForm(props) {
         setError("")
 
         if (!stepsections.every(stepsectionA => stepsections.filter(stepsectionB => stepsectionA.title === stepsectionB.title).length === 1)) {
-            setError("Sorry, each section must have a unique title.")
+            setError("Each section must have a unique title.")
         }
         else {
             setLoading(true)
