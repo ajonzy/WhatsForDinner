@@ -1,0 +1,19 @@
+.generate-mealplan-form-wrapper {
+    input[type=number] {
+        text-align: center;
+    }
+
+    .rules-wrapper {
+        .rule-wrapper {
+            @include flex;
+
+            .icon-button {
+                font-size: 25px;
+                color: red;
+                padding: 0px 1px;
+                align-self: flex-end;
+                margin-bottom: 2px;
+            }
+        }
+    }
+}

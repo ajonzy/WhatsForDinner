@@ -12,14 +12,14 @@ export default function Mealplans(props) {
         setMealplansList(user.mealplans.filter(mealplan => (
             mealplan.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
             mealplan.created_on.toLowerCase().includes(event.target.value.toLowerCase()) ||
-            mealplan.meals.map(meal => meal.name.toLowerCase()).includes(event.target.value.toLowerCase())
+            mealplan.meals.map(meal => meal.name.toLowerCase()).filter(meal => meal.includes(event.target.value.toLowerCase())).length > 0
         )))
 
         setSharedMealplansList(user.shared_mealplans.filter(mealplan => (
             mealplan.user_username.toLowerCase().includes(event.target.value.toLowerCase()) ||
             mealplan.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
             mealplan.created_on.toLowerCase().includes(event.target.value.toLowerCase()) ||
-            mealplan.meals.map(meal => meal.name.toLowerCase()).includes(event.target.value.toLowerCase())
+            mealplan.meals.map(meal => meal.name.toLowerCase()).filter(meal => meal.includes(event.target.value.toLowerCase())).length > 0
         )))
     }
 

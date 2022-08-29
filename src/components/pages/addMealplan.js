@@ -1,46 +1,170 @@
 import React, { useContext, useState } from 'react'
 
+import GenerateMealplanForm from '../forms/generateMealplanForm'
 import MealplanForm from '../forms/mealplanForm'
 
 import { UserContext } from '../app'
 
 export default function AddMealplan(props) {
-    const { user } = useContext(UserContext)
+    const { user, setUser } = useContext(UserContext)
     const [section, setSection] = useState("mealplan-form")
+    const [generatedData, setGeneratedData] = useState({})
     const [generatedMeals, setGeneratedMeals] = useState([])
     const [generatedProblem, setGeneratedProblem] = useState(false)
 
-    const handleSuccessfulBuild = (meals, problem) => {
-        setGeneratedMeals(meals)
-        setGeneratedProblem(problem)
+    const handleBuildMealplan = (name, number, rules) => {
+        setGeneratedData({
+            name,
+            number,
+            rules
+        })
+
+        let meals = [...user.meals]
+        const requiredMeals = []
+        const numberedMeals = []
+        const numberedRequiredMeals = []
+        const selectedMeals = []
+
+        rules.forEach(rule => {
+            switch(rule.rule) {
+                case "None": {
+                    if (rule.type === "Category") {
+                        meals = meals.filter(meal => !meal.categories.map(category => category.name).includes(rule.value))
+                    }
+                    else {
+                        meals = meals.filter(meal => meal[rule.type.toLowerCase()] != rule.value)
+                    }
+                    break
+                }
+                case "Exactly": {
+                    for (let i=0; i<rule.amount; i++) {
+                        requiredMeals.push({
+                            type: rule.type,
+                            value: rule.value
+                        })
+                    }
+                    break
+                }
+                case "No more than": {
+                    numberedMeals.push({
+                        type: rule.type,
+                        value: rule.value,
+                        amount: rule.amount
+                    })
+                    break
+                }
+                case "At least": {
+                    for (let i=0; i<rule.amount; i++) {
+                        numberedRequiredMeals.push({
+                            type: rule.type,
+                            value: rule.value
+                        })
+                    }
+                    break
+                }
+            }
+        })
+
+        const selectMeal = mealChoices => {
+            if (mealChoices.length > 0) {
+                const selectedMeal = mealChoices[Math.floor(Math.random() * mealChoices.length)]
+
+                numberedMeals.forEach(numberedMeal => {
+                    if (numberedMeal.type === "Category") {
+                        if (selectedMeal.categories.map(category => category.name).includes(numberedMeal.value)) {
+                            numberedMeal.amount -= 1
+                        }
+    
+                        if (numberedMeal.amount === 0) {
+                            meals = meals.filter(meal => !meal.categories.map(category => category.name).includes(numberedMeal.value))
+                        }
+                    }
+                    else {
+                        if (selectedMeal[numberedMeal.type.toLowerCase()] == numberedMeal.value) {
+                            numberedMeal.amount -= 1
+                        }
+    
+                        if (numberedMeal.amount === 0) {
+                            meals = meals.filter(meal => meal[numberedMeal.type.toLowerCase()] != numberedMeal.value)
+                        }
+                    }
+                })
+    
+                meals = meals.filter(meal => meal.id !== selectedMeal.id)
+                selectedMeals.push(selectedMeal)
+            }
+            else {
+                setGeneratedProblem(true)
+                selectedMeals.push(user.meals[Math.floor(Math.random() * user.meals.length)])
+            }
+        }
+
+        while (selectedMeals.length < number) {
+            if (requiredMeals.length > 0) {
+                let mealChoices = []
+                const requiredMeal = requiredMeals.pop()
+
+                if (requiredMeal.type === "Category") {
+                    mealChoices = meals.filter(meal => meal.categories.map(category => category.name).includes(requiredMeal.value))
+                }
+                else {
+                    mealChoices = meals.filter(meal => meal[requiredMeal.type.toLowerCase()] == requiredMeal.value)
+                }
+                selectMeal(mealChoices)
+
+                if (requiredMeals.filter(meal => meal.value === requiredMeal.value).length === 0) {
+                    if (requiredMeal.type === "Category") {
+                        meals = meals.filter(meal => !meal.categories.map(category => category.name).includes(requiredMeal.value))
+                    }
+                    else {
+                        meals = meals.filter(meal => meal[requiredMeal.type.toLowerCase()] != requiredMeal.value)
+                    }
+                }
+            }
+            else if (numberedRequiredMeals.length > 0 && numberedRequiredMeals.length >= (number - selectedMeals.length)) {
+                let mealChoices = []
+                const requiredMeal = numberedRequiredMeals.pop()
+
+                if (requiredMeal.type === "Category") {
+                    if (selectedMeals.filter(meal => meal.categories.map(category => category.name).includes(requiredMeal.value)).length > 0) {
+                        mealChoices = meals
+                    }
+                    else {
+                        mealChoices = meals.filter(meal => meal.categories.map(category => category.name).includes(requiredMeal.value))
+                    }
+                }
+                else {
+                    if (selectedMeals.filter(meal => meal[requiredMeal.type.toLowerCase()] == requiredMeal.value).length > 0) {
+                        mealChoices = meals
+                    }
+                    else {
+                        mealChoices = meals.filter(meal => meal[requiredMeal.type.toLowerCase()] == requiredMeal.value)
+                    }
+                }
+                selectMeal(mealChoices)
+            }
+            else {
+                selectMeal(meals)
+            }
+        }
+
+        setGeneratedMeals(selectedMeals)
         setSection("mealplan-view")
+    }
+
+    const handleSuccessfulCreateMealplan = data => {
+        const newUser = {...user}
+        newUser.mealplans.push(data)
+        newUser.shoppinglists.push(data.shoppinglist)
+        setUser(newUser)
+        props.history.push("/mealplans")
+
     }
 
     const renderSection = () => {
         switch(section) {
-            case "mealplan-form": return <MealplanForm handleSuccessfulBuild={handleSuccessfulBuild} />
-            case "mealplan-view": return (
-                <div className="mealplan-view-wrapper">
-                    {generatedProblem ? <p>Unfortunately, not all rules were able to be fulfilled.</p> : null}
-                    {generatedMeals.map(meal => (
-                        <div className="generated-meal-wrapper" key={`generated-meal-${meal.id}`}>
-                            <p>{meal.name}</p>
-                            {meal.difficulty > 0 ? <p>{meal.difficulty}</p> : null}
-                            {meal.categories.length > 0 
-                                ? (
-                                    <div className="meal-categories-wrapper">
-                                        {"Category: "}
-                                        {meal.categories.map((category, index) => (
-                                            <p key={`category-${meal.name}-${category}-${index}`}>{category.name}{index === meal.categories.length - 1 ? null : ", "}</p>
-                                        ))}
-                                    </div>
-                                )
-                                : null
-                            }
-                        </div>
-                    ))}
-                </div>
-            )
+            case "mealplan-form": return <GenerateMealplanForm handleBuildMealplan={handleBuildMealplan} />
+            case "mealplan-view": return <MealplanForm meals={generatedMeals} problem={generatedProblem} data={generatedData} handleSuccessfulCreateMealplan={handleSuccessfulCreateMealplan} />
         }
     }
 

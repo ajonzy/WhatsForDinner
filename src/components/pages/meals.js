@@ -12,7 +12,7 @@ export default function Meals(props) {
         setMealsList(user.meals.filter(meal => (
             meal.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
             (meal.description ? meal.description.toLowerCase().includes(event.target.value.toLowerCase()) : false) ||
-            meal.categories.map(category => category.name.toLowerCase()).includes(event.target.value.toLowerCase()) ||
+            meal.categories.map(category => category.name.toLowerCase()).filter(category => category.includes(event.target.value.toLowerCase())).length > 0 ||
             (meal.difficulty > 0 ? meal.difficulty === parseInt(event.target.value) : false)
         )))
 
@@ -20,7 +20,7 @@ export default function Meals(props) {
             meal.user_username.toLowerCase().includes(event.target.value.toLowerCase()) ||
             meal.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
             (meal.description ? meal.description.toLowerCase().includes(event.target.value.toLowerCase()) : false) ||
-            meal.categories.map(category => category.name.toLowerCase()).includes(event.target.value.toLowerCase()) ||
+            meal.categories.map(category => category.name.toLowerCase()).filter(category => category.includes(event.target.value.toLowerCase())).length > 0 ||
             (meal.difficulty > 0 ? meal.difficulty === parseInt(event.target.value) : false)
         )))
     }
