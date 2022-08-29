@@ -1,8 +1,9 @@
 import React, { useContext, useState } from 'react'
 
-import { UserContext } from '../app'
 import ConfirmLoadingError from '../utils/confirmLoadingError'
 import LoadingError from '../utils/loadingError'
+
+import { UserContext } from '../app'
 
 export default function Meal(props) {
     const { user, setUser } = useContext(UserContext)

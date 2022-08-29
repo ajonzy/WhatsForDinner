@@ -1,0 +1,38 @@
+.mealplan-page-wrapper {
+    @include flex;
+
+    p {
+        margin: 0px;
+    }
+
+    .shared-by {
+        color: $darkest;
+    }
+
+    .created-on {
+        color: $darkest;
+        font-size: 12px;
+    }
+
+    h3 {
+        color: $darkest;
+    }
+
+    .mealplan-meals-wrapper {
+        margin-bottom: 30px;
+
+        .meal-wrapper {
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid $complementary-darkest;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 5px;
+            box-shadow: 0px 0px 4px 2px rgba(0,0,0,0.25);
+
+            span {
+                color: $complementary-darkest;
+            }
+        }
+    }
+}

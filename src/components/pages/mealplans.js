@@ -37,9 +37,9 @@ export default function Mealplans(props) {
                 <p className='created-on'>{mealplan.created_on}</p>
                 <div className="mealplan-meals-wrapper">
                     {mealplan.meals.map(meal => (
-                        <div className="meal-wrapper" key={`meal-${meal.id}`} onClick={() => props.history.push(`/meal/view/${meal.id}`)}>
+                        <div className="meal-wrapper" key={`meal-${meal.id}`}>
                             <p className='meal-name'>{meal.name}</p>
-                            {meal.difficulty > 0 ? <p className='meal-difficulty'><span>{"★".repeat(mealplan.difficulty)}</span></p> : null}
+                            {meal.difficulty > 0 ? <p className='meal-difficulty'><span>{"★".repeat(meal.difficulty)}</span></p> : null}
                         </div>
                     ))}
                 </div>
@@ -52,9 +52,9 @@ export default function Mealplans(props) {
                 <p className='created-on'>{mealplan.created_on}</p>
                 <div className="mealplan-meals-wrapper">
                     {mealplan.meals.map(meal => (
-                        <div className="meal-wrapper" key={`meal-${meal.id}`} onClick={() => props.history.push(`/meal/view/${meal.id}`)}>
+                        <div className="meal-wrapper" key={`meal-${meal.id}`}>
                             <p className='meal-name'>{meal.name}</p>
-                            {meal.difficulty > 0 ? <p className='meal-difficulty'><span>{"★".repeat(mealplan.difficulty)}</span></p> : null}
+                            {meal.difficulty > 0 ? <p className='meal-difficulty'><span>{"★".repeat(meal.difficulty)}</span></p> : null}
                         </div>
                     ))}
                 </div>
