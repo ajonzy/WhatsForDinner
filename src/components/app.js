@@ -16,6 +16,7 @@ import Shoppinglists from './pages/shoppinglists';
 import AddShoppinglist from './pages/addShoppinglist';
 import Shoppinglist from './pages/shoppinglist';
 import Friends from './pages/friends';
+import AddFriend from './pages/addFriend';
 
 import Loader from "../../static/assets/images/BeaneaterLoader.gif"
 
@@ -113,7 +114,8 @@ export default class App extends Component {
                     <Route exact path="/shoppinglists" component={Shoppinglists} />
                     <Route path="/shoppinglists/add" component={AddShoppinglist} />
                     <Route path="/shoppinglists/view/:id" component={Shoppinglist} />
-                    <Route path="/friends" component={Friends} />
+                    <Route exact path="/friends" component={Friends} />
+                    <Route path="/friends/add" component={AddFriend} />
                   </AnimatedSwitch>
               </div>
             )
