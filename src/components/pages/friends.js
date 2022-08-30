@@ -13,7 +13,7 @@ export default function Friends(props) {
         )))
     }
 
-    const renderShoppinglists = () => {
+    const renderFriends = () => {
         if (user.friends.length === 0) {
             return (
                 <div className='no-content'>No friends here yet... Get adding!</div>
@@ -42,7 +42,7 @@ export default function Friends(props) {
                 />
             </div>
             <div className="friends-wrapper">
-                {renderShoppinglists()}
+                {renderFriends()}
             </div>
         </div>
     )
