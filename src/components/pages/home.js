@@ -25,7 +25,7 @@ export default function Home(props) {
                 </div></Link>
             </div>
 
-            <button onClick={() => props.history.push("/mealplans/add")}>Create Mealplan</button>
+            <button className='fancy-button' onClick={() => props.history.push("/mealplans/add")}>Create Mealplan</button>
         </div>
     )
 }

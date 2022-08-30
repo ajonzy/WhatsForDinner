@@ -1,9 +1,4 @@
-html {
-    height: -webkit-fill-available;
-}
-
 body {
-    height: -webkit-fill-available;
     margin: 0px;
     font-family: 'Bad Script', cursive;
 }
@@ -102,7 +97,8 @@ textarea {
 
 .app {
     width: 100vw;
-    height: 100vh;
+    height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+    height: calc(var(--vh, 1vh) * 100);
     padding: 20px;
     padding-top: 0px;
     @include flex;
