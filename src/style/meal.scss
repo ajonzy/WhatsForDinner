@@ -1,6 +1,10 @@
 .meal-page-wrapper {
     @include flex;
 
+    h2 {
+        text-align: center;
+    }
+
     img {
         width: 100%;
     }
@@ -18,10 +22,7 @@
     }
 
     .meal-categories-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        white-space: pre;
+        text-align: center;
     }
 
     h3, h4 {
@@ -45,6 +46,7 @@
 
         .ingredient-wrapper {
             margin-bottom: 15px;
+            text-align: center;
 
             .ingredient-amount {
                 font-weight: bold;

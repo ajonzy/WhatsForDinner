@@ -72,15 +72,17 @@ export default function MealplanForm(props) {
             {problem ? <p>Unfortunately, not all rules were able to be fulfilled.</p> : null}
             {meals.map(meal => (
                 <div className="generated-meal-wrapper" key={`generated-meal-${meal.id}`}>
-                    <p className='meal-name'>{meal.name}</p>
-                    {meal.difficulty > 0 ? <p className='meal-difficulty'>Difficulty: <span>{"★".repeat(meal.difficulty)}</span></p> : null}
+                    <div className="name-difficulty-wrapper">
+                        <p className='meal-name'>{meal.name}</p>
+                        {meal.difficulty > 0 ? <p className='meal-difficulty'>Difficulty: <span>{"★".repeat(meal.difficulty)}</span></p> : null}
+                    </div>
                     {meal.categories.length > 0 
                         ? (
                             <div className="meal-categories-wrapper">
-                                {"Category: "}
-                                {meal.categories.map((category, index) => (
-                                    <p key={`category-${meal.name}-${category}-${index}`}>{category.name}{index === meal.categories.length - 1 ? null : ", "}</p>
-                                ))}
+                                {"Category: " +
+                                meal.categories.map((category, index) => (
+                                    `${category.name}${index === meal.categories.length - 1 ? "" : ", "}`
+                                )).join("")}
                             </div>
                         )
                         : null

@@ -77,7 +77,7 @@ export default function Friend(props) {
                                         {mealplan.meals.map(meal => (
                                             <div className="meal-wrapper" key={`meal-${meal.id}`}>
                                                 <p className='meal-name'>{meal.name}</p>
-                                                {meal.difficulty > 0 ? <p className='meal-difficulty'><span>{"★".repeat(meal.difficulty)}</span></p> : null}
+                                                {meal.difficulty > 0 ? <p className='difficulty'><span>{"★".repeat(meal.difficulty)}</span></p> : null}
                                             </div>
                                         ))}
                                     </div>

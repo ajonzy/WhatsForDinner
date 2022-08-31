@@ -120,7 +120,7 @@ export default function MealForm(props) {
                 return false
             }
 
-            const formmattedCategories = categories.map(category => capitalize(category))
+            const formmattedCategories = categories.map(category => titleize(category))
             const newCategories = formmattedCategories.filter(category => !user.categories.map(category => category.name).includes(category))
             const existingCategories = user.categories.filter(category => formmattedCategories.includes(category.name))
             const categoryData = [...existingCategories]

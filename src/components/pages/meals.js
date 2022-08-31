@@ -51,10 +51,10 @@ export default function Meals(props) {
                 {meal.categories.length > 0 
                     ? (
                         <div className="meal-categories-wrapper">
-                            {"Category: "}
-                            {meal.categories.map((category, index) => (
-                                <p key={`category-${meal.name}-${category}-${index}`}>{category.name}{index === meal.categories.length - 1 ? null : ", "}</p>
-                            ))}
+                            {"Category: " +
+                            meal.categories.map((category, index) => (
+                                `${category.name}${index === meal.categories.length - 1 ? "" : ", "}`
+                            )).join("")}
                         </div>
                     )
                     : null
