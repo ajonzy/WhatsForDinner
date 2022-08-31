@@ -23,8 +23,8 @@ export default function LoginForm(props) {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
-                    username,
-                    password
+                    username: username.trim(),
+                    password: password.trim()
                 })
             })
             .then(response => response.json())

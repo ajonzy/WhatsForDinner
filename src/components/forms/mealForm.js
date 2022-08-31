@@ -7,6 +7,8 @@ import LoadingError from '../utils/loadingError'
 
 import { UserContext } from '../app'
 
+import titleize from '../../functions/titleize'
+
 export default function MealForm(props) {
     const { user } = useContext(UserContext)
     const [name, setName] = useState("")
@@ -49,8 +51,6 @@ export default function MealForm(props) {
         else {
             setLoading(true)
 
-            const capitalize = string => string.length > 0 ? string[0].toUpperCase() + string.slice(1).toLowerCase() : ""
-
             let image_url = null
             if (image) {
                 const form = new FormData()
@@ -87,9 +87,9 @@ export default function MealForm(props) {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
-                    name: capitalize(name),
+                    name: titleize(name),
                     difficulty,
-                    description: capitalize(description),
+                    description: titleize(description),
                     image_url,
                     user_id: user.id
                 })
@@ -130,7 +130,7 @@ export default function MealForm(props) {
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify(newCategories.map(category => {
                         return {
-                            name: capitalize(category),
+                            name: titleize(category),
                             user_id: user.id
                         }
                     }))

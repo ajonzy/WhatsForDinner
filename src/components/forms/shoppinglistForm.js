@@ -7,6 +7,8 @@ import LoadingError from '../utils/loadingError'
 
 import { UserContext } from '../app'
 
+import titleize from '../../functions/titleize'
+
 export default function ShoppinglistForm(props) {
     const { user } = useContext(UserContext)
     const [name, setName] = useState("")
@@ -46,14 +48,12 @@ export default function ShoppinglistForm(props) {
         else {
             setLoading(true)
 
-            const capitalize = string => string.length > 0 ? string[0].toUpperCase() + string.slice(1).toLowerCase() : ""
-
             let newData = []
             let data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppinglist/add", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
-                    name: capitalize(name),
+                    name: titleize(name),
                     updates_hidden: updatesHidden,
                     created_on: new Date().toLocaleDateString(),
                     user_id: user.id
@@ -92,9 +92,9 @@ export default function ShoppinglistForm(props) {
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify(ingredients.map(ingredient => {
                         return {
-                            name: capitalize(ingredient.name),
-                            amount: capitalize(ingredient.amount),
-                            category: capitalize(ingredient.category),
+                            name: titleize(ingredient.name),
+                            amount: titleize(ingredient.amount),
+                            category: titleize(ingredient.category),
                             shoppinglist_id: newData.id
                         }
                     }))

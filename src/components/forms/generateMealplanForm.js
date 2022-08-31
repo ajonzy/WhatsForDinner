@@ -4,6 +4,8 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
 import LoadingError from '../utils/loadingError'
 
+import titleize from '../../functions/titleize'
+
 export default function GenerateMealplanForm(props) {
     const [name, setName] = useState("Weekly")
     const [number, setNumber] = useState(3)
@@ -22,7 +24,7 @@ export default function GenerateMealplanForm(props) {
             setLoading(false)
         }
 
-        props.handleBuildMealplan(name, number, rules)
+        props.handleBuildMealplan(titleize(name), number, rules)
     }
 
     return (

@@ -28,9 +28,9 @@ export default function RegisterForm(props) {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
-                    username,
-                    password,
-                    email
+                    username: username.trim(),
+                    password: password.trim(),
+                    email: email.trim()
                 })
             })
             .then(response => response.json())

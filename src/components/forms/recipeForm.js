@@ -5,6 +5,8 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
 import LoadingError from '../utils/loadingError'
 
+import titleize from '../../functions/titleize'
+
 export default function RecipeForm(props) {
     const [steps, setSteps] = useState([])
     const [stepsections, setStepsections] = useState([])
@@ -65,7 +67,7 @@ export default function RecipeForm(props) {
         else {
             setLoading(true)
 
-            const capitalize = string => string.length > 0 ? string[0].toUpperCase() + string.slice(1).toLowerCase() : ""
+            const capitalize = string => string.length > 0 ? string[0].toUpperCase() + string.slice(1) : ""
 
             let stepsectionsData = []
             if (stepsections.length > 0) {
@@ -74,7 +76,7 @@ export default function RecipeForm(props) {
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify(stepsections.map(stepsection => {
                         return {
-                            title: capitalize(stepsection.title),
+                            title: titleize(stepsection.title),
                             recipe_id: props.meal.recipe.id
                         }
                     }))
@@ -115,7 +117,7 @@ export default function RecipeForm(props) {
                 })
 
                 stepsections.forEach((stepsection, index) => {
-                    const stepsectionData = stepsectionsData.filter(stepsectionData => stepsectionData.title === capitalize(stepsection.title))[0]
+                    const stepsectionData = stepsectionsData.filter(stepsectionData => stepsectionData.title === titleize(stepsection.title))[0]
                     let count = 0
                     formattedSteps = formattedSteps.concat(steps.filter(step => step.stepsection === index).map(step => {
                         count++
@@ -129,7 +131,7 @@ export default function RecipeForm(props) {
                     body: JSON.stringify(formattedSteps.map(step => {
                         return {
                             number: step.number,
-                            text: capitalize(step.text),
+                            text: capitalize(step.text).trim(),
                             stepsection_id: step.stepsection_id,
                             recipe_id: props.meal.recipe.id
                         }
@@ -169,9 +171,9 @@ export default function RecipeForm(props) {
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify(ingredients.map(ingredient => {
                         return {
-                            name: capitalize(ingredient.name),
-                            amount: capitalize(ingredient.amount),
-                            category: capitalize(ingredient.category),
+                            name: titleize(ingredient.name),
+                            amount: titleize(ingredient.amount),
+                            category: titleize(ingredient.category),
                             recipe_id: props.meal.recipe.id
                         }
                     }))

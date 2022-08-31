@@ -5,6 +5,8 @@ import MealplanForm from '../forms/mealplanForm'
 
 import { UserContext } from '../app'
 
+import titleize from '../../functions/titleize'
+
 export default function AddMealplan(props) {
     const { user, setUser } = useContext(UserContext)
     const [section, setSection] = useState("mealplan-form")
@@ -29,10 +31,10 @@ export default function AddMealplan(props) {
             switch(rule.rule) {
                 case "None": {
                     if (rule.type === "Category") {
-                        meals = meals.filter(meal => !meal.categories.map(category => category.name).includes(rule.value))
+                        meals = meals.filter(meal => !meal.categories.map(category => category.name).includes(titleize(rule.value)))
                     }
                     else {
-                        meals = meals.filter(meal => meal[rule.type.toLowerCase()] != rule.value)
+                        meals = meals.filter(meal => meal[rule.type.toLowerCase()] != titleize(rule.value))
                     }
                     break
                 }
@@ -40,7 +42,7 @@ export default function AddMealplan(props) {
                     for (let i=0; i<rule.amount; i++) {
                         requiredMeals.push({
                             type: rule.type,
-                            value: rule.value
+                            value: titleize(rule.value)
                         })
                     }
                     break
@@ -48,7 +50,7 @@ export default function AddMealplan(props) {
                 case "No more than": {
                     numberedMeals.push({
                         type: rule.type,
-                        value: rule.value,
+                        value: titleize(rule.value),
                         amount: rule.amount
                     })
                     break
@@ -57,7 +59,7 @@ export default function AddMealplan(props) {
                     for (let i=0; i<rule.amount; i++) {
                         numberedRequiredMeals.push({
                             type: rule.type,
-                            value: rule.value
+                            value: titleize(rule.value)
                         })
                     }
                     break
