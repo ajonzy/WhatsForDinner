@@ -56,6 +56,7 @@ export default function ShoppinglistForm(props) {
                     name: titleize(name),
                     updates_hidden: updatesHidden,
                     created_on: new Date().toLocaleDateString(),
+                    user_username: user.username,
                     user_id: user.id
                 })
             })

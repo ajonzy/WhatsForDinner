@@ -187,6 +187,15 @@ export default function Shoppinglist(props) {
                     <div className="options-wrapper">
                         {personal_shoppinglist && !shoppinglist.mealplan_id
                             ? (
+                                <div className="share-option-wrapper">
+                                    <button className='alt-button' onClick={() => props.history.push(`/share/shoppinglist/${shoppinglist.id}`)}>Share Shopping List</button>
+                                    <div className='spacer-30' />
+                                </div>
+                            )
+                            : null
+                        }
+                        {personal_shoppinglist && !shoppinglist.mealplan_id
+                            ? (
                                 <div className="delete-option-wrapper">
                                     <button className='dangerous-button' onClick={handleDelete}>Delete Shopping List</button>
                                     <ConfirmLoadingError confirm={confirm} loading={deleteLoading} error={deleteError} item={shoppinglist.name} />

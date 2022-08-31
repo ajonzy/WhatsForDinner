@@ -26,7 +26,7 @@ export default function Meals(props) {
     }
 
     const renderMeals = () => {
-        if (user.meals.length === 0) {
+        if (user.meals.length === 0 && user.shared_meals.length === 0) {
             return (
                 <div className='no-content'>No meals here yet... Get adding!</div>
             )

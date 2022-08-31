@@ -24,7 +24,7 @@ export default function Shoppinglists(props) {
     }
 
     const renderShoppinglists = () => {
-        if (user.shoppinglists.length === 0) {
+        if (user.shoppinglists.length === 0 && user.shared_shoppinglists.length === 0) {
             return (
                 <div className='no-content'>No mealplans here yet... Get adding!</div>
             )

@@ -24,7 +24,7 @@ export default function Mealplans(props) {
     }
 
     const renderMealplans = () => {
-        if (user.mealplans.length === 0) {
+        if (user.mealplans.length === 0 && user.shared_mealplans.length === 0) {
             return (
                 <div className='no-content'>No mealplans here yet... Get adding!</div>
             )

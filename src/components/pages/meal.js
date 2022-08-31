@@ -9,7 +9,8 @@ export default function Meal(props) {
     const { user, setUser } = useContext(UserContext)
     const [personal_meal] = useState(user.meals.filter(meal => meal.id === parseInt(props.match.params.id))[0])
     const [shared_meal] = useState(user.shared_meals.filter(meal => meal.id === parseInt(props.match.params.id))[0])
-    const [meal] = useState(personal_meal || shared_meal)
+    const [shared_mealplan_meal] = useState(user.shared_mealplans.reduce((meals, mealplan) => meals.concat(mealplan.meals), []).filter(meal => meal.id === parseInt(props.match.params.id))[0])
+    const [meal] = useState(personal_meal || shared_meal || shared_mealplan_meal)
     const [confirm, setConfirm] = useState(false)
     const [copyLoading, setCopyLoading] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
@@ -239,29 +240,33 @@ export default function Meal(props) {
         }
 
         let unshareData = {}
-        data = await fetch(`https://whatsforsupperapi.herokuapp.com/meal/unshare/${meal.id}/${user.id}`, { method: "DELETE" })
-        .then(response => response.json())
-        .catch(error => {
-            return { catchError: error }
-        }) 
-        if (data.catchError) {
-            setCopyError("An error occured... Please try again later.")
-            setCopyLoading(false)
-            console.log("Error unsharing meal: ", error)
-            return false
-        }
-        else if (data.status === 200) {
-            unshareData = data.data
-        }
-        else {
-            setCopyError("An error occured... Please try again later.")
-            console.log(data)
-            setCopyLoading(false)
-            return false
+        if (shared_meal) {
+            data = await fetch(`https://whatsforsupperapi.herokuapp.com/meal/unshare/${meal.id}/${user.id}`, { method: "DELETE" })
+            .then(response => response.json())
+            .catch(error => {
+                return { catchError: error }
+            }) 
+            if (data.catchError) {
+                setCopyError("An error occured... Please try again later.")
+                setCopyLoading(false)
+                console.log("Error unsharing meal: ", error)
+                return false
+            }
+            else if (data.status === 200) {
+                unshareData = data.data
+            }
+            else {
+                setCopyError("An error occured... Please try again later.")
+                console.log(data)
+                setCopyLoading(false)
+                return false
+            }
         }
 
         user.meals.push(newData)
-        user.shared_meals = user.shared_meals.filter(meal => meal.id !== unshareData.meal.id)
+        if (shared_meal) {
+            user.shared_meals = user.shared_meals.filter(meal => meal.id !== unshareData.meal.id)
+        }
         setUser({...user})
         props.history.push("/meals")
     }
@@ -302,6 +307,7 @@ export default function Meal(props) {
                 <div className='page-wrapper meal-page-wrapper'>
                     <h2 className='name'>{meal.name}</h2>
                     {shared_meal ? <p className='shared-by'>Shared by: {meal.user_username}</p> : null}
+                    {shared_mealplan_meal ? <p className='shared-by'>Owned by: {meal.user_username}</p> : null}
                     {meal.difficulty > 0 ? <p className='difficulty'>Difficulty: <span>{"★".repeat(meal.difficulty)}</span></p> : null}
                     {meal.image_url ? <img src={meal.image_url} alt="" /> : null}
                     {meal.description ? <p className='description'>{meal.description}</p> : null}
@@ -351,6 +357,15 @@ export default function Meal(props) {
                     <div className="options-wrapper">
                         {personal_meal
                             ? (
+                                <div className="share-option-wrapper">
+                                    <button className='alt-button' onClick={() => props.history.push(`/share/meal/${meal.id}`)}>Share Meal</button>
+                                    <div className='spacer-30' />
+                                </div>
+                            )
+                            : null
+                        }
+                        {personal_meal
+                            ? (
                                 <div className="delete-option-wrapper">
                                     <button className='dangerous-button' onClick={handleDelete}>Delete Meal</button>
                                     <ConfirmLoadingError confirm={confirm} loading={deleteLoading} error={deleteError} item={meal.name} />
@@ -359,7 +374,7 @@ export default function Meal(props) {
                             )
                             : null
                         }
-                        {shared_meal
+                        {shared_meal || shared_mealplan_meal
                             ? (
                                 <div className="add-option-wrapper">
                                     <button className='alt-button' onClick={handleCopy}>Copy Meal</button>

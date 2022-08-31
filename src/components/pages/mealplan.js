@@ -23,6 +23,7 @@ export default function Mealplan(props) {
             .then(data => {
                 if (data.status === 200) {
                     user.mealplans = user.mealplans.filter(mealplan => mealplan.id !== data.data.id)
+                    user.shoppinglists = user.shoppinglists.filter(shoppinglist => shoppinglist.mealplan_id !== data.data.id)
                     setUser({...user})
                     props.history.push("/mealplans")
                 }
@@ -53,6 +54,7 @@ export default function Mealplan(props) {
             .then(data => {
                 if (data.status === 200) {
                     user.shared_mealplans = user.shared_mealplans.filter(mealplan => mealplan.id !== data.data.mealplan.id)
+                    user.shared_shoppinglists = user.shared_shoppinglists.filter(shoppinglist => shoppinglist.mealplan_id !== data.data.mealplan.id)
                     setUser({...user})
                     props.history.push("/mealplans")
                 }
@@ -91,6 +93,15 @@ export default function Mealplan(props) {
                     </div>
                     
                     <div className="options-wrapper">
+                        {personal_mealplan
+                            ? (
+                                <div className="share-option-wrapper">
+                                    <button className='alt-button' onClick={() => props.history.push(`/share/mealplan/${mealplan.id}`)}>Share Mealplan</button>
+                                    <div className='spacer-30' />
+                                </div>
+                            )
+                            : null
+                        }
                         {personal_mealplan
                             ? (
                                 <div className="delete-option-wrapper">
