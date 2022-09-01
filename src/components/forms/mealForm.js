@@ -11,11 +11,11 @@ import titleize from '../../functions/titleize'
 
 export default function MealForm(props) {
     const { user } = useContext(UserContext)
-    const [name, setName] = useState("")
-    const [difficulty, setDifficulty] = useState(0)
-    const [description, setDescription] = useState("")
-    const [image, setImage] = useState(null)
-    const [categories, setCategories] = useState([])
+    const [name, setName] = useState(props.edit ? props.meal.name : "")
+    const [difficulty, setDifficulty] = useState(props.edit ? props.meal.difficulty : 0)
+    const [description, setDescription] = useState(props.edit ? props.meal.description : "")
+    const [image, setImage] = useState(props.edit ? props.meal.image_url : null)
+    const [categories, setCategories] = useState(props.edit ? props.meal.categories.map(category => category.name) : [])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -40,7 +40,7 @@ export default function MealForm(props) {
         target.value = null
     }
 
-    const handleSubmit = async event => {
+    const handleAdd = async event => {
         event.preventDefault()
 
         setError("")
@@ -204,11 +204,214 @@ export default function MealForm(props) {
         }
     }
 
+    const handleEdit = async event => {
+        event.preventDefault()
+
+        setError("")
+        
+        if (name === "" || categories.filter(category => category === "").length > 0) {
+            setError("Please fill out all required fields (including open categories).")
+        }
+        else {
+            setLoading(true)
+
+            let image_url = image
+            if (image && image !== props.meal.image_url) {
+                const form = new FormData()
+                form.append("file", image)
+                form.append("upload_preset", process.env.CLOUDINARY_UPLOAD_PRESET)
+
+                let data = await fetch(`https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_NAME}/image/upload`, {
+                    method: "POST",
+                    body: form
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })
+                if (data.error) {
+                    console.log(data.error.message)
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding meal image: ", error)
+                    return false
+                }
+                else {
+                    image_url = data.url
+                }
+            }
+
+            let newData = {}
+            let data = await fetch(`https://whatsforsupperapi.herokuapp.com/meal/update/${props.meal.id}`, {
+                method: "PUT",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                    name: titleize(name),
+                    difficulty,
+                    description: titleize(description),
+                    image_url
+                })
+            })
+            .then(response => response.json())
+            .catch(error => {
+                return { catchError: error }
+            })
+            if (data.status === 400) {
+                setError("An error occured... Please try again later.")
+                console.log(data)
+                setLoading(false)
+                return false
+            }
+            else if (data.catchError) {
+                setError("An error occured... Please try again later.")
+                setLoading(false)
+                console.log("Error updating meal: ", error)
+                return false
+            }
+            else if (data.status === 200) {
+                newData = data.data
+            }
+            else {
+                setError("An error occured... Please try again later.")
+                console.log(data)
+                setLoading(false)
+                return false
+            }
+
+            const attachedCategories = props.meal.categories.map(category => category.name)
+            const formmattedCategories = categories.map(category => titleize(category))
+            const newCategories = formmattedCategories.filter(category => !user.categories.map(category => category.name).includes(category))
+            const existingCategories = user.categories.filter(category => formmattedCategories.includes(category.name)).filter(category => !attachedCategories.includes(category))
+            const removedCategories = props.meal.categories.filter(category => !categories.includes(category.name))
+            const categoryData = [...existingCategories]
+            if (newCategories.length > 0) {
+                data = await fetch("https://whatsforsupperapi.herokuapp.com/category/add/multiple", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(newCategories.map(category => {
+                        return {
+                            name: titleize(category),
+                            user_id: user.id
+                        }
+                    }))
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                }) 
+                if (data.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding category: ", error)
+                    return false
+                }
+                else if (data.status === 200) {
+                    categoryData.push(...data.data)
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+            }
+
+            if (categoryData.length > 0) {
+                data = await fetch("https://whatsforsupperapi.herokuapp.com/category/attach/multiple", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(categoryData.map(category => {
+                        return {
+                            meal_id: newData.id,
+                            category_id: category.id
+                        }
+                    }))
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })  
+                if (data.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding category: ", error)
+                    return false
+                }
+                else if (data.status === 200) {
+                    newData = data.data.meals[0]
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+            }
+
+            if (removedCategories.length > 0) {
+                data = await fetch("https://whatsforsupperapi.herokuapp.com/category/unattach/multiple", {
+                    method: "DELETE",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(removedCategories.map(category => {
+                        return {
+                            meal_id: newData.id,
+                            category_id: category.id
+                        }
+                    }))
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })  
+                if (data.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding category: ", error)
+                    return false
+                }
+                else if (data.status === 200) {
+                    newData = data.data.meals[0]
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+            }
+
+            props.handleSuccessfulSubmit(newData)
+        }
+    }
+
     return (
         <form className='form-wrapper meal-form-wrapper'
-            onSubmit={handleSubmit}
+            onSubmit={props.edit ? handleEdit : handleAdd}
         >
-            <h3>Add a Meal</h3>
+            <h3>{props.edit ? `Edit ${props.meal.name}` : "Add a Meal"}</h3>
             <input type="text" 
                 value={name}
                 placeholder="Meal name"
@@ -274,7 +477,7 @@ export default function MealForm(props) {
                 <button type='button' disabled={loading} className='alt-button' onClick={() => setCategories([...categories, ""])}>Add Category</button>
             </div>
             <div className='spacer-40' />
-            <button type="submit" disabled={loading}>Add Meal</button>
+            <button type="submit" disabled={loading}>{props.edit ? "Edit Meal" : "Add Meal"}</button>
             <LoadingError loading={loading} error={error} />
         </form>
     )

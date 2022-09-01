@@ -357,6 +357,15 @@ export default function Meal(props) {
                     <div className="options-wrapper">
                         {personal_meal
                             ? (
+                                <div className="edit-option-wrapper">
+                                    <button className='alt-button' onClick={() => props.history.push(`/meals/edit/${meal.id}`)}>Edit Meal</button>
+                                    <div className='spacer-30' />
+                                </div>
+                            )
+                            : null
+                        }
+                        {personal_meal
+                            ? (
                                 <div className="share-option-wrapper">
                                     <button className='alt-button' onClick={() => props.history.push(`/share/meal/${meal.id}`)}>Share Meal</button>
                                     <div className='spacer-30' />
