@@ -31,7 +31,7 @@ export default function Meal(props) {
 
         stepElements.push(<div className='spacer-40'key={`spacer`} />)
 
-        meal.recipe.stepsections.forEach(stepsection => {
+        meal.recipe.stepsections.sort((stepsectionA, stepsectionB) => stepsectionA.id - stepsectionB.id).forEach(stepsection => {
             stepsection.steps.sort((stepA, stepB) => stepA.number - stepB.number)
             stepElements.push(
                 <div className="stepsection-wrapper" key={`stepsection-${stepsection.id}`}>
@@ -331,7 +331,7 @@ export default function Meal(props) {
                                     ? (
                                         <div className="recipe-ingredients-wrapper">
                                             <h4>Ingredients</h4>
-                                            {meal.recipe.ingredients.map(ingredient => (
+                                            {meal.recipe.ingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id).map(ingredient => (
                                                 <div className="ingredient-wrapper" key={`ingredient-${ingredient.id}`}>
                                                     <p className='ingredient-amount'>{ingredient.amount}</p>
                                                     <p>{ingredient.name}</p>
@@ -350,11 +350,20 @@ export default function Meal(props) {
                                     )
                                     : null
                                 }
+                                <button className='alt-button' onClick={() => props.history.push(`/meals/recipe/edit/${meal.id}`)}>Edit Recipe</button>
+                                <div className='spacer-30' />
                             </div>
                         )
-                        : null
+                        : (
+                            <div className="meal-recipe-wrapper">
+                                <h3>Recipe</h3>
+                                <button className='alt-button' onClick={() => props.history.push(`/meals/recipe/add/${meal.id}`)}>Add Recipe</button>
+                                <div className='spacer-30' />
+                            </div>
+                        )
                     }
                     <div className="options-wrapper">
+                        <h3>Meal Options</h3>
                         {personal_meal
                             ? (
                                 <div className="edit-option-wrapper">

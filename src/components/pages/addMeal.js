@@ -7,14 +7,24 @@ import { UserContext } from '../app'
 
 export default function AddMeal(props) {
     const { user, setUser } = useContext(UserContext)
-    const [section, setSection] = useState("meal-form")
-    const [meal, setMeal] = useState({})
+    const [section, setSection] = useState(props.match.params.id ? "recipe-form" : "meal-form")
+    const [meal, setMeal] = useState(props.match.params.id ? user.meals.filter(meal => meal.id === parseInt(props.match.params.id))[0] : {})
 
     const finish = () => {
         const newUser = {...user}
-        newUser.meals.push(meal)
+        if (props.match.params.id) {
+            newUser.meals.splice(newUser.meals.findIndex(userMeal => userMeal.id === meal.id), 1, meal)
+        }
+        else {
+            newUser.meals.push(meal)
+        }
         setUser(newUser)
-        props.history.push("/meals")
+        if (props.match.params.id) {
+            props.history.push(`/meals/view/${meal.id}`)
+        }
+        else {
+            props.history.push("/meals")
+        }
     }
 
     const handleSuccessfulAddMeal = data => {
@@ -44,7 +54,20 @@ export default function AddMeal(props) {
         switch (section) {
             case "meal-form": return <MealForm handleSuccessfulSubmit={handleSuccessfulAddMeal} />
             case "recipe-check": return renderRecipeCheck()
-            case "recipe-form": return <RecipeForm meal={meal} handleSuccessfulSubmit={handleSuccessfulAddRecipe} />
+            case "recipe-form": return (
+                (meal
+                    ? <RecipeForm meal={meal} handleSuccessfulSubmit={handleSuccessfulAddRecipe} />
+                    : (
+                        <div className='add-recipe-wrapper'>
+                            <p className="not-found">Sorry, this meal does not exist...</p>
+                            <div className="spacer-30" />
+                            <div className="options-wrapper">
+                                <button onClick={() => props.history.push("/meals")}>Back to Meals</button>
+                            </div>
+                        </div>
+                    )
+                )
+            )
         }
     }
 

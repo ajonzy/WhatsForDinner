@@ -10,6 +10,7 @@ import Meals from './pages/meals';
 import AddMeal from './pages/addMeal';
 import Meal from './pages/meal';
 import EditMeal from './pages/editMeal';
+import EditRecipe from './pages/editRecipe';
 import Mealplans from './pages/mealplans';
 import AddMealplan from './pages/addMealplan';
 import Mealplan from './pages/mealplan';
@@ -113,6 +114,8 @@ export default class App extends Component {
                     <Route path="/meals/add" component={AddMeal} />
                     <Route path="/meals/view/:id" component={Meal} />
                     <Route path="/meals/edit/:id" component={EditMeal} />
+                    <Route path="/meals/recipe/add/:id" component={AddMeal} />
+                    <Route path="/meals/recipe/edit/:id" component={EditRecipe} />
                     <Route exact path="/mealplans" component={Mealplans} />
                     <Route path="/mealplans/add" component={AddMealplan} />
                     <Route path="/mealplans/view/:id" component={Mealplan} />
