@@ -19,6 +19,8 @@ import EditMeals from './pages/editMeals';
 import Shoppinglists from './pages/shoppinglists';
 import AddShoppinglist from './pages/addShoppinglist';
 import Shoppinglist from './pages/shoppinglist';
+import EditShoppinglist from './pages/editShoppinglist';
+import EditShoppingingredients from './pages/editIngredients';
 import Friends from './pages/friends';
 import AddFriend from './pages/addFriend';
 import FriendRequests from './pages/friendRequests';
@@ -126,6 +128,8 @@ export default class App extends Component {
                     <Route exact path="/shoppinglists" component={Shoppinglists} />
                     <Route path="/shoppinglists/add" component={AddShoppinglist} />
                     <Route path="/shoppinglists/view/:id" component={Shoppinglist} />
+                    <Route path="/shoppinglists/edit/:id" component={EditShoppinglist} />
+                    <Route path="/shoppinglists/items/edit/:id" component={EditShoppingingredients} />
                     <Route exact path="/friends" component={Friends} />
                     <Route path="/friends/add" component={AddFriend} />
                     <Route path="/friends/requests" component={FriendRequests} />

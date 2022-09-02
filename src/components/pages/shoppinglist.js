@@ -148,43 +148,60 @@ export default function Shoppinglist(props) {
                     {shared_shoppinglist ? <p className='shared-by'>Shared by: {shoppinglist.user_username}</p> : null}
                     {shoppinglist.updates_hidden ? <p className='contains-gifts'>Contains Gifts</p> : null}
                     <h3>Items</h3>
-                    <div className="shoppinglist-ingredients-options-wrapper">
-                        <p>Sort By</p>
-                        <div className="ingredients-options-wrapper">
-                            <label>
-                                Alphabetical
-                                <input type="radio" 
-                                    name="ingredient-option" 
-                                    checked={ingredientsSort === "alphabetical"}
-                                    onChange={() => setIngredientsSort("alphabetical")}
-                                />
-                                <span>{ingredientsSort === "alphabetical" ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faCircle} />}</span>
-                            </label>
-                            <label>
-                                Category
-                                <input type="radio" 
-                                    name="ingredient-option" 
-                                    checked={ingredientsSort === "category"}
-                                    onChange={() => setIngredientsSort("category")}
-                                />
-                                <span>{ingredientsSort === "category" ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faCircle} />}</span>
-                            </label>
-                            <label>
-                                Arbitrary
-                                <input type="radio" 
-                                    name="ingredient-option" 
-                                    checked={ingredientsSort === "arbitrary"}
-                                    onChange={() => setIngredientsSort("arbitrary")}
-                                />
-                                <span>{ingredientsSort === "arbitrary" ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faCircle} />}</span>
-                            </label>
-                        </div>
-                    </div>
+                    {shoppinglist.shoppingingredients.length > 0
+                        ? (
+                            <div className="shoppinglist-ingredients-options-wrapper">
+                                <p>Sort By</p>
+                                <div className="ingredients-options-wrapper">
+                                    <label>
+                                        Alphabetical
+                                        <input type="radio" 
+                                            name="ingredient-option" 
+                                            checked={ingredientsSort === "alphabetical"}
+                                            onChange={() => setIngredientsSort("alphabetical")}
+                                        />
+                                        <span>{ingredientsSort === "alphabetical" ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faCircle} />}</span>
+                                    </label>
+                                    <label>
+                                        Category
+                                        <input type="radio" 
+                                            name="ingredient-option" 
+                                            checked={ingredientsSort === "category"}
+                                            onChange={() => setIngredientsSort("category")}
+                                        />
+                                        <span>{ingredientsSort === "category" ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faCircle} />}</span>
+                                    </label>
+                                    <label>
+                                        Arbitrary
+                                        <input type="radio" 
+                                            name="ingredient-option" 
+                                            checked={ingredientsSort === "arbitrary"}
+                                            onChange={() => setIngredientsSort("arbitrary")}
+                                        />
+                                        <span>{ingredientsSort === "arbitrary" ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faCircle} />}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        )
+                        : null
+                    }
                     <div className="shoppinglist-ingredients-wrapper">
                         {renderIngredients()}
+                        <div className="spacer-30" />
+                        {personal_shoppinglist && !shoppinglist.mealplan_id ? <button className='alt-button' onClick={() => props.history.push(`/shoppinglists/items/edit/${shoppinglist.id}`)}>{shoppinglist.shoppingingredients.length > 0 ? "Edit Items" : "Add Items"}</button> : null}
                     </div>
                     
                     <div className="options-wrapper">
+                        {!shoppinglist.mealplan_id ? <h3>Shopping List Options</h3> : null}
+                        {personal_shoppinglist && !shoppinglist.mealplan_id
+                            ? (
+                                <div className="edit-option-wrapper">
+                                    <button className='alt-button' onClick={() => props.history.push(`/shoppinglists/edit/${shoppinglist.id}`)}>Edit Shopping List</button>
+                                    <div className='spacer-30' />
+                                </div>
+                            )
+                            : null
+                        }
                         {personal_shoppinglist && !shoppinglist.mealplan_id
                             ? (
                                 <div className="share-option-wrapper">

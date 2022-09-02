@@ -15,8 +15,8 @@ export default function RecipeForm(props) {
     }
 
     const [steps, setSteps] = useState(props.edit ? props.meal.recipe.steps.map(step => ({...step, stepsection: step.stepsection_id ? props.meal.recipe.stepsections.findIndex(stepsection => stepsection.id === step.stepsection_id) : undefined })) : [])
-    const [stepsections, setStepsections] = useState(props.edit ? [...props.meal.recipe.stepsections] : [])
-    const [ingredients, setIngredients] = useState(props.edit ? [...props.meal.recipe.ingredients] : [])
+    const [stepsections, setStepsections] = useState(props.edit ? props.meal.recipe.stepsections.map(stepsection => ({...stepsection})) : [])
+    const [ingredients, setIngredients] = useState(props.edit ? props.meal.recipe.ingredients.map(ingredient => ({...ingredient})) : [])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -239,8 +239,8 @@ export default function RecipeForm(props) {
 
             const newStepsections = stepsections.filter(stepsection => !stepsection.id)
             const existingStepsections = stepsections.filter(stepsection => props.meal.recipe.stepsections.filter(existingStepsection => existingStepsection.id === stepsection.id).length > 0)
-            const updatedStepsections = existingStepsections.filter(existingStepsection => existingStepsection.title !== stepsections.filter(stepsection => stepsection.id === existingStepsection.id)[0].title)
-            const nonUpdatedStepsections = existingStepsections.filter(existingStepsection => existingStepsection.title === stepsections.filter(stepsection => stepsection.id === existingStepsection.id)[0].title)
+            const updatedStepsections = existingStepsections.filter(existingStepsection => existingStepsection.title !== props.meal.recipe.stepsections.filter(stepsection => stepsection.id === existingStepsection.id)[0].title)
+            const nonUpdatedStepsections = existingStepsections.filter(existingStepsection => existingStepsection.title === props.meal.recipe.stepsections.filter(stepsection => stepsection.id === existingStepsection.id)[0].title)
             const deletedStepsections = props.meal.recipe.stepsections.filter(existingStepsection => stepsections.filter(stepsection => stepsection.id === existingStepsection.id).length === 0)
             let stepsectionsData = [...nonUpdatedStepsections]
             if (newStepsections.length > 0) {
@@ -359,8 +359,8 @@ export default function RecipeForm(props) {
 
             const newSteps = formattedSteps.filter(step => !step.id)
             const existingSteps = formattedSteps.filter(step => props.meal.recipe.steps.filter(existingStep => existingStep.id === step.id).length > 0)
-            const updatedSteps = existingSteps.filter(existingStep => existingStep.text !== steps.filter(step => step.id === existingStep.id)[0].text || existingStep.number !== steps.filter(step => step.id === existingStep.id)[0].number)
-            const nonUpdatedSteps = existingSteps.filter(existingStep => existingStep.text === steps.filter(step => step.id === existingStep.id)[0].text && existingStep.number === steps.filter(step => step.id === existingStep.id)[0].number)
+            const updatedSteps = existingSteps.filter(existingStep => existingStep.text !== props.meal.recipe.steps.filter(step => step.id === existingStep.id)[0].text || existingStep.number !== props.meal.recipe.steps.filter(step => step.id === existingStep.id)[0].number)
+            const nonUpdatedSteps = existingSteps.filter(existingStep => existingStep.text === props.meal.recipe.steps.filter(step => step.id === existingStep.id)[0].text && existingStep.number === props.meal.recipe.steps.filter(step => step.id === existingStep.id)[0].number)
             const deletedSteps = props.meal.recipe.steps.filter(existingStep => formattedSteps.filter(step => step.id === existingStep.id).length === 0)
             let stepsData = [...nonUpdatedSteps]
             if (newSteps.length > 0) {
@@ -482,8 +482,8 @@ export default function RecipeForm(props) {
 
             const newIngredients = ingredients.filter(ingredient => !ingredient.id)
             const existingIngredients = ingredients.filter(ingredient => props.meal.recipe.ingredients.filter(existingIngredient => existingIngredient.id === ingredient.id).length > 0)
-            const updatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount !== ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount || existingIngredient.name !== ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name || existingIngredient.category !== ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
-            const nonUpdatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount === ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount && existingIngredient.name === ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name && existingIngredient.category === ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
+            const updatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount !== props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount || existingIngredient.name !== props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name || existingIngredient.category !== props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
+            const nonUpdatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount === props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount && existingIngredient.name === props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name && existingIngredient.category === props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
             const deletedIngredients = props.meal.recipe.ingredients.filter(existingIngredient => ingredients.filter(ingredient => ingredient.id === existingIngredient.id).length === 0)
             let ingredientsData = [...nonUpdatedIngredients]
             if (newIngredients.length > 0) {

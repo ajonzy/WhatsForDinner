@@ -307,7 +307,7 @@ export default function Meal(props) {
                 <div className='page-wrapper meal-page-wrapper'>
                     <h2 className='name'>{meal.name}</h2>
                     {shared_meal ? <p className='shared-by'>Shared by: {meal.user_username}</p> : null}
-                    {shared_mealplan_meal ? <p className='shared-by'>Owned by: {meal.user_username}</p> : null}
+                    {shared_mealplan_meal && !shared_meal ? <p className='shared-by'>Owned by: {meal.user_username}</p> : null}
                     {meal.difficulty > 0 ? <p className='difficulty'>Difficulty: <span>{"★".repeat(meal.difficulty)}</span></p> : null}
                     {meal.image_url ? <img src={meal.image_url} alt="" /> : null}
                     {meal.description ? <p className='description'>{meal.description}</p> : null}
