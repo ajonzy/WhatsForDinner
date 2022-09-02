@@ -90,9 +90,21 @@ export default function Mealplan(props) {
                                 {meal.difficulty > 0 ? <p className='meal-difficulty'><span>{"★".repeat(meal.difficulty)}</span></p> : null}
                             </div>
                         ))}
+                        <div className="spacer-30" />
+                        {personal_mealplan ? <button className='alt-button' onClick={() => props.history.push(`/mealplans/meals/edit/${mealplan.id}`)}>Edit Meals</button> : null}
                     </div>
                     
                     <div className="options-wrapper">
+                        <h3>Mealplan Options</h3>
+                        {personal_mealplan
+                            ? (
+                                <div className="edit-option-wrapper">
+                                    <button className='alt-button' onClick={() => props.history.push(`/mealplans/edit/${mealplan.id}`)}>Edit Mealplan</button>
+                                    <div className='spacer-30' />
+                                </div>
+                            )
+                            : null
+                        }
                         {personal_mealplan
                             ? (
                                 <div className="share-option-wrapper">

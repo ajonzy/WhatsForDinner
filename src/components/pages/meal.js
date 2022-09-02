@@ -350,16 +350,19 @@ export default function Meal(props) {
                                     )
                                     : null
                                 }
-                                <button className='alt-button' onClick={() => props.history.push(`/meals/recipe/edit/${meal.id}`)}>Edit Recipe</button>
+                                {personal_meal ? <button className='alt-button' onClick={() => props.history.push(`/meals/recipe/edit/${meal.id}`)}>Edit Recipe</button> : null}
                                 <div className='spacer-30' />
                             </div>
                         )
-                        : (
-                            <div className="meal-recipe-wrapper">
-                                <h3>Recipe</h3>
-                                <button className='alt-button' onClick={() => props.history.push(`/meals/recipe/add/${meal.id}`)}>Add Recipe</button>
-                                <div className='spacer-30' />
-                            </div>
+                        : (personal_meal
+                            ? (
+                                <div className="meal-recipe-wrapper">
+                                    <h3>Recipe</h3>
+                                    <button className='alt-button' onClick={() => props.history.push(`/meals/recipe/add/${meal.id}`)}>Add Recipe</button>
+                                    <div className='spacer-30' />
+                                </div>
+                            )
+                            : null
                         )
                     }
                     <div className="options-wrapper">

@@ -26,7 +26,7 @@ export default function MealplanForm(props) {
         setMeals([...meals])
     }
 
-    const handleSubmit = event => {
+    const handleAdd = event => {
         event.preventDefault()
 
         setError("")
@@ -64,9 +64,92 @@ export default function MealplanForm(props) {
         }
     }
 
+    const handleEdit = async event => {
+        event.preventDefault()
+
+        if (true) {
+            setLoading(true)
+
+            const newMeals = meals.filter(meal => !props.meals.map(existingMeal => existingMeal.id).includes(meal.id))
+            const deletedMeals = props.meals.filter(existingMeal => !meals.map(meal => meal.id).includes(existingMeal.id))
+            let newData = [...props.data]
+            if (newMeals.length > 0) {
+                for (let meal of newMeals) {
+                    const data = await fetch("https://whatsforsupperapi.herokuapp.com/mealplan/meal/add", {
+                        method: "POST",
+                        headers: { "content-type": "application/json" },
+                        body: JSON.stringify({
+                            mealplan_id: props.data.id,
+                            meal_id: meal.id
+                        })
+                    })
+                    .then(response => response.json())
+                    .catch(error => {
+                        return { catchError: error }
+                    })  
+                    if (data.status === 400) {
+                        setError("An error occured... Please try again later.")
+                        console.log(data)
+                        setLoading(false)
+                        return false
+                    }
+                    else if (data.catchError) {
+                        setError("An error occured... Please try again later.")
+                        setLoading(false)
+                        console.log("Error adding meal: ", error)
+                        return false
+                    }
+                    else if (data.status === 200) {
+                        newData = data.data.mealplan
+                    }
+                    else {
+                        setError("An error occured... Please try again later.")
+                        console.log(data)
+                        setLoading(false)
+                        return false
+                    }
+                }
+            }
+
+            if (deletedMeals.length > 0) {
+                for (let meal of deletedMeals) {
+                    const data = await fetch(`https://whatsforsupperapi.herokuapp.com/mealplan/meal/delete`, {
+                        method: "DELETE",
+                        headers: { "content-type": "application/json" },
+                        body: JSON.stringify({
+                            mealplan_id: props.data.id,
+                            meal_id: meal.id
+                        })
+                    })
+                    .then(response => response.json())
+                    .catch(error => {
+                        return { catchError: error }
+                    })  
+                    if (data.catchError) {
+                        setError("An error occured... Please try again later.")
+                        setLoading(false)
+                        console.log("Error deleting meal: ", error)
+                        return false
+                    }
+                    else if (data.status === 200) {
+                        newData = data.data.mealplan
+                    }
+                    else {
+                        setError("An error occured... Please try again later.")
+                        console.log(data)
+                        setLoading(false)
+                        return false
+                    }
+                }
+            }
+
+            props.handleSuccessfulEdit(newData)
+        }
+    }
+
     return (
         <form className='form-wrapper mealplan-form-wrapper'
-            onSubmit={handleSubmit}
+            onSubmit={props.edit ? handleEdit : handleAdd}
         >
             <h2 className='name'>{data.name}</h2>
             {problem ? <p>Unfortunately, not all rules were able to be fulfilled.</p> : null}
@@ -96,7 +179,7 @@ export default function MealplanForm(props) {
                 </div>
             ))}
             <div className="spacer-40" />
-            <button type="submit" disabled={loading}>Create Mealplan</button>
+            <button type="submit" disabled={loading}>{props.edit ? "Edit Meals" : "Create Mealplan"}</button>
             <LoadingError loading={loading} error={error} />
         </form>
     )
