@@ -2,6 +2,7 @@ import React, { Component, createContext } from 'react';
 import { Route, Redirect } from 'react-router';
 import { AnimatedSwitch } from 'react-router-transition'
 import Cookies from "js-cookie"
+import io from 'socket.io-client'
 
 import Navbar from './utils/navbar';
 import Auth from './pages/auth';
@@ -37,6 +38,7 @@ export default class App extends Component {
 
     this.state = {
       user: {},
+      socket: {},
       loading: true
     }
 
@@ -71,14 +73,60 @@ export default class App extends Component {
   componentDidMount() {
     const token = Cookies.get("token")
     if (token) {
-      fetch(`https://whatsforsupperapi.herokuapp.com//user/get/token/${token}`)
+      fetch(`https://whatsforsupperapi.herokuapp.com/user/get/token/${token}`)
       .then(response => response.json())
       .then(data => {
         if (data.status === 403) {
           Cookies.remove("token")
         }
         else if (data.status === 200) {
-          this.setState({ user: data.data })
+          const socket = io("https://whatsforsupperapi.herokuapp.com/")
+
+          socket.on("shoppingingredient-update", data => {
+            const sharedShoppinglist = this.state.user.shared_shoppinglists.filter(shoppinglist => shoppinglist.id === data.data.shoppinglist_id)[0]
+            if (sharedShoppinglist) {
+              switch(data.type) {
+                case "add":
+                  sharedShoppinglist.shoppingingredients.push(data.data)
+                  break
+                case "update":
+                  sharedShoppinglist.shoppingingredients.splice(sharedShoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
+                  break
+                case "delete":
+                  sharedShoppinglist.shoppingingredients.splice(sharedShoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1)
+                  break
+              }
+              this.setUser({...this.state.user})
+            }
+          })
+
+          socket.on("shoppingingredient-update-multiple", data => {
+            data.data.forEach(shoppingingredient => {
+              const sharedShoppinglist = this.state.user.shared_shoppinglists.filter(shoppinglist => shoppinglist.id === shoppingingredient.shoppinglist_id)[0]
+              if (sharedShoppinglist) {
+                sharedShoppinglist.shoppingingredients.push(shoppingingredient)
+                this.setUser({...this.state.user})
+              }
+            })
+          })
+
+          socket.on("shared-shoppingingredient-update", data => {
+            const shoppinglist = this.state.user.shoppinglists.filter(shoppinglist => shoppinglist.id === data.data.shoppinglist_id)[0]
+            const sharedShoppinglist = this.state.user.shared_shoppinglists.filter(shoppinglist => shoppinglist.id === data.data.shoppinglist_id)[0]
+            if (shoppinglist) {
+              shoppinglist.shoppingingredients.splice(shoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
+              this.setUser({...this.state.user})
+            }
+            if (sharedShoppinglist) {
+              sharedShoppinglist.shoppingingredients.splice(sharedShoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
+              this.setUser({...this.state.user})
+            }
+          })
+
+          this.setState({ 
+            user: data.data,
+            socket
+          })
         }
         this.setState({ loading: false })
       })
@@ -93,6 +141,7 @@ export default class App extends Component {
     return (
       <UserContext.Provider value={{
         user: this.state.user,
+        socket: this.state.socket,
         setUser: this.setUser,
         logoutUser: this.logoutUser
       }}>

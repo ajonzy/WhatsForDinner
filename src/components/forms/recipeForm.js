@@ -534,7 +534,8 @@ export default function RecipeForm(props) {
                         body: JSON.stringify({
                             name: titleize(ingredient.name),
                             amount: titleize(ingredient.amount),
-                            category: titleize(ingredient.category)
+                            category: titleize(ingredient.category),
+                            obtained: false
                         })
                     })
                     .then(response => response.json())
