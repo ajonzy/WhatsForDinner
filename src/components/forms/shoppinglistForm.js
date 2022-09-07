@@ -13,7 +13,7 @@ export default function ShoppinglistForm(props) {
     const { user } = useContext(UserContext)
     const [name, setName] = useState(props.edit ? props.shoppinglist.name : "")
     const [updatesHidden, setUpdatesHidden] = useState(props.editShoppinglist ? props.shoppinglist.updates_hidden : false)
-    const [ingredients, setIngredients] = useState(props.editShoppingingredients ? props.shoppinglist.shoppingingredients.map(ingredient => ({...ingredient})) : [])
+    const [ingredients, setIngredients] = useState(props.editShoppingingredients ? props.shoppinglist.shoppingingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id).map(ingredient => ({...ingredient})) : [])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 

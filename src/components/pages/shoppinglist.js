@@ -112,13 +112,20 @@ export default function Shoppinglist(props) {
         )
 
         switch(ingredientsSort) {
-            case "arbitrary": return ingredients.map(ingredient => renderIngredient(ingredient))
-            case "alphabetical": {
-                ingredients.sort((ingredientA, ingredientB) => ingredientA.name - ingredientB.name)
+            case "arbitrary": {
+                ingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id)
                 return ingredients.map(ingredient => renderIngredient(ingredient))
             }
+            case "alphabetical": {
+                ingredients.sort((ingredientA, ingredientB) => ingredientA.name < ingredientB.name ? -1 : 1)
+                return ingredients.map(ingredient => renderIngredient(ingredient))
+            }
+            case "remaining": {
+                ingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id)
+                return ingredients.filter(ingredient => !ingredient.obtained).map(ingredient => renderIngredient(ingredient))
+            }
             case "category": {
-                ingredients.sort((ingredientA, ingredientB) => ingredientA.name - ingredientB.name)
+                ingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id)
                 let categories = []
                 ingredients.forEach(ingredient => {
                     if (!categories.includes(ingredient.category)) {
@@ -170,6 +177,15 @@ export default function Shoppinglist(props) {
                                             onChange={() => setIngredientsSort("category")}
                                         />
                                         <span>{ingredientsSort === "category" ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faCircle} />}</span>
+                                    </label>
+                                    <label>
+                                        Remaining
+                                        <input type="radio" 
+                                            name="ingredient-option" 
+                                            checked={ingredientsSort === "remaining"}
+                                            onChange={() => setIngredientsSort("remaining")}
+                                        />
+                                        <span>{ingredientsSort === "remaining" ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faCircle} />}</span>
                                     </label>
                                     <label>
                                         Arbitrary
