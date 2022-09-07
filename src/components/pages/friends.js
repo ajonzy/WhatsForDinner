@@ -23,7 +23,7 @@ export default function Friends(props) {
         friendsList.reverse()
 
         const friends = friendsList.map(friend => (
-            <div key={`friend-${friend.id}`} className="friend-wrapper" onClick={() => props.history.push(`/friends/view/${friend.username}`)}>
+            <div key={`friend-${friend.user_id}`} className="friend-wrapper" onClick={() => props.history.push(`/friends/view/${friend.username}`)}>
                 <p className='name'>{friend.username}</p>
             </div>
         ))

@@ -82,19 +82,125 @@ export default class App extends Component {
         else if (data.status === 200) {
           const socket = io("https://whatsforsupperapi.herokuapp.com/")
 
+          socket.on("friend-request-update", data => {
+            if (this.state.user.id === data.data.friend.id) {
+              const friendsList = this.state.user.incoming_friend_requests
+              switch(data.type) {
+                case "add": {
+                  // TODO: Add message bubble
+                  const friend = { user_id: data.data.user.id, username: data.data.user.username }
+                  friendsList.push(friend)
+                  break
+                }
+                case "delete": {
+                  friendsList.splice(friendsList.findIndex(friend => friend.user_id === data.data.user.id), 1)
+                  break
+                }
+              }
+              this.setUser({...this.state.user})
+            }
+          })
+
+          socket.on("shared-friend-request-update", data => {
+            if (this.state.user.id === data.data.friend.id) {
+              const friendsList = this.state.user.outgoing_friend_requests
+              friendsList.splice(friendsList.findIndex(friend => friend.user_id === data.data.user.id), 1)
+              this.setUser({...this.state.user})
+            }
+          })
+
+          socket.on("friend-update", data => {
+            if (this.state.user.id === data.data.friend.id) {
+              const friendsList = this.state.user.friends
+              const incomingFriendsList = this.state.user.incoming_friend_requests
+              const outgoingFriendsList = this.state.user.outgoing_friend_requests
+              switch(data.type) {
+                case "add": {
+                  // TODO: Add message bubble
+                  const friend = { user_id: data.data.user.id, username: data.data.user.username }
+                  friendsList.push(friend)
+                  if (incomingFriendsList.filter(friend => friend.user_id === data.data.user.id).length > 0) {
+                    incomingFriendsList.splice(incomingFriendsList.findIndex(friend => friend.user_id === data.data.user.id), 1)
+                  }
+                  if (outgoingFriendsList.filter(friend => friend.user_id === data.data.user.id).length > 0) {
+                    outgoingFriendsList.splice(outgoingFriendsList.findIndex(friend => friend.user_id === data.data.user.id), 1)
+                  }
+                  break
+                }
+                case "delete": {
+                  friendsList.splice(friendsList.findIndex(friend => friend.user_id === data.data.user.id), 1)
+                  break
+                }
+              }
+              this.setUser({...this.state.user})
+            }
+          })
+
+          socket.on("meal-share-update", data => {
+            if (this.state.user.id === data.data.user.id) {
+              const meals = this.state.user.shared_meals
+              switch(data.type) {
+                case "add": {
+                  // TODO: Add message bubble
+                  meals.push(data.data.meal)
+                  break
+                }
+                // TODO: Add possible update functionality
+              }
+              this.setUser({...this.state.user})
+            }
+          })
+
+          socket.on("mealplan-share-update", data => {
+            if (this.state.user.id === data.data.user.id) {
+              const mealplans = this.state.user.shared_mealplans
+              const shoppinglists = this.state.user.shared_shoppinglists
+              switch(data.type) {
+                case "add": {
+                  // TODO: Add message bubble
+                  mealplans.push(data.data.mealplan)
+                  if (data.data.mealplan.shoppinglist) {
+                    shoppinglists.push(data.data.mealplan.shoppinglist)
+                  }
+                  // TODO: Add possible update functionality
+                  break
+                }
+              }
+              this.setUser({...this.state.user})
+            }
+          })
+
+          socket.on("shoppinglist-share-update", data => {
+            if (this.state.user.id === data.data.user.id) {
+              const shoppinglists = this.state.user.shared_shoppinglists
+              switch(data.type) {
+                case "add": {
+                  // TODO: Add message bubble
+                  shoppinglists.push(data.data.shoppinglist)
+                  break
+                }
+                // TODO: Add possible update functionality
+              }
+              this.setUser({...this.state.user})
+            }
+          })
+
           socket.on("shoppingingredient-update", data => {
             const sharedShoppinglist = this.state.user.shared_shoppinglists.filter(shoppinglist => shoppinglist.id === data.data.shoppinglist_id)[0]
             if (sharedShoppinglist) {
               switch(data.type) {
-                case "add":
+                case "add": {
                   sharedShoppinglist.shoppingingredients.push(data.data)
                   break
-                case "update":
+                }
+                case "update": {
                   sharedShoppinglist.shoppingingredients.splice(sharedShoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
                   break
-                case "delete":
+                }
+                case "delete": {
                   sharedShoppinglist.shoppingingredients.splice(sharedShoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1)
                   break
+                }
               }
               this.setUser({...this.state.user})
             }
@@ -112,13 +218,8 @@ export default class App extends Component {
 
           socket.on("shared-shoppingingredient-update", data => {
             const shoppinglist = this.state.user.shoppinglists.filter(shoppinglist => shoppinglist.id === data.data.shoppinglist_id)[0]
-            const sharedShoppinglist = this.state.user.shared_shoppinglists.filter(shoppinglist => shoppinglist.id === data.data.shoppinglist_id)[0]
             if (shoppinglist) {
               shoppinglist.shoppingingredients.splice(shoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
-              this.setUser({...this.state.user})
-            }
-            if (sharedShoppinglist) {
-              sharedShoppinglist.shoppingingredients.splice(sharedShoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
               this.setUser({...this.state.user})
             }
           })
