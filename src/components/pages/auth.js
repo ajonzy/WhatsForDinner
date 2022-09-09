@@ -5,11 +5,14 @@ import { UserContext } from '../app'
 import LoginForm from '../forms/loginForm'
 import RegisterForm from '../forms/registerForm'
 
+import sockets from '../../functions/sockets'
+
 export default function Auth(props) {
     const [form, setForm] = useState("login")
-    const { setUser } = useContext(UserContext)
+    const { getUser, setUser, setSocket } = useContext(UserContext)
 
     const handleSuccessfulAuth = data => {
+        setSocket(sockets(getUser, setUser))
         setUser(data.user)
         Cookies.set("token", data.token)
         props.history.push("/")
