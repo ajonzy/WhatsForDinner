@@ -1,11 +1,27 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { UserContext } from '../app'
 
 export default function Friends(props) {
-    const { user } = useContext(UserContext)
+    const { user, setUser } = useContext(UserContext)
     const [friendsList, setFriendsList] = useState(user.friends)
+
+    useEffect(() => {
+        user.notifications.filter(notification => notification.category === "friend").forEach(notification => {
+            fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { method: "DELETE" })
+        })
+        user.notifications = user.notifications.filter(notification => notification.category !== "friend")
+        setUser({...user})
+
+        return () => {
+            user.notifications.filter(notification => notification.category === "friend").forEach(notification => {
+                fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { method: "DELETE" })
+            })
+            user.notifications = user.notifications.filter(notification => notification.category !== "friend")
+            setUser({...user})
+        }
+    }, [])
 
     const handleFilter = event => {
         setFriendsList(user.friends.filter(friend => (

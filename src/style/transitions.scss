@@ -1,0 +1,7 @@
+.page-transition-enter {
+    opacity: 0;
+}
+
+.page-transition-enter.fade-enter-active {
+    opacity: 1;
+}

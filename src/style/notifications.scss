@@ -1,0 +1,42 @@
+.notifications-wrapper {
+    position: absolute;
+    z-index: 1;
+
+    .notification-wrapper {
+        @include flex;
+        width: calc(100% - 20px);
+        margin: 10px;
+        padding: 10px;
+        background-color: $complementary-lightest;
+        border: 1px solid $complementary-darkest;
+        border-radius: 5px;
+        box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.25);
+
+        .text-wrapper {
+            text-align: center;
+
+            .username, .name {
+                font-weight: bold;
+                color: $darkest;
+            }
+        }
+
+        .options-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            font-size: 12px;
+
+            .option {
+                font-weight: bold;
+                color: $darkest;
+                cursor: pointer;
+            }
+        }
+
+        .additional {
+            font-size: 12px;
+            line-height: 10px;
+        }
+    }
+}
