@@ -101,7 +101,8 @@ module.exports = webpackMerge(webpackCommon, {
       uglifyOptions: {
         compress: {
           ie8: true,
-          warnings: false
+          warnings: false,
+          inline: false
         },
         mangle: {
           ie8: true
