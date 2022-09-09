@@ -83,8 +83,6 @@ class App extends Component {
           Cookies.remove("token")
         }
         else if (data.status === 200) {
-          fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/all/${data.data.id}`, { method: "DELETE" })
-
           const socket = io("https://whatsforsupperapi.herokuapp.com/")
 
           socket.on("friend-request-update", data => {
@@ -123,10 +121,9 @@ class App extends Component {
               const friendsList = this.state.user.friends
               const incomingFriendsList = this.state.user.incoming_friend_requests
               const outgoingFriendsList = this.state.user.outgoing_friend_requests
-              const notifications = this.state.user.notifications
+              const notificationsList = this.state.user.notifications
               switch(data.type) {
                 case "add": {
-                  console.log(data)
                   const friend = { user_id: data.data.user.id, username: data.data.user.username }
                   friendsList.push(friend)
                   if (incomingFriendsList.filter(friend => friend.user_id === data.data.user.id).length > 0) {
@@ -135,9 +132,9 @@ class App extends Component {
                   if (outgoingFriendsList.filter(friend => friend.user_id === data.data.user.id).length > 0) {
                     outgoingFriendsList.splice(outgoingFriendsList.findIndex(friend => friend.user_id === data.data.user.id), 1)
                   }
-                  notifications.push(data.data.notification)
-                  if (data.data.removed_notification) {
-                    notifications.splice(notifications.findIndex(notification => notification.id === data.data.removed_notification.id), 1)
+                  notificationsList.push(data.data.notification)
+                  if (data.data.removed_notification.id) {
+                    notificationsList.splice(notificationsList.findIndex(notification => notification.id === data.data.removed_notification.id), 1)
                   }
                   break
                 }
@@ -146,6 +143,7 @@ class App extends Component {
                   break
                 }
               }
+              console.log(this.state.user)
               this.setUser({...this.state.user})
             }
           })
@@ -235,8 +233,13 @@ class App extends Component {
 
           socket.on("shared-shoppingingredient-update", data => {
             const shoppinglist = this.state.user.shoppinglists.filter(shoppinglist => shoppinglist.id === data.data.shoppinglist_id)[0]
+            const sharedShoppinglist = this.state.user.shared_shoppinglists.filter(shoppinglist => shoppinglist.id === data.data.shoppinglist_id)[0]
             if (shoppinglist) {
               shoppinglist.shoppingingredients.splice(shoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
+              this.setUser({...this.state.user})
+            }
+            if (sharedShoppinglist) {
+              sharedShoppinglist.shoppingingredients.splice(sharedShoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
               this.setUser({...this.state.user})
             }
           })

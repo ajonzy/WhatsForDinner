@@ -1,28 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { UserContext } from '../app'
 
 export default function Shoppinglists(props) {
-    const { user, setUser } = useContext(UserContext)
+    const { user } = useContext(UserContext)
     const [shoppinglistsList, setShoppinglistsList] = useState(user.shoppinglists)
     const [sharedShoppinglistsList, setSharedShoppinglistsList] = useState(user.shared_shoppinglists)
-
-    useEffect(() => {
-        user.notifications.filter(notification => notification.category === "shoppinglist").forEach(notification => {
-            fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { method: "DELETE" })
-        })
-        user.notifications = user.notifications.filter(notification => notification.category !== "shoppinglist")
-        setUser({...user})
-
-        return () => {
-            user.notifications.filter(notification => notification.category === "shoppinglist").forEach(notification => {
-                fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { method: "DELETE" })
-            })
-            user.notifications = user.notifications.filter(notification => notification.category !== "shoppinglist")
-            setUser({...user})
-        }
-    }, [])
 
     const handleFilter = event => {
         setShoppinglistsList(user.shoppinglists.filter(shoppinglist => (

@@ -8,7 +8,7 @@ function Notifications(props) {
     const { user } = useContext(UserContext)
 
     const renderNotifications = () => (
-        user.notifications.slice(0, 1).map(notification => <Notification key={`notification-${notification.id}`} {...props} notification={notification} />)
+        user.notifications.slice(-1).map(notification => <Notification key={`notification-${notification.id}`} {...props} notification={notification} />)
     )
 
     return (

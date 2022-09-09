@@ -1,28 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { UserContext } from '../app'
 
 export default function Mealplans(props) {
-    const { user, setUser } = useContext(UserContext)
+    const { user } = useContext(UserContext)
     const [mealplansList, setMealplansList] = useState(user.mealplans)
     const [sharedMealplansList, setSharedMealplansList] = useState(user.shared_mealplans)
-
-    useEffect(() => {
-        user.notifications.filter(notification => notification.category === "mealplan").forEach(notification => {
-            fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { method: "DELETE" })
-        })
-        user.notifications = user.notifications.filter(notification => notification.category !== "mealplan")
-        setUser({...user})
-
-        return () => {
-            user.notifications.filter(notification => notification.category === "mealplan").forEach(notification => {
-                fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { method: "DELETE" })
-            })
-            user.notifications = user.notifications.filter(notification => notification.category !== "mealplan")
-            setUser({...user})
-        }
-    }, [])
 
     const handleFilter = event => {
         setMealplansList(user.mealplans.filter(mealplan => (

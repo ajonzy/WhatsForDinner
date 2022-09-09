@@ -18,6 +18,12 @@ export default function Notification(props) {
         }
     }
 
+    const handleNotifications = () => {
+        fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/all/${user.id}`, { method: "DELETE" })
+        user.notifications = []
+        setUser({...user})
+    }
+
     switch(notification.category) {
         case "friendrequest": {
             return (
@@ -30,6 +36,8 @@ export default function Notification(props) {
                         <span className="option" onClick={() => handleNotification(notification, "/friends/requests")}>View</span>
                         <span>|</span>
                         <span className="option" onClick={() => handleNotification(notification)}>Dismiss</span>
+                        {user.notifications.length > 1 ? <span>|</span> : null}
+                        {user.notifications.length > 1 ? <span className="option" onClick={handleNotifications}>Dismiss&nbsp;All</span> : null}
                     </div>
                     {user.notifications.length > 1 ? <span className='additional'>+{user.notifications.length - 1} more</span> : null}
                 </animated.div>
@@ -46,6 +54,8 @@ export default function Notification(props) {
                         <span className="option" onClick={() => handleNotification(notification, `/friends/view/${notification.username}`)}>View</span>
                         <span>|</span>
                         <span className="option" onClick={() => handleNotification(notification)}>Dismiss</span>
+                        {user.notifications.length > 1 ? <span>|</span> : null}
+                        {user.notifications.length > 1 ? <span className="option" onClick={handleNotifications}>Dismiss&nbsp;All</span> : null}
                     </div>
                     {user.notifications.length > 1 ? <span className='additional'>+{user.notifications.length - 1} more</span> : null}
                 </animated.div>
@@ -65,6 +75,8 @@ export default function Notification(props) {
                         <span className="option" onClick={() => handleNotification(notification, `/meals/view/${item.id}`)}>View</span>
                         <span>|</span>
                         <span className="option" onClick={() => handleNotification(notification)}>Dismiss</span>
+                        {user.notifications.length > 1 ? <span>|</span> : null}
+                        {user.notifications.length > 1 ? <span className="option" onClick={handleNotifications}>Dismiss&nbsp;All</span> : null}
                     </div>
                     {user.notifications.length > 1 ? <span className='additional'>+{user.notifications.length - 1} more</span> : null}
                 </animated.div>
@@ -84,6 +96,8 @@ export default function Notification(props) {
                         <span className="option" onClick={() => handleNotification(notification, `/mealplans/view/${item.id}`)}>View</span>
                         <span>|</span>
                         <span className="option" onClick={() => handleNotification(notification)}>Dismiss</span>
+                        {user.notifications.length > 1 ? <span>|</span> : null}
+                        {user.notifications.length > 1 ? <span className="option" onClick={handleNotifications}>Dismiss&nbsp;All</span> : null}
                     </div>
                     {user.notifications.length > 1 ? <span className='additional'>+{user.notifications.length - 1} more</span> : null}
                 </animated.div>
@@ -103,6 +117,8 @@ export default function Notification(props) {
                         <span className="option" onClick={() => handleNotification(notification, `/shoppinglists/view/${item.id}`)}>View</span>
                         <span>|</span>
                         <span className="option" onClick={() => handleNotification(notification)}>Dismiss</span>
+                        {user.notifications.length > 1 ? <span>|</span> : null}
+                        {user.notifications.length > 1 ? <span className="option" onClick={handleNotifications}>Dismiss&nbsp;All</span> : null}
                     </div>
                     {user.notifications.length > 1 ? <span className='additional'>+{user.notifications.length - 1} more</span> : null}
                 </animated.div>

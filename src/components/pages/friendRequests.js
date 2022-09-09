@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faX } from '@fortawesome/free-solid-svg-icons'
@@ -10,22 +10,6 @@ export default function FriendRequests(props) {
     const [outgoingFriendRequests, setOutgoingFriendRequests] = useState(user.outgoing_friend_requests)
     const [incomingFriendRequests, setIncomingFriendRequests] = useState(user.incoming_friend_requests)
     const [problem, setProblem] = useState(false)
-
-    useEffect(() => {
-        user.notifications.filter(notification => notification.category === "friendrequest").forEach(notification => {
-            fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { method: "DELETE" })
-        })
-        user.notifications = user.notifications.filter(notification => notification.category !== "friendrequest")
-        setUser({...user})
-
-        return () => {
-            user.notifications.filter(notification => notification.category === "friendrequest").forEach(notification => {
-                fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { method: "DELETE" })
-            })
-            user.notifications = user.notifications.filter(notification => notification.category !== "friendrequest")
-            setUser({...user})
-        }
-    }, [])
 
     const handleFilter = event => {
         setOutgoingFriendRequests(user.outgoing_friend_requests.filter(friend => (
