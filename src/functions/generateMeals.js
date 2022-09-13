@@ -1,6 +1,8 @@
 import titleize from "./titleize"
 
-export default function generateMeals(user, number, rules) {
+export default function generateMeals(user, number, rules, setGeneratedProblem, lockedMeals) {
+    number = lockedMeals ? number - lockedMeals.length : number
+    rules = rules.map(rule => ({...rule}))
     let meals = [...user.meals]
     const requiredMeals = []
     const numberedMeals = []
@@ -9,6 +11,65 @@ export default function generateMeals(user, number, rules) {
     let bestSelectedMeals = []
     let bestCompactSelectedMeals = []
     let finalSelectedMeals = []
+
+    if (lockedMeals) {
+        lockedMeals.forEach(lockedMeal => meals = meals.filter(meal => meal.id !== lockedMeal.id))
+
+        rules.forEach(rule => {
+            const matchingMeals = rule.type === "Category" ? lockedMeals.filter(meal => meal.categories.map(category => category.name).includes(titleize(rule.value))) : lockedMeals.filter(meal => meal[rule.type] == titleize(rule.value))
+            switch(rule.rule) {
+                case "None": {
+                    if (matchingMeals.length > 0) {
+                        setGeneratedProblem(true)
+                    }
+                    break
+                }
+                case "Exactly": {
+                    rule.amount -= matchingMeals.length
+                    if (rule.amount <= 0) {
+                        if (rule.type === "Category") {
+                            meals = meals.filter(meal => !meal.categories.map(category => category.name).includes(titleize(rule.value)))
+                        }
+                        else {
+                            meals = meals.filter(meal => meal[rule.type.toLowerCase()] != titleize(rule.value))
+                        }
+
+                        if (rule.amount < 0) {
+                            setGeneratedProblem(true)
+                        }
+
+                        rule.rule = "Done"
+                    }
+                    break
+                }
+                case "No more than": {
+                    rule.amount -= matchingMeals.length
+                    if (rule.amount <= 0) {
+                        if (rule.type === "Category") {
+                            meals = meals.filter(meal => !meal.categories.map(category => category.name).includes(titleize(rule.value)))
+                        }
+                        else {
+                            meals = meals.filter(meal => meal[rule.type.toLowerCase()] != titleize(rule.value))
+                        }
+
+                        if (rule.amount < 0) {
+                            setGeneratedProblem(true)
+                        }
+
+                        rule.rule = "Done"
+                    }
+                    break
+                }
+                case "At least": {
+                    rule.amount -= matchingMeals.length
+                    if (rule.amount <= 0) {
+                        rule.rule = "Done"
+                    }
+                    break
+                }
+            }
+        })
+    }
 
     rules.forEach(rule => {
         switch(rule.rule) {
@@ -84,7 +145,6 @@ export default function generateMeals(user, number, rules) {
         }
     })
 
-    
     let bestSelectedNumber = [...requiredMeals, ...numberedRequiredMeals].length
 
     const generator = requiredMeals => {
@@ -151,6 +211,7 @@ export default function generateMeals(user, number, rules) {
         while (iteration < mealChoices.length && mealChoices.length !== 0) {
             if (mealChoices.length > 0) {
                 selectedMeal = mealChoices[iteration]
+                meals = meals.filter(meal => meal.id !== selectedMeal.id)
         
                 numberedMeals.forEach(numberedMeal => {
                     if (numberedMeal.type === "Category") {
@@ -185,6 +246,7 @@ export default function generateMeals(user, number, rules) {
                 }
                 else {
                     currentSelectedMeals.pop()
+                    meals.push(selectedMeal)
                     meals.push(...removedMeals)
                     affectedNumberedMeals.forEach(numberedMeal => numberedMeal.amount += 1)
                     affectedNumberedMeals = []
@@ -223,7 +285,7 @@ export default function generateMeals(user, number, rules) {
 
     if (number > user.meals.length) {
         number = user.meals.length
-        result = false
+        setGeneratedProblem(true)
     }
 
     if (result) {
@@ -231,39 +293,32 @@ export default function generateMeals(user, number, rules) {
             finalSelectedMeals.push(...meals.sort(function(){return 0.5 - Math.random()}).slice(0, number - finalSelectedMeals.length))
         }
 
-        return {
-            selectedMeals: finalSelectedMeals,
-            problem: false
-        }
+        return lockedMeals ? finalSelectedMeals.concat(lockedMeals) : finalSelectedMeals
     }
     else {
         if (rules.length <= number) {
             if (number - bestSelectedMeals.length > meals.length) {
-                meals = [...user.meals].filter(meal => !bestSelectedMeals.map(selectedMeal => selectedMeal.id).includes(meal.id))
+                meals = lockedMeals ? [...user.meals].filter(meal => !bestSelectedMeals.map(selectedMeal => selectedMeal.id).includes(meal.id)).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id)) : [...user.meals].filter(meal => !bestSelectedMeals.map(selectedMeal => selectedMeal.id).includes(meal.id))
             }
 
             if (bestSelectedMeals.length < number) {
                 bestSelectedMeals.push(...meals.sort(function(){return 0.5 - Math.random()}).slice(0, number - bestSelectedMeals.length))
             }
 
-            return {
-                selectedMeals: bestSelectedMeals,
-                problem: true
-            }
+            setGeneratedProblem(true)
+            return lockedMeals ? bestSelectedMeals.concat(lockedMeals) : bestSelectedMeals
         }
         else {
             if (number - bestCompactSelectedMeals.length > meals.length) {
-                meals = [...user.meals].filter(meal => !bestCompactSelectedMeals.map(selectedMeal => selectedMeal.id).includes(meal.id))
+                meals = lockedMeals ? [...user.meals].filter(meal => !bestCompactSelectedMeals.map(selectedMeal => selectedMeal.id).includes(meal.id)).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id)) : [...user.meals].filter(meal => !bestCompactSelectedMeals.map(selectedMeal => selectedMeal.id).includes(meal.id))
             }
 
             if (bestCompactSelectedMeals.length < number) {
                 bestCompactSelectedMeals.push(...meals.sort(function(){return 0.5 - Math.random()}).slice(0, number - bestCompactSelectedMeals.length))
             }
 
-            return {
-                selectedMeals: bestCompactSelectedMeals,
-                problem: true
-            }
+            setGeneratedProblem(true)
+            return lockedMeals ? bestCompactSelectedMeals.concat(lockedMeals) : bestCompactSelectedMeals
         }
     }
 }

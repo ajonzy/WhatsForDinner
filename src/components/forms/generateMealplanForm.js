@@ -135,7 +135,7 @@ export default function GenerateMealplanForm(props) {
                                             value={rule.amount}
                                             placeholder="Amount"
                                             onChange={event => {
-                                                rule.amount = isNan(event.target.valueAsNumber) ? "" : event.target.valueAsNumber
+                                                rule.amount = isNaN(event.target.valueAsNumber) ? "" : event.target.valueAsNumber
                                                 setRules([...rules])
                                             }}
                                             min="1"

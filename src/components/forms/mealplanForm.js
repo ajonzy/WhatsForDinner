@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
+import Modal from 'react-modal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleXmark, faHandPointer, faLock, faRotate, faUnlock } from '@fortawesome/free-solid-svg-icons'
+import { faCircleXmark, faHandPointer, faLock, faRotate, faUnlock, faCheck } from '@fortawesome/free-solid-svg-icons'
 
 import LoadingError from '../utils/loadingError'
 
@@ -11,6 +12,8 @@ export default function MealplanForm(props) {
     const [meals, setMeals] = useState(props.meals.map(meal => ({...meal, locked: false})))
     const [problem, setProblem] = useState(props.problem)
     const [data] = useState(props.data)
+    const [modalIsOpen, setIsOpen] = useState(false)
+    const [overidenMeal, setOveridenMeal] = useState({})
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -20,13 +23,41 @@ export default function MealplanForm(props) {
         setMeals([...meals])
     }
 
-    const handleRefresh = refreshedMeal => {
-        const newMeal = user.meals.filter(meal => meals.every(generatedMeal => generatedMeal.id !== meal.id))[Math.floor(Math.random() * (user.meals.length - meals.length))]
-        meals.splice(meals.findIndex(meal => meal.id === refreshedMeal.id), 1, newMeal)
-        setMeals([...meals])
+    const generateNewMeals = (lockedMeals, newMeals) => {
+        lockedMeals.forEach(lockedMeal => newMeals.splice(lockedMeal.position, 0, lockedMeal))
+        newMeals.forEach(meal => delete meal.position)
+        setMeals(newMeals)
     }
 
-    const handleAdd = event => {
+    const handleRefresh = refreshedMeal => {
+        const lockedMeals = refreshedMeal ? meals.map((meal, index) => ({...meal, position: index})).filter(meal => meal.id != refreshedMeal.id) : meals.map((meal, index) => ({...meal, position: index})).filter(meal => meal.locked)
+        const newMeals = props.handleMealplanRefresh(lockedMeals).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
+        generateNewMeals(lockedMeals, newMeals)
+    }
+
+    const handleMealAdd = () => {
+        props.setData({...props.data, number: props.data.number + 1})
+        const lockedMeals = meals.map((meal, index) => ({...meal, position: index}))
+        const newMeals = props.handleMealplanRefresh(lockedMeals, props.data.number + 1).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
+        generateNewMeals(lockedMeals, newMeals)
+    }
+
+    const handleMealOveride = overidingMeal => {
+        meals.splice(meals.findIndex(meal => meal.id === overidenMeal.id), 1, overidingMeal)
+        const lockedMeals = meals.map((meal, index) => ({...meal, position: index}))
+        const newMeals = props.handleMealplanRefresh(lockedMeals).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
+        generateNewMeals(lockedMeals, newMeals)
+        handleModalClose()
+    }
+
+    const handleMealDelete = deletedMeal => {
+        props.setData({...props.data, number: props.data.number - 1})
+        const lockedMeals = meals.filter(meal => meal.id !== deletedMeal.id).map((meal, index) => ({...meal, position: index}))
+        const newMeals = props.handleMealplanRefresh(lockedMeals, props.data.number - 1).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
+        generateNewMeals(lockedMeals, newMeals)
+    }
+
+    const handleMealplanAdd = event => {
         event.preventDefault()
 
         setError("")
@@ -147,12 +178,69 @@ export default function MealplanForm(props) {
         }
     }
 
+    const modalStyles = {
+        overlay: {
+            zIndex: "1",
+            backgroundColor: "rgba(255, 255, 255, 0.45)"
+        },
+        content: {
+            top: '52.6px',
+            left: '50%',
+            right: 'auto',
+            marginRight: '-50%',
+            transform: 'translateX(-50%)',
+            height: "calc(100% - 83.6px)",
+            height: "calc((var(--vh, 1vh) * 100) - 83.6px)",
+            width: "calc(100% - 62px)",
+            maxWidth: "778px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+        }
+    }
+      
+    Modal.setAppElement(document.querySelector(".app-wrapper"));
+
+    const handleModalOpen = overidenMeal => {
+        setOveridenMeal(overidenMeal)
+        setIsOpen(true)
+    }
+
+    const handleModalClose = () => {
+        setOveridenMeal({})
+        setIsOpen(false)
+    }
+
+    const renderModal = () => {
+        return (
+            <Modal
+                isOpen={modalIsOpen}
+                style={modalStyles}
+                onRequestClose={handleModalClose}
+                contentLabel="Example Modal"
+            >
+                <div className="mealplan-modal-wrapper">
+                    <div className="options-wrapper">
+                        <button type="button" onClick={() => setIsOpen(false)}>Close</button>
+                    </div>
+                    {user.meals.filter(userMeal => !meals.map(meal => meal.id).includes(userMeal.id)).map(userMeal => (
+                        <div key={`modal-meal-${userMeal.id}`} className="modal-meal-wrapper">
+                            <p className='name'>{userMeal.name}</p>
+                            <button type='button' className='icon-button' onClick={() => handleMealOveride(userMeal)}><FontAwesomeIcon icon={faCheck} /></button>
+                        </div>
+                    ))}
+                </div>
+            </Modal>
+        )
+    }
+
     return (
         <form className='form-wrapper mealplan-form-wrapper'
-            onSubmit={props.edit ? handleEdit : handleAdd}
+            onSubmit={props.edit ? handleEdit : handleMealplanAdd}
         >
             <h2 className='name'>{data.name}</h2>
-            {problem ? <p>Unfortunately, not all rules were able to be fulfilled.</p> : null}
+            {renderModal()}
+            {problem ? <p className='problem'>Unfortunately, not all rules were able to be fulfilled.</p> : null}
             {meals.map(meal => (
                 <div className="generated-meal-wrapper" key={`generated-meal-${meal.id}`}>
                     <div className="name-difficulty-wrapper">
@@ -173,11 +261,15 @@ export default function MealplanForm(props) {
                     <div className="options-wrapper">
                         {meal.locked ? <button type='button' className='icon-button' onClick={() => handleLock(meal)} disabled={loading}><FontAwesomeIcon icon={faUnlock} /></button> : <button type='button' className='icon-button' onClick={() => handleLock(meal)} disabled={loading}><FontAwesomeIcon icon={faLock} /></button>}
                         <button type='button' className='icon-button' disabled={meal.locked || loading} onClick={() => handleRefresh(meal)}><FontAwesomeIcon icon={faRotate} /></button>
-                        <button type='button' className='icon-button' disabled={meal.locked || loading}><FontAwesomeIcon icon={faHandPointer} /></button>
-                        <button type='button' className='icon-button' disabled={meal.locked || loading}><FontAwesomeIcon icon={faCircleXmark} /></button>
+                        <button type='button' className='icon-button' disabled={meal.locked || loading} onClick={() => handleModalOpen(meal)}><FontAwesomeIcon icon={faHandPointer} /></button>
+                        <button type='button' className='icon-button' disabled={meal.locked || loading} onClick={() => handleMealDelete(meal)}><FontAwesomeIcon icon={faCircleXmark} /></button>
                     </div>
                 </div>
             ))}
+            <div className="options-wrapper">
+                <button type='button' className='alt-button' onClick={() => handleRefresh()}>Refresh Meals</button>
+                <button type='button' className='alt-button' onClick={() => handleMealAdd()}>Add Meal</button>
+            </div>
             <div className="spacer-40" />
             <button type="submit" disabled={loading}>{props.edit ? "Edit Meals" : "Create Mealplan"}</button>
             <LoadingError loading={loading} error={error} />
