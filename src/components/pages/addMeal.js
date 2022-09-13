@@ -18,6 +18,7 @@ export default function AddMeal(props) {
         else {
             newUser.meals.push(meal)
         }
+        newUser.categories.push(...meal.categories.filter(mealCategory => user.categories.every(userCategory => userCategory.id !== mealCategory.id)))
         setUser(newUser)
         if (props.match.params.id) {
             props.history.push(`/meals/view/${meal.id}`)

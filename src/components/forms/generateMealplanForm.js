@@ -8,7 +8,7 @@ import titleize from '../../functions/titleize'
 
 export default function GenerateMealplanForm(props) {
     const [name, setName] = useState(props.edit ? props.mealplan.name : "")
-    const [number, setNumber] = useState(7)
+    const [number, setNumber] = useState("")
     const [rules, setRules] = useState([])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
@@ -74,6 +74,7 @@ export default function GenerateMealplanForm(props) {
             onSubmit={props.edit ? handleEdit : handleGenerate}
         >
             <h3>{props.edit ? `Edit ${props.mealplan.name}` : "Create a Mealplan"}</h3>
+            <label>Name</label>
             <input type="text"
                 value = {name}
                 placeholder = "Mealplan Name"
@@ -87,7 +88,7 @@ export default function GenerateMealplanForm(props) {
                     <input type="number" 
                         value={number}
                         placeholder="Amount"
-                        onChange={event => setNumber(event.target.valueAsNumber)}
+                        onChange={event => setNumber(isNaN(event.target.valueAsNumber) ? "" : event.target.valueAsNumber)}
                         min="1"
                         required
                     />
@@ -134,7 +135,7 @@ export default function GenerateMealplanForm(props) {
                                             value={rule.amount}
                                             placeholder="Amount"
                                             onChange={event => {
-                                                rule.amount = event.target.valueAsNumber
+                                                rule.amount = isNan(event.target.valueAsNumber) ? "" : event.target.valueAsNumber
                                                 setRules([...rules])
                                             }}
                                             min="1"
@@ -157,7 +158,7 @@ export default function GenerateMealplanForm(props) {
                             rules.push({
                                 type: "Category",
                                 rule: "At least",
-                                amount: 1,
+                                amount: "",
                                 value: ""
                             })
                             setRules([...rules])
