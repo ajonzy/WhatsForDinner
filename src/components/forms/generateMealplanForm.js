@@ -7,9 +7,9 @@ import LoadingError from '../utils/loadingError'
 import titleize from '../../functions/titleize'
 
 export default function GenerateMealplanForm(props) {
-    const [name, setName] = useState(props.edit ? props.mealplan.name : "")
-    const [number, setNumber] = useState("")
-    const [rules, setRules] = useState([])
+    const [name, setName] = useState(props.edit ? props.mealplan.name : props.data ? props.data.name || "" : "")
+    const [number, setNumber] = useState(props.data ? props.data.number || "" : "")
+    const [rules, setRules] = useState(props.data ? props.data.rules || [] : [])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 

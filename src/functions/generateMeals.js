@@ -7,10 +7,12 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
     const requiredMeals = []
     const numberedMeals = []
     const numberedRequiredMeals = []
+    const leftoverRequiredMeals = []
     const currentSelectedMeals = []
     let bestSelectedMeals = []
     let bestCompactSelectedMeals = []
     let finalSelectedMeals = []
+    let problem = false
 
     if (lockedMeals) {
         lockedMeals.forEach(lockedMeal => meals = meals.filter(meal => meal.id !== lockedMeal.id))
@@ -20,6 +22,7 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
             switch(rule.rule) {
                 case "None": {
                     if (matchingMeals.length > 0) {
+                        problem = true
                         setGeneratedProblem(true)
                     }
                     break
@@ -35,6 +38,7 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
                         }
 
                         if (rule.amount < 0) {
+                            problem = true
                             setGeneratedProblem(true)
                         }
 
@@ -53,6 +57,7 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
                         }
 
                         if (rule.amount < 0) {
+                            problem = true
                             setGeneratedProblem(true)
                         }
 
@@ -88,6 +93,7 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
                     (rule.type !== "Category" && meals.filter(meal => meal[rule.type.toLowerCase()] == titleize(rule.value)).length < rule.amount) ||
                     (rules.filter(rule => rule.rule === "None").filter(noneRule => noneRule.value === rule.value).length > 0)
                 ) {
+                    problem = true
                     setGeneratedProblem(true)
                 }
                 else {
@@ -111,6 +117,7 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
                     (rules.filter(rule => rule.rule === "Exactly").filter(exactlyRule => exactlyRule.type === rule.type && exactlyRule.value === rule.value).filter(exactlyRule => exactlyRule.amount > rule.amount).length > 0) ||
                     (rules.filter(rule => rule.rule === "At least").filter(atLeastRule => atLeastRule.type === rule.type && atLeastRule.value === rule.value).filter(atLeastRule => atLeastRule.amount > rule.amount).length > 0)
                 ) {
+                    problem = true
                     setGeneratedProblem(true)
                 }
                 else {
@@ -129,6 +136,7 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
                     (rules.filter(rule => rule.rule === "None").filter(noneRule => noneRule.value === rule.value).length > 0) ||
                     (rules.filter(rule => rule.rule === "Exactly").filter(exactlyRule => exactlyRule.type === rule.type && exactlyRule.value === rule.value).filter(exactlyRule => exactlyRule.amount < rule.amount).length > 0)
                 ) {
+                    problem = true
                     setGeneratedProblem(true)
                 }
                 else {
@@ -145,28 +153,38 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
         }
     })
 
-    let bestSelectedNumber = [...requiredMeals, ...numberedRequiredMeals].length
+    const ruledRequiredMeals = [...requiredMeals, ...numberedRequiredMeals]
+
+    for (let i=ruledRequiredMeals.length; i<number; i++) {
+        leftoverRequiredMeals.push({
+            type: "All",
+            value: "",
+            amount: 1
+        })
+    }
+
+    let bestSelectedNumber = [...ruledRequiredMeals, ...leftoverRequiredMeals].length
 
     const generator = requiredMeals => {
         if (currentSelectedMeals.length > bestSelectedMeals.length || (currentSelectedMeals.length >= bestSelectedMeals.length && requiredMeals.length < bestSelectedNumber)) {
             bestSelectedMeals = [...currentSelectedMeals]
 
-            if (bestSelectedMeals.length <= number && (bestSelectedMeals.length > bestCompactSelectedMeals.length || (bestSelectedMeals.length >= bestCompactSelectedMeals.length && requiredMeals.length < bestSelectedNumber))) {
+            if (currentSelectedMeals.length <= number && (currentSelectedMeals.length > bestCompactSelectedMeals.length || (currentSelectedMeals.length >= bestCompactSelectedMeals.length && requiredMeals.length < bestSelectedNumber))) {
                 bestSelectedNumber = requiredMeals.length
-                bestCompactSelectedMeals = [...bestSelectedMeals]
+                bestCompactSelectedMeals = [...currentSelectedMeals]
             }
         }
         
-        if (requiredMeals.length < bestSelectedNumber) {
+        if (currentSelectedMeals.length <= number && requiredMeals.length < bestSelectedNumber) {
             bestSelectedNumber = requiredMeals.length
         }
 
         if (requiredMeals.length === 0) {
-            if (bestSelectedMeals.length + meals.length < number || bestSelectedMeals.length > number) {
+            if (currentSelectedMeals.length + meals.length < number || currentSelectedMeals.length > number) {
                 return false
             }
 
-            finalSelectedMeals = bestSelectedMeals
+            finalSelectedMeals = currentSelectedMeals
             return true
         }
 
@@ -175,14 +193,14 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
         let removedMeals = []
         let selectedMeal = {}
         let iteration = 0
-        const requiredMeal = requiredMeals.pop()
+        const requiredMeal = requiredMeals.shift()
         
         if (requiredMeal.type === "Category") {
             if (currentSelectedMeals.filter(meal => meal.categories.map(category => category.name).includes(requiredMeal.value)).length >= requiredMeal.amount) {
                 const nextResult = generator(requiredMeals)
 
                 if (!nextResult) {
-                    requiredMeals.push(requiredMeal)
+                    requiredMeals.unshift(requiredMeal)
                     return false
                 }
                 else {
@@ -192,12 +210,15 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
 
             mealChoices = meals.filter(meal => meal.categories.map(category => category.name).includes(requiredMeal.value)).sort(function(){return 0.5 - Math.random()})
         }
+        else if (requiredMeal.type === "All") {
+            mealChoices = meals.sort(function(){return 0.5 - Math.random()})
+        }
         else {
             if (currentSelectedMeals.filter(meal => meal[requiredMeal.type.toLowerCase()] == requiredMeal.value).length >= requiredMeal.amount) {
                 const nextResult = generator(requiredMeals)
 
                 if (!nextResult) {
-                    requiredMeals.push(requiredMeal)
+                    requiredMeals.unshift(requiredMeal)
                     return false
                 }
                 else {
@@ -221,7 +242,7 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
                         }
         
                         if (numberedMeal.amount === 0) {
-                            removedMeals = meals.filter(meal => meal.categories.map(category => category.name).includes(numberedMeal.value))
+                            removedMeals.push(...meals.filter(meal => meal.categories.map(category => category.name).includes(numberedMeal.value)))
                             meals = meals.filter(meal => !meal.categories.map(category => category.name).includes(numberedMeal.value))
                         }
                     }
@@ -232,7 +253,7 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
                         }
         
                         if (numberedMeal.amount === 0) {
-                            removedMeals = meals.filter(meal => meal[numberedMeal.type.toLowerCase()] == numberedMeal.value)
+                            removedMeals.push(...meals.filter(meal => meal[numberedMeal.type.toLowerCase()] == numberedMeal.value))
                             meals = meals.filter(meal => meal[numberedMeal.type.toLowerCase()] != numberedMeal.value)
                         }
                     }
@@ -249,29 +270,30 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
                     meals.push(selectedMeal)
                     meals.push(...removedMeals)
                     affectedNumberedMeals.forEach(numberedMeal => numberedMeal.amount += 1)
+                    removedMeals = []
                     affectedNumberedMeals = []
                     iteration++
                 }
             }
             else {
-                requiredMeals.push(requiredMeal)
+                requiredMeals.unshift(requiredMeal)
                 return false
             }
         }
 
         if (iteration >= mealChoices.length || mealChoices.length === 0) {
-            requiredMeals.push(requiredMeal)
+            requiredMeals.unshift(requiredMeal)
             return false
         }
 
         return true
     }
 
-    const allRequiredMeals = [...requiredMeals, ...numberedRequiredMeals].sort(function(){return 0.5 - Math.random()})
+    const allRequiredMeals = [...ruledRequiredMeals.sort(function(){return 0.5 - Math.random()}), ...leftoverRequiredMeals]
     let iteration = 0
     let result = true
 
-    while (iteration < allRequiredMeals.length) {
+    do {
         result = generator(allRequiredMeals)
 
         if (result) {
@@ -282,41 +304,61 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
             iteration++
         }
     }
+    while (iteration < ruledRequiredMeals.length)
 
     if (number > user.meals.length) {
         number = user.meals.length
+        problem = true
         setGeneratedProblem(true)
     }
 
     if (result) {
-        if (finalSelectedMeals.length < number) {
-            finalSelectedMeals.push(...meals.sort(function(){return 0.5 - Math.random()}).slice(0, number - finalSelectedMeals.length))
-        }
-
+        setGeneratedProblem(problem)
         return lockedMeals ? finalSelectedMeals.concat(lockedMeals) : finalSelectedMeals
     }
     else {
+        const handleBestMeals = bestMeals => {
+            meals = meals.filter(meal => !bestMeals.map(selectedMeal => selectedMeal.id).includes(meal.id))
+
+            bestMeals.forEach(selectedMeal => {
+                numberedMeals.forEach(numberedMeal => {
+                    if (numberedMeal.type === "Category") {
+                        if (selectedMeal.categories.map(category => category.name).includes(numberedMeal.value)) {
+                            numberedMeal.amount -= 1
+                        }
+        
+                        if (numberedMeal.amount === 0) {
+                            meals = meals.filter(meal => !meal.categories.map(category => category.name).includes(numberedMeal.value))
+                        }
+                    }
+                    else {
+                        if (selectedMeal[numberedMeal.type.toLowerCase()] == numberedMeal.value) {
+                            numberedMeal.amount -= 1
+                        }
+        
+                        if (numberedMeal.amount === 0) {
+                            meals = meals.filter(meal => meal[numberedMeal.type.toLowerCase()] != numberedMeal.value)
+                        }
+                    }
+                })
+            })
+
+            if (number - bestMeals.length > meals.length) {
+                meals = lockedMeals ? [...user.meals].filter(meal => !bestMeals.map(selectedMeal => selectedMeal.id).includes(meal.id)).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id)) : [...user.meals].filter(meal => !bestMeals.map(selectedMeal => selectedMeal.id).includes(meal.id))
+            }
+
+            if (bestMeals.length < number) {
+                bestMeals.push(...meals.sort(function(){return 0.5 - Math.random()}).slice(0, number - bestMeals.length))
+            }
+        }
+
         if (rules.length <= number) {
-            if (number - bestSelectedMeals.length > meals.length) {
-                meals = lockedMeals ? [...user.meals].filter(meal => !bestSelectedMeals.map(selectedMeal => selectedMeal.id).includes(meal.id)).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id)) : [...user.meals].filter(meal => !bestSelectedMeals.map(selectedMeal => selectedMeal.id).includes(meal.id))
-            }
-
-            if (bestSelectedMeals.length < number) {
-                bestSelectedMeals.push(...meals.sort(function(){return 0.5 - Math.random()}).slice(0, number - bestSelectedMeals.length))
-            }
-
+            handleBestMeals(bestSelectedMeals)
             setGeneratedProblem(true)
             return lockedMeals ? bestSelectedMeals.concat(lockedMeals) : bestSelectedMeals
         }
         else {
-            if (number - bestCompactSelectedMeals.length > meals.length) {
-                meals = lockedMeals ? [...user.meals].filter(meal => !bestCompactSelectedMeals.map(selectedMeal => selectedMeal.id).includes(meal.id)).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id)) : [...user.meals].filter(meal => !bestCompactSelectedMeals.map(selectedMeal => selectedMeal.id).includes(meal.id))
-            }
-
-            if (bestCompactSelectedMeals.length < number) {
-                bestCompactSelectedMeals.push(...meals.sort(function(){return 0.5 - Math.random()}).slice(0, number - bestCompactSelectedMeals.length))
-            }
-
+            handleBestMeals(bestCompactSelectedMeals)
             setGeneratedProblem(true)
             return lockedMeals ? bestCompactSelectedMeals.concat(lockedMeals) : bestCompactSelectedMeals
         }

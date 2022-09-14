@@ -25,10 +25,6 @@ export default function AddMealplan(props) {
         setSection("mealplan-view")
     }
 
-    const handleMealplanRefresh = (lockedMeals, number=generatedData.number) => {
-        return generateMeals(user, number, generatedData.rules, setGeneratedProblem, lockedMeals)
-    }
-
     const handleSuccessfulCreateMealplan = data => {
         const newUser = {...user}
         newUser.mealplans.push(data)
@@ -40,8 +36,8 @@ export default function AddMealplan(props) {
 
     const renderSection = () => {
         switch(section) {
-            case "mealplan-form": return <GenerateMealplanForm handleBuildMealplan={handleBuildMealplan} />
-            case "mealplan-view": return <MealplanForm meals={generatedMeals} problem={generatedProblem} data={generatedData} setData={setGeneratedData} handleMealplanRefresh={handleMealplanRefresh} handleSuccessfulCreateMealplan={handleSuccessfulCreateMealplan} />
+            case "mealplan-form": return <GenerateMealplanForm data={generatedData} handleBuildMealplan={handleBuildMealplan} />
+            case "mealplan-view": return <MealplanForm meals={generatedMeals} problem={generatedProblem} data={generatedData} setSection={setSection} handleSuccessfulCreateMealplan={handleSuccessfulCreateMealplan} />
         }
     }
 

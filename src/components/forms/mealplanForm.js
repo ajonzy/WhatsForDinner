@@ -3,6 +3,8 @@ import Modal from 'react-modal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleXmark, faHandPointer, faLock, faRotate, faUnlock, faCheck } from '@fortawesome/free-solid-svg-icons'
 
+import generateMeals from '../../functions/generateMeals'
+
 import LoadingError from '../utils/loadingError'
 
 import { UserContext } from '../app'
@@ -11,7 +13,7 @@ export default function MealplanForm(props) {
     const { user } = useContext(UserContext)
     const [meals, setMeals] = useState(props.meals.map(meal => ({...meal, locked: false})))
     const [problem, setProblem] = useState(props.problem)
-    const [data] = useState(props.data)
+    const [data, setData] = useState(props.data)
     const [modalIsOpen, setIsOpen] = useState(false)
     const [overidenMeal, setOveridenMeal] = useState({})
     const [error, setError] = useState("")
@@ -23,37 +25,42 @@ export default function MealplanForm(props) {
         setMeals([...meals])
     }
 
+    const handleMealplanRefresh = (lockedMeals, number=data.number) => {
+        return generateMeals(user, number, data.rules, setProblem, lockedMeals)
+    }
+
     const generateNewMeals = (lockedMeals, newMeals) => {
         lockedMeals.forEach(lockedMeal => newMeals.splice(lockedMeal.position, 0, lockedMeal))
         newMeals.forEach(meal => delete meal.position)
+        console.log(newMeals)
         setMeals(newMeals)
     }
 
     const handleRefresh = refreshedMeal => {
         const lockedMeals = refreshedMeal ? meals.map((meal, index) => ({...meal, position: index})).filter(meal => meal.id != refreshedMeal.id) : meals.map((meal, index) => ({...meal, position: index})).filter(meal => meal.locked)
-        const newMeals = props.handleMealplanRefresh(lockedMeals).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
+        const newMeals = handleMealplanRefresh(lockedMeals).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
         generateNewMeals(lockedMeals, newMeals)
     }
 
     const handleMealAdd = () => {
-        props.setData({...props.data, number: props.data.number + 1})
+        setData({...data, number: data.number + 1})
         const lockedMeals = meals.map((meal, index) => ({...meal, position: index}))
-        const newMeals = props.handleMealplanRefresh(lockedMeals, props.data.number + 1).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
+        const newMeals = handleMealplanRefresh(lockedMeals, data.number + 1).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
         generateNewMeals(lockedMeals, newMeals)
     }
 
     const handleMealOveride = overidingMeal => {
         meals.splice(meals.findIndex(meal => meal.id === overidenMeal.id), 1, overidingMeal)
         const lockedMeals = meals.map((meal, index) => ({...meal, position: index}))
-        const newMeals = props.handleMealplanRefresh(lockedMeals).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
+        const newMeals = handleMealplanRefresh(lockedMeals).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
         generateNewMeals(lockedMeals, newMeals)
         handleModalClose()
     }
 
     const handleMealDelete = deletedMeal => {
-        props.setData({...props.data, number: props.data.number - 1})
+        setData({...data, number: data.number - 1})
         const lockedMeals = meals.filter(meal => meal.id !== deletedMeal.id).map((meal, index) => ({...meal, position: index}))
-        const newMeals = props.handleMealplanRefresh(lockedMeals, props.data.number - 1).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
+        const newMeals = handleMealplanRefresh(lockedMeals, data.number - 1).filter(meal => !lockedMeals.map(lockedMeal => lockedMeal.id).includes(meal.id))
         generateNewMeals(lockedMeals, newMeals)
     }
 
@@ -269,6 +276,7 @@ export default function MealplanForm(props) {
             <div className="options-wrapper">
                 <button type='button' className='alt-button' onClick={() => handleRefresh()}>Refresh Meals</button>
                 <button type='button' className='alt-button' onClick={() => handleMealAdd()}>Add Meal</button>
+                <button type='button' className='alt-button' onClick={() => props.setSection("mealplan-form")}>Edit Rules</button>
             </div>
             <div className="spacer-40" />
             <button type="submit" disabled={loading}>{props.edit ? "Edit Meals" : "Create Mealplan"}</button>
