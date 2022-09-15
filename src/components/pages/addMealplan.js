@@ -6,6 +6,7 @@ import MealplanForm from '../forms/mealplanForm'
 import { UserContext } from '../app'
 
 import generateMeals from '../../functions/generateMeals'
+import titleize from '../../functions/titleize'
 
 export default function AddMealplan(props) {
     const { user, setUser } = useContext(UserContext)
@@ -55,7 +56,7 @@ export default function AddMealplan(props) {
                     rule_type: rule.type,
                     rule: rule.rule,
                     amount: rule.amount,
-                    value: rule.value,
+                    value: titleize(rule.value),
                     mealplanoutline_id: newData.id
                 })
             })

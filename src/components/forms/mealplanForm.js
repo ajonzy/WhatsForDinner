@@ -118,7 +118,7 @@ export default function MealplanForm(props) {
                         rule_type: rule.type,
                         rule: rule.rule,
                         amount: rule.amount,
-                        value: rule.value,
+                        value: titleize(rule.value),
                         mealplan_id: newData.id
                     })
                 })

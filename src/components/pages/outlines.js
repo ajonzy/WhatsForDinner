@@ -52,7 +52,7 @@ export default function Outlines(props) {
             <div key={`outline-${outline.id}`} className="outline-wrapper">
                 <p className='name'>{outline.name}</p>
                 <div className="options-wrapper">
-                    <button type='button' className='icon-button'><FontAwesomeIcon icon={faPenToSquare} /></button>
+                    <button type='button' className='icon-button' onClick={() => props.history.push(`/mealplanoutlines/edit/${outline.id}`)}><FontAwesomeIcon icon={faPenToSquare} /></button>
                     <button type='button' className='icon-button' onClick={() => handleDelete(outline)}><FontAwesomeIcon icon={faTrashCan} /></button>
                 </div>
                 {confirmId === outline.id ? <ConfirmLoadingError confirm={confirm} loading={false} error={""} item={outline.name} /> : null}
