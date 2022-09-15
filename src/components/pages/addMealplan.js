@@ -14,6 +14,77 @@ export default function AddMealplan(props) {
     const [generatedMeals, setGeneratedMeals] = useState([])
     const [generatedProblem, setGeneratedProblem] = useState(false)
 
+    const handleSaveOutline = async (name, number, rules) => {
+        let newData = {}
+
+        let responseData = await fetch("https://whatsforsupperapi.herokuapp.com/mealplanoutline/add", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+                name,
+                number,
+                user_id: user.id
+            })
+        })
+        .then(response => response.json())
+        .catch(error => {
+            return { catchError: error }
+        })  
+
+        if (responseData.status === 400) {
+            console.log(responseData)
+            return false
+        }
+        else if (responseData.catchError) {
+            console.log("Error adding mealplan outline: ", responseData.catchError)
+            return false
+        }
+        else if (responseData.status === 200) {
+            newData = responseData.data
+        }
+        else {
+            setLoading(false)
+            return false
+        }
+
+        for (let rule of rules) {
+            responseData = await fetch("https://whatsforsupperapi.herokuapp.com/rule/add", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                    rule_type: rule.type,
+                    rule: rule.rule,
+                    amount: rule.amount,
+                    value: rule.value,
+                    mealplanoutline_id: newData.id
+                })
+            })
+            .then(response => response.json())
+            .catch(error => {
+                return { catchError: error }
+            }) 
+                
+            if (responseData.status === 400) {
+                setLoading(false)
+                return false
+            }
+            else if (responseData.catchError) {
+                console.log("Error adding rule: ", responseData.catchError)
+                return false
+            }
+            else if (responseData.status === 200) {
+                newData.rules.push(responseData.data)
+            }
+            else {
+                setLoading(false)
+                return false
+            }
+        }
+
+        user.mealplanoutlines.push(newData)
+        setUser({...user})
+    }
+
     const handleBuildMealplan = (name, number, rules, savedOutline) => {
         setGeneratedData({
             name,
@@ -25,48 +96,7 @@ export default function AddMealplan(props) {
         setSection("mealplan-view")
 
         if (savedOutline) {
-            fetch("https://whatsforsupperapi.herokuapp.com/mealplanoutline/add", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({
-                    name,
-                    number,
-                    user_id: user.id
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 200) {
-                    rules.forEach(rule => {
-                        fetch("https://whatsforsupperapi.herokuapp.com/rule/add", {
-                            method: "POST",
-                            headers: { "content-type": "application/json" },
-                            body: JSON.stringify({
-                                rule_type: rule.type,
-                                rule: rule.rule,
-                                amount: rule.amount,
-                                value: rule.value,
-                                mealplanoutline_id: data.data.id
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status !== 200) {
-                                console.log(data)
-                            }
-                        })
-                        .catch(error => {
-                            console.log("Error adding rule: ", error)
-                        })
-                    })
-                }
-                else {
-                    console.log(data)
-                }
-            })
-            .catch(error => {
-                console.log("Error adding mealplanoutline: ", error)
-            })
+            handleSaveOutline(name, number, rules)
         }
     }
 

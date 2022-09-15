@@ -1,0 +1,32 @@
+.outlines-page-wrapper {
+    .outlines-wrapper {
+        .outline-wrapper {
+            @include flex;
+            padding: 10px;
+            border: 1px solid $darkest;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.25);
+
+            p {
+                margin: 0px;
+            }
+
+            .name {
+                font-weight: bold;
+            }
+
+            .options-wrapper {
+                display: flex;
+                justify-content: center;
+
+                .icon-button {
+                    color: $darkest;
+                    font-size: 20px;
+                    text-align: center;
+                    margin: 0px 5px;
+                }
+            }
+        }
+    }
+}

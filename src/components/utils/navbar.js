@@ -22,6 +22,7 @@ export default function Navbar(props) {
                             <Link to="/meals">Meals</Link>
                             <Link to="/mealcategories">Meal Categories</Link>
                             <Link to="/mealplans">Mealplans</Link>
+                            <Link to="/mealplanoutlines">Mealplan Outlines</Link>
                             <Link to="/shoppinglists">Shopping Lists</Link>
                             <Link to="/friends">Friends</Link>
                             <Link to="/settings">Settings</Link>

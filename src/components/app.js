@@ -17,6 +17,7 @@ import AddMealplan from './pages/addMealplan';
 import Mealplan from './pages/mealplan';
 import EditMealplan from './pages/editMealplan';
 import EditMeals from './pages/editMeals';
+import Outlines from './pages/outlines';
 import Shoppinglists from './pages/shoppinglists';
 import AddShoppinglist from './pages/addShoppinglist';
 import Shoppinglist from './pages/shoppinglist';
@@ -153,6 +154,7 @@ class App extends Component {
                         <Route path="/mealplans/view/:id" component={Mealplan} />
                         <Route path="/mealplans/edit/:id" component={EditMealplan} />
                         <Route path="/mealplans/meals/edit/:id" component={EditMeals} />
+                        <Route exact path="/mealplanoutlines" component={Outlines} />
                         <Route exact path="/shoppinglists" component={Shoppinglists} />
                         <Route path="/shoppinglists/add" component={AddShoppinglist} />
                         <Route path="/shoppinglists/view/:id" component={Shoppinglist} />

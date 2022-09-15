@@ -100,7 +100,7 @@ export default function RecipeForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding stepsection: ", error)
+                    console.log("Error adding stepsection: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -156,7 +156,7 @@ export default function RecipeForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding step: ", error)
+                    console.log("Error adding step: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -197,7 +197,7 @@ export default function RecipeForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding ingredient: ", error)
+                    console.log("Error adding ingredient: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -267,7 +267,7 @@ export default function RecipeForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding stepsection: ", error)
+                    console.log("Error adding stepsection: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -303,7 +303,7 @@ export default function RecipeForm(props) {
                     else if (data.catchError) {
                         setError("An error occured... Please try again later.")
                         setLoading(false)
-                        console.log("Error updating stepsection: ", error)
+                        console.log("Error updating stepsection: ", data.catchError)
                         return false
                     }
                     else if (data.status === 200) {
@@ -330,7 +330,7 @@ export default function RecipeForm(props) {
                     if (data.catchError) {
                         setError("An error occured... Please try again later.")
                         setLoading(false)
-                        console.log("Error deleting stepsection: ", error)
+                        console.log("Error deleting stepsection: ", data.catchError)
                         return false
                     }
                     else if (data.status !== 200) {
@@ -394,7 +394,7 @@ export default function RecipeForm(props) {
                 .then(response => response.json())
                 .catch(error => {
                     return { catchError: error }
-                })  
+                }) 
                 if (data.status === 400) {
                     setError("An error occured... Please try again later.")
                     console.log(data)
@@ -404,7 +404,7 @@ export default function RecipeForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding step: ", error)
+                    console.log("Error adding step: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -441,7 +441,7 @@ export default function RecipeForm(props) {
                     else if (data.catchError) {
                         setError("An error occured... Please try again later.")
                         setLoading(false)
-                        console.log("Error updating step: ", error)
+                        console.log("Error updating step: ", data.catchError)
                         return false
                     }
                     else if (data.status === 200) {
@@ -468,7 +468,7 @@ export default function RecipeForm(props) {
                     if (data.catchError) {
                         setError("An error occured... Please try again later.")
                         setLoading(false)
-                        console.log("Error deleting step: ", error)
+                        console.log("Error deleting step: ", data.catchError)
                         return false
                     }
                     else if (data.status !== 200) {
@@ -512,7 +512,7 @@ export default function RecipeForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding ingredient: ", error)
+                    console.log("Error adding ingredient: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -551,7 +551,7 @@ export default function RecipeForm(props) {
                     else if (data.catchError) {
                         setError("An error occured... Please try again later.")
                         setLoading(false)
-                        console.log("Error updating ingredient: ", error)
+                        console.log("Error updating ingredient: ", data.catchError)
                         return false
                     }
                     else if (data.status === 200) {
@@ -578,7 +578,7 @@ export default function RecipeForm(props) {
                     if (data.catchError) {
                         setError("An error occured... Please try again later.")
                         setLoading(false)
-                        console.log("Error deleting ingredient: ", error)
+                        console.log("Error deleting ingredient: ", data.catchError)
                         return false
                     }
                     else if (data.status !== 200) {

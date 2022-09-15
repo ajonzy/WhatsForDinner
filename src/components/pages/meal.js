@@ -108,7 +108,7 @@ export default function Meal(props) {
         else if (data.catchError) {
             setCopyError("An error occured... Please try again later.")
             setCopyLoading(false)
-            console.log("Error adding meal: ", error)
+            console.log("Error adding meal: ", data.catchError)
             return false
         }
         else if (data.status === 200) {
@@ -145,7 +145,7 @@ export default function Meal(props) {
             else if (data.catchError) {
                 setCopyError("An error occured... Please try again later.")
                 setCopyLoading(false)
-                console.log("Error adding stepsection: ", error)
+                console.log("Error adding stepsection: ", data.catchError)
                 return false
             }
             else if (data.status === 200) {
@@ -185,7 +185,7 @@ export default function Meal(props) {
             else if (data.catchError) {
                 setCopyError("An error occured... Please try again later.")
                 setCopyLoading(false)
-                console.log("Error adding step: ", error)
+                console.log("Error adding step: ", data.catchError)
                 return false
             }
             else if (data.status === 200) {
@@ -225,7 +225,7 @@ export default function Meal(props) {
             else if (data.catchError) {
                 setCopyError("An error occured... Please try again later.")
                 setCopyLoading(false)
-                console.log("Error adding ingredient: ", error)
+                console.log("Error adding ingredient: ", data.catchError)
                 return false
             }
             else if (data.status === 200) {
@@ -249,7 +249,7 @@ export default function Meal(props) {
             if (data.catchError) {
                 setCopyError("An error occured... Please try again later.")
                 setCopyLoading(false)
-                console.log("Error unsharing meal: ", error)
+                console.log("Error unsharing meal: ", data.catchError)
                 return false
             }
             else if (data.status === 200) {

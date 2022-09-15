@@ -73,7 +73,7 @@ export default function ShoppinglistForm(props) {
             else if (data.catchError) {
                 setError("An error occured... Please try again later.")
                 setLoading(false)
-                console.log("Error adding shoppinglist: ", error)
+                console.log("Error adding shoppinglist: ", data.catchError)
                 return false
             }
             else if (data.status === 200) {
@@ -113,7 +113,7 @@ export default function ShoppinglistForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding shopping ingredient: ", error)
+                    console.log("Error adding shopping ingredient: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -165,7 +165,7 @@ export default function ShoppinglistForm(props) {
             else if (data.catchError) {
                 setError("An error occured... Please try again later.")
                 setLoading(false)
-                console.log("Error adding shoppinglist: ", error)
+                console.log("Error adding shoppinglist: ", data.catchError)
                 return false
             }
             else if (data.status === 200) {
@@ -225,7 +225,7 @@ export default function ShoppinglistForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding ingredient: ", error)
+                    console.log("Error adding ingredient: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -264,7 +264,7 @@ export default function ShoppinglistForm(props) {
                     else if (data.catchError) {
                         setError("An error occured... Please try again later.")
                         setLoading(false)
-                        console.log("Error updating ingredient: ", error)
+                        console.log("Error updating ingredient: ", data.catchError)
                         return false
                     }
                     else if (data.status === 200) {
@@ -291,7 +291,7 @@ export default function ShoppinglistForm(props) {
                     if (data.catchError) {
                         setError("An error occured... Please try again later.")
                         setLoading(false)
-                        console.log("Error deleting ingredient: ", error)
+                        console.log("Error deleting ingredient: ", data.catchError)
                         return false
                     }
                     else if (data.status !== 200) {

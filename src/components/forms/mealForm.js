@@ -74,7 +74,7 @@ export default function MealForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding meal image: ", error)
+                    console.log("Error adding meal image: ", data.catchError)
                     return false
                 }
                 else {
@@ -107,7 +107,7 @@ export default function MealForm(props) {
             else if (data.catchError) {
                 setError("An error occured... Please try again later.")
                 setLoading(false)
-                console.log("Error adding meal: ", error)
+                console.log("Error adding meal: ", data.catchError)
                 return false
             }
             else if (data.status === 200) {
@@ -148,7 +148,7 @@ export default function MealForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding category: ", error)
+                    console.log("Error adding category: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -186,7 +186,7 @@ export default function MealForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding category: ", error)
+                    console.log("Error adding category: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -238,7 +238,7 @@ export default function MealForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding meal image: ", error)
+                    console.log("Error adding meal image: ", data.catchError)
                     return false
                 }
                 else {
@@ -270,7 +270,7 @@ export default function MealForm(props) {
             else if (data.catchError) {
                 setError("An error occured... Please try again later.")
                 setLoading(false)
-                console.log("Error updating meal: ", error)
+                console.log("Error updating meal: ", data.catchError)
                 return false
             }
             else if (data.status === 200) {
@@ -313,7 +313,7 @@ export default function MealForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding category: ", error)
+                    console.log("Error adding category: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -351,7 +351,7 @@ export default function MealForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding category: ", error)
+                    console.log("Error adding category: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
@@ -389,7 +389,7 @@ export default function MealForm(props) {
                 else if (data.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding category: ", error)
+                    console.log("Error adding category: ", data.catchError)
                     return false
                 }
                 else if (data.status === 200) {
