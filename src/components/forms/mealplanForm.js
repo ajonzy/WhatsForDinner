@@ -32,7 +32,6 @@ export default function MealplanForm(props) {
     const generateNewMeals = (lockedMeals, newMeals) => {
         lockedMeals.forEach(lockedMeal => newMeals.splice(lockedMeal.position, 0, lockedMeal))
         newMeals.forEach(meal => delete meal.position)
-        console.log(newMeals)
         setMeals(newMeals)
     }
 

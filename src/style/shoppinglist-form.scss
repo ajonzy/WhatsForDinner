@@ -1,18 +1,4 @@
 .shoppinglist-form-wrapper {
-    input[type=checkbox] {
-        display: none;
-    }
-
-    label {
-        @include flex;
-
-        span {
-            font-size: 25px;
-            color: $darkest;
-            line-height: 0px;
-        }
-    }
-
     .ingredient-wrapper {
         @include flex;
 

@@ -18,7 +18,7 @@ export default function generateMeals(user, number, rules, setGeneratedProblem, 
         lockedMeals.forEach(lockedMeal => meals = meals.filter(meal => meal.id !== lockedMeal.id))
 
         rules.forEach(rule => {
-            const matchingMeals = rule.type === "Category" ? lockedMeals.filter(meal => meal.categories.map(category => category.name).includes(titleize(rule.value))) : lockedMeals.filter(meal => meal[rule.type] == titleize(rule.value))
+            const matchingMeals = rule.type === "Category" ? lockedMeals.filter(meal => meal.categories.map(category => category.name).includes(titleize(rule.value))) : lockedMeals.filter(meal => meal[rule.type.toLowerCase()] == titleize(rule.value))
             switch(rule.rule) {
                 case "None": {
                     if (matchingMeals.length > 0) {

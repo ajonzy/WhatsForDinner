@@ -326,7 +326,7 @@ export default function ShoppinglistForm(props) {
             }
             {!props.editShoppingingredients
                 ? (
-                    <label>
+                    <label className='checkbox'>
                         Contains Gifts
                         <input type="checkbox" 
                             checked={updatesHidden}
