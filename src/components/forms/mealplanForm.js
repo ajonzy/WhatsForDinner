@@ -12,8 +12,8 @@ import { UserContext } from '../app'
 export default function MealplanForm(props) {
     const { user } = useContext(UserContext)
     const [meals, setMeals] = useState(props.meals.map(meal => ({...meal, locked: false})))
-    const [problem, setProblem] = useState(props.problem)
-    const [data, setData] = useState(props.data)
+    const [problem, setProblem] = useState(props.problem || false)
+    const [data, setData] = useState(props.edit ? { name: props.data.name, number: props.meals.length, rules: props.data.rules.map(rule => ({ ...rule, type: rule.rule_type })) } : props.data)
     const [modalIsOpen, setIsOpen] = useState(false)
     const [overidenMeal, setOveridenMeal] = useState({})
     const [error, setError] = useState("")
@@ -63,15 +63,16 @@ export default function MealplanForm(props) {
         generateNewMeals(lockedMeals, newMeals)
     }
 
-    const handleMealplanAdd = event => {
+    const handleMealplanAdd = async event => {
         event.preventDefault()
 
         setError("")
 
         if (true) {
             setLoading(true)
+            let newData = {}
 
-            fetch("https://whatsforsupperapi.herokuapp.com/mealplan/add", {
+            let responseData = await fetch("https://whatsforsupperapi.herokuapp.com/mealplan/add", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
@@ -83,21 +84,73 @@ export default function MealplanForm(props) {
                 })
             })
             .then(response => response.json())
-            .then(data => {
-                if (data.status === 200) {
-                    props.handleSuccessfulCreateMealplan(data.data)
+            .catch(error => {
+                return { catchError: error }
+            })  
+
+            if (responseData.status === 400) {
+                setError("An error occured... Please try again later.")
+                console.log(responseData)
+                setLoading(false)
+                return false
+            }
+            else if (responseData.catchError) {
+                setError("An error occured... Please try again later.")
+                setLoading(false)
+                console.log("Error adding mealplan: ", error)
+                return false
+            }
+            else if (responseData.status === 200) {
+                newData = responseData.data
+            }
+            else {
+                setError("An error occured... Please try again later.")
+                console.log(data)
+                setLoading(false)
+                return false
+            }
+
+            for (let rule of data.rules) {
+                responseData = await fetch("https://whatsforsupperapi.herokuapp.com/rule/add", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({
+                        rule_type: rule.type,
+                        rule: rule.rule,
+                        amount: rule.amount,
+                        value: rule.value,
+                        mealplan_id: newData.id
+                    })
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                }) 
+                 
+                if (responseData.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(responseData)
+                    setLoading(false)
+                    return false
+                }
+                else if (responseData.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding rule: ", error)
+                    return false
+                }
+                else if (responseData.status === 200) {
+                    newData.rules.push(responseData.data)
                 }
                 else {
                     setError("An error occured... Please try again later.")
                     console.log(data)
                     setLoading(false)
+                    return false
                 }
-            })
-            .catch(error => {
-                setError("An error occured... Please try again later.")
-                setLoading(false)
-                console.log("Error adding mealplan: ", error)
-            })
+            }
+
+            props.handleSuccessfulCreateMealplan(newData)
         }
     }
 
@@ -109,7 +162,7 @@ export default function MealplanForm(props) {
 
             const newMeals = meals.filter(meal => !props.meals.map(existingMeal => existingMeal.id).includes(meal.id))
             const deletedMeals = props.meals.filter(existingMeal => !meals.map(meal => meal.id).includes(existingMeal.id))
-            let newData = [...props.data]
+            let newData = {...props.data}
             if (newMeals.length > 0) {
                 for (let meal of newMeals) {
                     const data = await fetch("https://whatsforsupperapi.herokuapp.com/mealplan/meal/add", {
