@@ -372,6 +372,21 @@ export default function GenerateMealplanForm(props) {
         }
     }
 
+    const renderHeaderText = () => {
+        if (props.edit) {
+            return `Edit ${props.mealplan.name}`
+        }
+        else if (props.outlineAdd) {
+            return "Add a Mealplan Outline"
+        }
+        else if (props.outlineEdit) {
+            return `Edit ${props.data.name} Outline`
+        }
+        else {
+            return "Create a Mealplan"
+        }
+    }
+
     const renderSubmitButtonText = () => {
         if (props.edit) {
             return "Edit Mealplan"
@@ -391,7 +406,7 @@ export default function GenerateMealplanForm(props) {
         <form className='form-wrapper generate-mealplan-form-wrapper'
             onSubmit={handleSubmit}
         >
-            <h3>{props.edit ? `Edit ${props.mealplan.name}` : props.outlineEdit ? `Edit ${props.data.name} Outline` : "Create a Mealplan"}</h3>
+            <h3>{renderHeaderText()}</h3>
             {user.mealplanoutlines.length > 0 && !props.outlineAdd && !props.outlineEdit ? <label>Mealplan Outline</label> : null}
             {user.mealplanoutlines.length > 0 && !props.outlineAdd && !props.outlineEdit
                 ? (

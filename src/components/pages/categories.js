@@ -53,7 +53,7 @@ export default function Categories(props) {
                 })
 
                 category.name = titleize(edit)
-                user.categories = user.categories.splice(user.categories.findIndex(userCategory => userCategory.id === category.id), 1, category)
+                user.categories.splice(user.categories.findIndex(userCategory => userCategory.id === category.id), 1, category)
                 user.meals.filter(meal => meal.categories.map(category => category.id).includes(category.id)).forEach(meal => meal.categories.splice(meal.categories.findIndex(mealCategory => mealCategory.id === category.id), 1, category))
                 setUser({...user})
                 setCategoriesList([...categoriesList])
