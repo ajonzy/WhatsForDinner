@@ -88,13 +88,15 @@ export default function GenerateMealplanForm(props) {
             setLoading(false)
         }
         else {
+            setLoading(true)
+
             let newData = {}
 
             let responseData = await fetch("https://whatsforsupperapi.herokuapp.com/mealplanoutline/add", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
-                    name,
+                    name: titleize(name),
                     number,
                     user_id: user.id
                 })

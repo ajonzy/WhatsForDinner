@@ -12,6 +12,8 @@ import AddMeal from './pages/addMeal';
 import Meal from './pages/meal';
 import EditMeal from './pages/editMeal';
 import EditRecipe from './pages/editRecipe';
+import Categories from './pages/categories';
+import AddCategory from './pages/addCategory';
 import Mealplans from './pages/mealplans';
 import AddMealplan from './pages/addMealplan';
 import Mealplan from './pages/mealplan';
@@ -151,6 +153,8 @@ class App extends Component {
                         <Route path="/meals/edit/:id" component={EditMeal} />
                         <Route path="/meals/recipe/add/:id" component={AddMeal} />
                         <Route path="/meals/recipe/edit/:id" component={EditRecipe} />
+                        <Route exact path="/mealcategories" component={Categories} />
+                        <Route path="/mealcategories/add" component={AddCategory} />
                         <Route exact path="/mealplans" component={Mealplans} />
                         <Route path="/mealplans/add" component={AddMealplan} />
                         <Route path="/mealplans/view/:id" component={Mealplan} />

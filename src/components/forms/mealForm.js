@@ -152,6 +152,7 @@ export default function MealForm(props) {
                     return false
                 }
                 else if (data.status === 200) {
+                    user.categories.push(...data.data)
                     categoryData.push(...data.data)
                 }
                 else {
@@ -317,6 +318,7 @@ export default function MealForm(props) {
                     return false
                 }
                 else if (data.status === 200) {
+                    user.categories.push(...data.data)
                     categoryData.push(...data.data)
                 }
                 else {
