@@ -140,9 +140,9 @@ export default function Categories(props) {
 
     return (
         <div className='page-wrapper categories-page-wrapper'>
-            <h3>Categories</h3>
+            <h3>Meal Categories</h3>
             <div className="options-wrapper">
-                <Link to="/mealcategories/add"><button>Add Category</button></Link>
+                <Link to="/mealcategories/add"><button>Add Meal Category</button></Link>
                 <input type="text"
                     placeholder='Search: category names'
                     onChange={handleFilter}

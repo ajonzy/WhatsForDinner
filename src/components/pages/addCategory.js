@@ -17,7 +17,7 @@ export default function AddCategory(props) {
         <div className='page-wrapper add-category-page-wrapper'>
             <CategoryForm handleSuccessfulAdd={handleSuccessfulAdd} />
             <div className="spacer-40" />
-            <button onClick={() => props.history.push("/categories")}>Cancel</button>
+            <button onClick={() => props.history.push("/mealcategories")}>Cancel</button>
         </div>
     )
 }

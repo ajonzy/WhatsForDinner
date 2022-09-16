@@ -22,7 +22,7 @@ export default function CategoryForm(props) {
         }
         else {
             setLoading(true)
-            
+
             fetch("https://whatsforsupperapi.herokuapp.com/category/add", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
@@ -54,7 +54,7 @@ export default function CategoryForm(props) {
         <form className='form-wrapper category-form-wrapper'
             onSubmit={handleSubmit}
         >
-            <h3>Add a Category</h3>
+            <h3>Add a Meal Category</h3>
             <input type="text" 
                 value={name}
                 placeholder="Category name"
@@ -62,7 +62,7 @@ export default function CategoryForm(props) {
                 required
             />
             <div className='spacer-40' />
-            <button type="submit" disabled={loading}>{props.edit ? "Edit Meal" : "Add Meal"}</button>
+            <button type="submit" disabled={loading}>Add Meal Category</button>
             <LoadingError loading={loading} error={error} />
         </form>
     )
