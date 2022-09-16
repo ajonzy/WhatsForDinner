@@ -33,6 +33,7 @@ export default function Friends(props) {
 
     return (
         <div className='page-wrapper friends-page-wrapper'>
+            <h3>Friends</h3>
             <div className="options-wrapper">
                 <Link to="/friends/add"><button>Send Friend Request</button></Link>
                 <Link to="/friends/requests"><button>View Friend Requests</button></Link>

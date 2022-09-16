@@ -14,14 +14,12 @@ export default function GenerateMealplanForm(props) {
     const [outline, setOutline] = useState("")
     const [name, setName] = useState(props.edit ? props.mealplan.name : props.data ? props.data.name || "" : "")
     const [number, setNumber] = useState(props.data ? props.data.number || "" : "")
-    const [rules, setRules] = useState(props.data ? props.data.rules.map(rule => ({...rule, type: rule.rule_type})) || [] : [])
+    const [rules, setRules] = useState(props.data ? props.data.rules ? props.data.rules.map(rule => ({...rule, type: rule.rule_type})) : [] : [])
     const [saveOutline, setSaveOutline] = useState(false)
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
-    const handleGenerate = event => {
-        event.preventDefault()
-
+    const handleGenerate = () => {
         setError("")
         setLoading(true)
 
@@ -38,9 +36,7 @@ export default function GenerateMealplanForm(props) {
         }
     }
 
-    const handleEdit = event => {
-        event.preventDefault()
-
+    const handleEdit = () => {
         setError("")
 
         if (name === "") {
@@ -80,9 +76,95 @@ export default function GenerateMealplanForm(props) {
         }
     }
 
-    const handleOutlineEdit = async event => {
-        event.preventDefault()
+    const handleOutlineAdd = async () => {
+        setError("")
 
+        if (name === "") {
+            setError("Please fill out all required fields.")
+            setLoading(false)
+        }
+        else if (user.mealplanoutlines.map(mealplanoutline => mealplanoutline.name).includes(titleize(name))) {
+            setError("Sorry, mealplan outlines can not have the same name as another mealplan outline.")
+            setLoading(false)
+        }
+        else {
+            let newData = {}
+
+            let responseData = await fetch("https://whatsforsupperapi.herokuapp.com/mealplanoutline/add", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                    name,
+                    number,
+                    user_id: user.id
+                })
+            })
+            .then(response => response.json())
+            .catch(error => {
+                return { catchError: error }
+            })  
+    
+            if (responseData.status === 400) {
+                setError("An error occured... Please try again later.")
+                console.log(responseData)
+                return false
+            }
+            else if (responseData.catchError) {
+                setError("An error occured... Please try again later.")
+                console.log("Error adding mealplan outline: ", responseData.catchError)
+                return false
+            }
+            else if (responseData.status === 200) {
+                newData = responseData.data
+            }
+            else {
+                setError("An error occured... Please try again later.")
+                setLoading(false)
+                return false
+            }
+    
+            for (let rule of rules) {
+                responseData = await fetch("https://whatsforsupperapi.herokuapp.com/rule/add", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({
+                        rule_type: rule.type,
+                        rule: rule.rule,
+                        amount: rule.amount,
+                        value: titleize(rule.value),
+                        mealplanoutline_id: newData.id
+                    })
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                }) 
+                    
+                if (responseData.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    return false
+                }
+                else if (responseData.catchError) {
+                    setError("An error occured... Please try again later.")
+                    console.log("Error adding rule: ", responseData.catchError)
+                    return false
+                }
+                else if (responseData.status === 200) {
+                    newData.rules.push(responseData.data)
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    return false
+                }
+            }
+    
+            props.handleBuildMealplan(newData)
+        }
+    }
+
+    const handleOutlineEdit = async () => {
         setError("")
 
         if (name === "") {
@@ -134,8 +216,6 @@ export default function GenerateMealplanForm(props) {
             const newRules = rules.filter(rule => rule.id === undefined)
             const updatedRules = rules.filter(rule => rule.id !== undefined).filter(rule => {
                 const originalRule = newData.rules.filter(newDataRule => newDataRule.id === rule.id)[0]
-                console.log(originalRule)
-                console.log(rule.type, originalRule.rule_type)
                 if (
                     rule.type !== originalRule.rule_type ||
                     rule.rule !== originalRule.rule ||
@@ -273,13 +353,45 @@ export default function GenerateMealplanForm(props) {
         }
     }
 
+    const handleSubmit = event => {
+        event.preventDefault()
+
+        if (props.edit) {
+            handleEdit()
+        }
+        else if (props.outlineAdd) {
+            handleOutlineAdd()
+        }
+        else if (props.outlineEdit) {
+            handleOutlineEdit()
+        }
+        else {
+            handleGenerate()
+        }
+    }
+
+    const renderSubmitButtonText = () => {
+        if (props.edit) {
+            return "Edit Mealplan"
+        }
+        else if (props.outlineAdd) {
+            return "Add Mealplan Outline"
+        }
+        else if (props.outlineEdit) {
+            return "Edit Mealplan Outline"
+        }
+        else {
+            return "Generate Mealplan"
+        }
+    }
+
     return (
         <form className='form-wrapper generate-mealplan-form-wrapper'
-            onSubmit={props.edit ? handleEdit : props.outlineEdit ? handleOutlineEdit : handleGenerate}
+            onSubmit={handleSubmit}
         >
             <h3>{props.edit ? `Edit ${props.mealplan.name}` : props.outlineEdit ? `Edit ${props.data.name} Outline` : "Create a Mealplan"}</h3>
-            {user.mealplanoutlines.length > 0 && !props.outlineEdit ? <label>Mealplan Outline</label> : null}
-            {user.mealplanoutlines.length > 0 && !props.outlineEdit
+            {user.mealplanoutlines.length > 0 && !props.outlineAdd && !props.outlineEdit ? <label>Mealplan Outline</label> : null}
+            {user.mealplanoutlines.length > 0 && !props.outlineAdd && !props.outlineEdit
                 ? (
                     <select 
                         value={outline}
@@ -397,8 +509,8 @@ export default function GenerateMealplanForm(props) {
                             setRules([...rules])
                             setOutline("")
                         }}>Add Rule</button>
-                        {outline === "" && !props.outlineEdit ? <div className="spacer-30" /> : null}
-                        {outline === "" && !props.outlineEdit
+                        {outline === "" && !props.outlineAdd && !props.outlineEdit ? <div className="spacer-30" /> : null}
+                        {outline === "" && !props.outlineAdd && !props.outlineEdit
                             ? (
                                 <label className='checkbox'>
                                     Save Mealplan Outline
@@ -415,7 +527,7 @@ export default function GenerateMealplanForm(props) {
                 )
             }
             <div className="spacer-40" />
-            <button type='submit' disabled={loading}>{props.edit ? "Edit Mealplan" : props.outlineEdit ? "Edit Mealplan Outline" : "Generate Mealplan"}</button>
+            <button type='submit' disabled={loading}>{renderSubmitButtonText()}</button>
             <LoadingError loading={loading} error={error} />
         </form>
     )

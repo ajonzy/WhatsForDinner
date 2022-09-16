@@ -70,6 +70,7 @@ export default function Meals(props) {
 
     return (
         <div className='page-wrapper meals-page-wrapper'>
+            <h3>Meals</h3>
             <div className="options-wrapper">
                 <Link to="/meals/add"><button>Add Meal</button></Link>
                 <input type="text"

@@ -53,6 +53,7 @@ export default function Shoppinglists(props) {
 
     return (
         <div className='page-wrapper shoppinglists-page-wrapper'>
+            <h3>Shopping Lists</h3>
             <div className="options-wrapper">
                 <Link to="/shoppinglists/add"><button>Add Shopping List</button></Link>
                 <input type="text"

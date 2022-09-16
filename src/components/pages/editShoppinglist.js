@@ -19,6 +19,8 @@ export default function EditShoppinglist(props) {
             ? (
                 <div className='page-wrapper edit-shoppinglist-page-wrapper'>
                     <ShoppinglistForm shoppinglist={shoppinglist} edit editShoppinglist handleSuccessfulSubmit={handleSuccessfulSubmit} />
+                    <div className="spacer-40" />
+                    <button onClick={() => props.history.push(`/shoppinglists/view/${shoppinglist.id}`)}>Cancel</button>
                 </div>
             )
             : (

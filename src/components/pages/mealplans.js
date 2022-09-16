@@ -69,6 +69,7 @@ export default function Mealplans(props) {
 
     return (
         <div className='page-wrapper mealplans-page-wrapper'>
+            <h3>Mealplans</h3>
             <div className="options-wrapper">
                 <Link to="/mealplans/add"><button>Add Mealplan</button></Link>
                 <input type="text"

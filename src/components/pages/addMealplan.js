@@ -44,7 +44,7 @@ export default function AddMealplan(props) {
             newData = responseData.data
         }
         else {
-            setLoading(false)
+            console.log(responseData)
             return false
         }
 
@@ -66,7 +66,7 @@ export default function AddMealplan(props) {
             }) 
                 
             if (responseData.status === 400) {
-                setLoading(false)
+                console.log(responseData)
                 return false
             }
             else if (responseData.catchError) {
@@ -77,7 +77,7 @@ export default function AddMealplan(props) {
                 newData.rules.push(responseData.data)
             }
             else {
-                setLoading(false)
+                console.log(responseData)
                 return false
             }
         }
@@ -131,6 +131,8 @@ export default function AddMealplan(props) {
             : (
                 <div className='page-wrapper add-mealplan-page-wrapper'>
                     {renderSection()}
+                    <div className="spacer-40" />
+                    <button onClick={() => props.history.push("/mealplans")}>Cancel</button>
                 </div>
             )
         )

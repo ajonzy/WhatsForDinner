@@ -19,6 +19,8 @@ export default function EditRecipe(props) {
             ? (
                 <div className='page-wrapper edit-recipe-page-wrapper'>
                     <RecipeForm meal={meal} edit handleSuccessfulSubmit={handleSuccessfulSubmit} />
+                    <div className="spacer-40" />
+                    <button onClick={() => props.history.push(`/meals/view/${meal.id}`)}>Cancel</button>
                 </div>
             )
             : (

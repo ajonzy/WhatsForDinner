@@ -130,6 +130,7 @@ export default function FriendRequests(props) {
 
     return (
         <div className='page-wrapper friend-requests-page-wrapper'>
+            <h3>Friend Requests</h3>
             <div className="options-wrapper">
                 <Link to="/friends/add"><button>Send Friend Request</button></Link>
                 <input type="text"

@@ -20,6 +20,8 @@ export default function EditMealplan(props) {
             ? (
                 <div className='page-wrapper edit-mealplan-page-wrapper'>
                     <GenerateMealplanForm mealplan={mealplan} edit handleSuccessfulEdit={handleSuccessfulEdit} />
+                    <div className="spacer-40" />
+                    <button onClick={() => props.history.push(`/mealplans/view/${mealplan.id}`)}>Cancel</button>
                 </div>
             )
             : (

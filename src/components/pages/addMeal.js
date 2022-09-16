@@ -75,6 +75,8 @@ export default function AddMeal(props) {
     return (
         <div className='page-wrapper add-meal-page-wrapper'>
             {renderSection()}
+            {section !== "recipe-check" ? <div className="spacer-40" /> : null }
+            {section !== "recipe-check" ? <button onClick={() => section === "meal-form" ? props.history.push("/meals") : finish()}>Cancel</button> : null }
         </div>
     )
 }

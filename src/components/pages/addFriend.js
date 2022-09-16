@@ -15,7 +15,7 @@ export default function AddFriend(props) {
         <div className='page-wrapper add-friend-page-wrapper'>
             <FriendForm handleSuccessfulRequest={handleSuccessfulRequest} />
             <div className="spacer-40" />
-            <button onClick={() => props.history.push("/friends")}>Back to Friends List</button>
+            <button onClick={() => props.history.push("/friends")}>Cancel</button>
         </div>
     )
 }

@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-regular-svg-icons'
 
@@ -48,6 +49,8 @@ export default function Outlines(props) {
             )
         }
 
+        outlinesList.sort((outlineA, outlineB) => outlineA.id - outlineB.id).reverse()
+
         return outlinesList.map(outline => (
             <div key={`outline-${outline.id}`} className="outline-wrapper">
                 <p className='name'>{outline.name}</p>
@@ -64,6 +67,7 @@ export default function Outlines(props) {
         <div className='page-wrapper outlines-page-wrapper'>
             <h3>Mealplan Outlines</h3>
             <div className="options-wrapper">
+                <Link to="/mealplanoutlines/add"><button>Add Mealplan Outline</button></Link>
                 <input type="text"
                     placeholder='Search: outline names'
                     onChange={handleFilter}
