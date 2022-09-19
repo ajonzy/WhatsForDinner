@@ -106,7 +106,7 @@ export default function Shoppinglist(props) {
 
         const renderIngredient = ingredient => (
             <div className={`ingredient-wrapper ${ingredient.obtained ? "obtained" : "unobtained"}`} key={`ingredient-${ingredient.id}`} onClick={() => handleObtain(ingredient)}>
-                <p className='ingredient-amount'>{ingredient.amount}</p>
+                <p className='ingredient-amount'>{ingredient.amount}{ingredient.unit ? ` ${ingredient.unit}` : null}</p>
                 <p className='ingredient-name'>{ingredient.name}</p>
             </div>
         )

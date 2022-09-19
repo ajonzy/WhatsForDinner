@@ -1,5 +1,5 @@
 .recipe-form-wrapper {
-    .step-wrapper, .stepsection-wrapper, .ingredient-wrapper {
+    .step-wrapper, .stepsection-wrapper, .ingredient-wrapper, .ingredientsection-wrapper {
         @include flex;
     }
 
@@ -35,7 +35,7 @@
         }
     }
 
-    .stepsection-wrapper {
+    .stepsection-wrapper, .ingredientsection-wrapper {
         border: 1px solid $complementary-darkest;
         border-radius: 5px;
         padding: 5px;

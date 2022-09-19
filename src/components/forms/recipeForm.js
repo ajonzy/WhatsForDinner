@@ -12,11 +12,13 @@ export default function RecipeForm(props) {
         props.meal.recipe.steps.sort((stepA, stepB) => stepA.id - stepB.id)
         props.meal.recipe.stepsections.sort((stepsectionA, stepsectionB) => stepsectionA.id - stepsectionB.id)
         props.meal.recipe.ingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id)
+        props.meal.recipe.ingredientsections.sort((ingredientsectionA, ingredientsectionB) => ingredientsectionA.id - ingredientsectionB.id)
     }
 
     const [steps, setSteps] = useState(props.edit ? props.meal.recipe.steps.map(step => ({...step, stepsection: step.stepsection_id ? props.meal.recipe.stepsections.findIndex(stepsection => stepsection.id === step.stepsection_id) : undefined })) : [])
     const [stepsections, setStepsections] = useState(props.edit ? props.meal.recipe.stepsections.map(stepsection => ({...stepsection})) : [])
-    const [ingredients, setIngredients] = useState(props.edit ? props.meal.recipe.ingredients.map(ingredient => ({...ingredient})) : [])
+    const [ingredients, setIngredients] = useState(props.edit ? props.meal.recipe.ingredients.map(ingredient => ({...ingredient, ingredientsection: ingredient.ingredientsection_id ? props.meal.recipe.ingredientsections.findIndex(ingredientsection => ingredientsection.id === ingredient.ingredientsection_id) : undefined })) : [])
+    const [ingredientsections, setIngredientsections] = useState(props.edit ? props.meal.recipe.ingredientsections.map(ingredientsection => ({...ingredientsection})) : [])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -43,7 +45,12 @@ export default function RecipeForm(props) {
     }
 
     const handleIngredientChangeAmount = (event, ingredient) => {
-        ingredient.amount = event.target.value
+        ingredient.amount = isNaN(event.target.valueAsNumber) ? "" : event.target.valueAsNumber
+        setIngredients([...ingredients])
+    }
+
+    const handleIngredientChangeUnit = (event, ingredient) => {
+        ingredient.unit = event.target.value
         setIngredients([...ingredients])
     }
 
@@ -62,12 +69,26 @@ export default function RecipeForm(props) {
         setIngredients([...ingredients])
     }
 
+    const handleIngredientsectionChange = (event, ingredientsection) => {
+        ingredientsection.title = event.target.value
+        setIngredientsections([...ingredientsections])
+    }
+
+    const handleIngredientsectionDelete = index => {
+        ingredientsections.splice(index, 1)
+        setIngredientsections([...ingredientsections])
+        setIngredients(ingredients.filter(ingredient => ingredient.ingredientsection !== index))
+    }
+
     const handleAdd = async event => {
         event.preventDefault()
 
         setError("")
 
-        if (!stepsections.every(stepsectionA => stepsections.filter(stepsectionB => stepsectionA.title === stepsectionB.title).length === 1)) {
+        if (
+            !stepsections.every(stepsectionA => stepsections.filter(stepsectionB => stepsectionA.title === stepsectionB.title).length === 1) ||
+            !ingredientsections.every(ingredientsectionA => ingredientsections.filter(ingredientsectionB => ingredientsectionA.title === ingredientsectionB.title).length === 1)
+        ) {
             setError("Each section must have a unique title.")
         }
         else {
@@ -170,16 +191,64 @@ export default function RecipeForm(props) {
                 }
             }
 
+            let ingredientsectionsData = []
+            if (ingredientsections.length > 0) {
+                const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredientsection/add/multiple", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(ingredientsections.map(ingredientsection => {
+                        return {
+                            title: titleize(ingredientsection.title),
+                            recipe_id: props.meal.recipe.id
+                        }
+                    }))
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })  
+                if (data.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding ingredientsection: ", data.catchError)
+                    return false
+                }
+                else if (data.status === 200) {
+                    ingredientsectionsData = data.data
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+            }
+
             let ingredientsData = []
             if (ingredients.length > 0) {
+                const formmattedIngredients = [...ingredients.filter(ingredient => ingredient.ingredientsection === undefined)]
+
+                ingredientsections.forEach((ingredientsection, index) => {
+                    const ingredientsectionData = ingredientsectionsData.filter(ingredientsectionData => ingredientsectionData.title === titleize(ingredientsection.title))[0]
+                    formmattedIngredients.push(...ingredients.filter(ingredient => ingredient.ingredientsection === index).map(ingredient => ({ ...ingredient, ingredientsection_id: ingredientsectionData.id })))
+                })
+
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
                     method: "POST",
                     headers: { "content-type": "application/json" },
-                    body: JSON.stringify(ingredients.map(ingredient => {
+                    body: JSON.stringify(formmattedIngredients.map(ingredient => {
                         return {
                             name: titleize(ingredient.name),
-                            amount: titleize(ingredient.amount),
+                            amount: ingredient.amount,
+                            unit: ingredient.unit.trim(),
                             category: titleize(ingredient.category),
+                            ingredientsection_id: ingredient.ingredientsection_id,
                             recipe_id: props.meal.recipe.id
                         }
                     }))
@@ -217,8 +286,14 @@ export default function RecipeForm(props) {
                     stepsectionsData.filter(stepsection => stepsection.id === step.stepsection_id)[0].steps.push(step)
                 }
             })
+            ingredientsData.forEach(ingredient => {
+                if (ingredient.ingredientsection_id) {
+                    ingredientsectionsData.filter(ingredientsection => ingredientsection.id === ingredient.ingredientsection_id)[0].ingredients.push(ingredient)
+                }
+            })
             meal.recipe.stepsections = stepsectionsData
             meal.recipe.steps = stepsData
+            meal.recipe.ingredientsections = ingredientsectionsData
             meal.recipe.ingredients = ingredientsData
             props.handleSuccessfulSubmit(meal)
         } 
@@ -229,7 +304,10 @@ export default function RecipeForm(props) {
 
         setError("")
 
-        if (!stepsections.every(stepsectionA => stepsections.filter(stepsectionB => stepsectionA.title === stepsectionB.title).length === 1)) {
+        if (
+            !stepsections.every(stepsectionA => stepsections.filter(stepsectionB => stepsectionA.title === stepsectionB.title).length === 1) ||
+            !ingredientsections.every(ingredientsectionA => ingredientsections.filter(ingredientsectionB => ingredientsectionA.title === ingredientsectionB.title).length === 1)
+        ) {
             setError("Each section must have a unique title.")
         }
         else {
@@ -361,7 +439,7 @@ export default function RecipeForm(props) {
             const existingSteps = formattedSteps.filter(step => props.meal.recipe.steps.filter(existingStep => existingStep.id === step.id).length > 0)
             const updatedSteps = existingSteps.filter(existingStep => existingStep.text !== props.meal.recipe.steps.filter(step => step.id === existingStep.id)[0].text || existingStep.number !== props.meal.recipe.steps.filter(step => step.id === existingStep.id)[0].number)
             const nonUpdatedSteps = existingSteps.filter(existingStep => existingStep.text === props.meal.recipe.steps.filter(step => step.id === existingStep.id)[0].text && existingStep.number === props.meal.recipe.steps.filter(step => step.id === existingStep.id)[0].number)
-            const deletedSteps = props.meal.recipe.steps.filter(existingStep => formattedSteps.filter(step => step.id === existingStep.id).length === 0)
+            const deletedSteps = props.meal.recipe.steps.filter(existingStep => formattedSteps.filter(step => step.id === existingStep.id).length === 0).filter(step => !deletedStepsections.map(stepsection => stepsection.id).includes(step.stepsection_id))
             let stepsData = [...nonUpdatedSteps]
             if (newSteps.length > 0) {
                 let count = existingSteps.filter(step => step.stepsection === undefined).length
@@ -480,11 +558,123 @@ export default function RecipeForm(props) {
                 }
             }
 
-            const newIngredients = ingredients.filter(ingredient => !ingredient.id)
-            const existingIngredients = ingredients.filter(ingredient => props.meal.recipe.ingredients.filter(existingIngredient => existingIngredient.id === ingredient.id).length > 0)
-            const updatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount !== props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount || existingIngredient.name !== props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name || existingIngredient.category !== props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
-            const nonUpdatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount === props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount && existingIngredient.name === props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name && existingIngredient.category === props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
-            const deletedIngredients = props.meal.recipe.ingredients.filter(existingIngredient => ingredients.filter(ingredient => ingredient.id === existingIngredient.id).length === 0)
+            const newIngredientsections = ingredientsections.filter(ingredientsection => !ingredientsection.id)
+            const existingIngredientsections = ingredientsections.filter(ingredientsection => props.meal.recipe.ingredientsections.filter(existingIngredientsection => existingIngredientsection.id === ingredientsection.id).length > 0)
+            const updatedIngredientsections = existingIngredientsections.filter(existingIngredientsection => existingIngredientsection.title !== props.meal.recipe.ingredientsections.filter(ingredientsection => ingredientsection.id === existingIngredientsection.id)[0].title)
+            const nonUpdatedIngredientsections = existingIngredientsections.filter(existingIngredientsection => existingIngredientsection.title === props.meal.recipe.ingredientsections.filter(ingredientsection => ingredientsection.id === existingIngredientsection.id)[0].title)
+            const deletedIngredientsections = props.meal.recipe.ingredientsections.filter(existingIngredientsection => ingredientsections.filter(ingredientsection => ingredientsection.id === existingIngredientsection.id).length === 0)
+            let ingredientsectionsData = [...nonUpdatedIngredientsections]
+            if (newIngredientsections.length > 0) {
+                const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredientsection/add/multiple", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(newIngredientsections.map(ingredientsection => {
+                        return {
+                            title: titleize(ingredientsection.title),
+                            recipe_id: props.meal.recipe.id
+                        }
+                    }))
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })  
+                if (data.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding ingredientsection: ", data.catchError)
+                    return false
+                }
+                else if (data.status === 200) {
+                    ingredientsectionsData = ingredientsectionsData.concat(data.data)
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+            }
+
+            if (updatedIngredientsections.length > 0) {
+                for (let ingredientsection of updatedIngredientsections) {
+                    const data = await fetch(`https://whatsforsupperapi.herokuapp.com/ingredientsection/update/${ingredientsection.id}`, {
+                        method: "PUT",
+                        headers: { "content-type": "application/json" },
+                        body: JSON.stringify({
+                            title: titleize(ingredientsection.title)
+                        })
+                    })
+                    .then(response => response.json())
+                    .catch(error => {
+                        return { catchError: error }
+                    })  
+                    if (data.status === 400) {
+                        setError("An error occured... Please try again later.")
+                        console.log(data)
+                        setLoading(false)
+                        return false
+                    }
+                    else if (data.catchError) {
+                        setError("An error occured... Please try again later.")
+                        setLoading(false)
+                        console.log("Error updating ingredientsection: ", data.catchError)
+                        return false
+                    }
+                    else if (data.status === 200) {
+                        ingredientsectionsData.push(data.data)
+                    }
+                    else {
+                        setError("An error occured... Please try again later.")
+                        console.log(data)
+                        setLoading(false)
+                        return false
+                    }
+                }
+            }
+
+            if (deletedIngredientsections.length > 0) {
+                for (let ingredientsection of deletedIngredientsections) {
+                    const data = await fetch(`https://whatsforsupperapi.herokuapp.com/ingredientsection/delete/${ingredientsection.id}`, {
+                        method: "DELETE"
+                    })
+                    .then(response => response.json())
+                    .catch(error => {
+                        return { catchError: error }
+                    })  
+                    if (data.catchError) {
+                        setError("An error occured... Please try again later.")
+                        setLoading(false)
+                        console.log("Error deleting ingredientsection: ", data.catchError)
+                        return false
+                    }
+                    else if (data.status !== 200) {
+                        setError("An error occured... Please try again later.")
+                        console.log(data)
+                        setLoading(false)
+                        return false
+                    }
+                }
+            }
+
+            const formmattedIngredients = [...ingredients.filter(ingredient => ingredient.ingredientsection === undefined)]
+
+            ingredientsections.forEach((ingredientsection, index) => {
+                const ingredientsectionData = ingredientsectionsData.filter(ingredientsectionData => ingredientsectionData.title === titleize(ingredientsection.title))[0]
+                formmattedIngredients.push(...ingredients.filter(ingredient => ingredient.ingredientsection === index).map(ingredient => ({ ...ingredient, ingredientsection_id: ingredientsectionData.id })))
+            })
+
+            const newIngredients = formmattedIngredients.filter(ingredient => !ingredient.id)
+            const existingIngredients = formmattedIngredients.filter(ingredient => props.meal.recipe.ingredients.filter(existingIngredient => existingIngredient.id === ingredient.id).length > 0)
+            const updatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount !== props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount || existingIngredient.unit !== props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].unit || existingIngredient.name !== props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name || existingIngredient.category !== props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
+            const nonUpdatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount === props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount && existingIngredient.unit === props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].unit && existingIngredient.name === props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name && existingIngredient.category === props.meal.recipe.ingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
+            const deletedIngredients = props.meal.recipe.ingredients.filter(existingIngredient => formmattedIngredients.filter(ingredient => ingredient.id === existingIngredient.id).length === 0).filter(ingredient => !deletedIngredientsections.map(ingredientsection => ingredientsection.id).includes(ingredient.ingredientsection_id))
             let ingredientsData = [...nonUpdatedIngredients]
             if (newIngredients.length > 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
@@ -493,8 +683,10 @@ export default function RecipeForm(props) {
                     body: JSON.stringify(newIngredients.map(ingredient => {
                         return {
                             name: titleize(ingredient.name),
-                            amount: titleize(ingredient.amount),
+                            amount: ingredient.amount,
+                            unit: ingredient.unit.trim(),
                             category: titleize(ingredient.category),
+                            ingredientsection_id: ingredient.ingredientsection_id,
                             recipe_id: props.meal.recipe.id
                         }
                     }))
@@ -533,7 +725,8 @@ export default function RecipeForm(props) {
                         headers: { "content-type": "application/json" },
                         body: JSON.stringify({
                             name: titleize(ingredient.name),
-                            amount: titleize(ingredient.amount),
+                            amount: ingredient.amount,
+                            unit: ingredient.unit.trim(),
                             category: titleize(ingredient.category),
                             obtained: false
                         })
@@ -599,8 +792,17 @@ export default function RecipeForm(props) {
                     stepsectionsData.filter(stepsection => stepsection.id === step.stepsection_id)[0].steps.push(step)
                 }
             })
+            ingredientsectionsData.forEach(ingredientsection => {
+                ingredientsection.ingredients = []
+            })
+            ingredientsData.forEach(ingredient => {
+                if (ingredient.ingredientsection_id) {
+                    ingredientsectionsData.filter(ingredientsection => ingredientsection.id === ingredient.ingredientsection_id)[0].ingredients.push(ingredient)
+                }
+            })
             meal.recipe.stepsections = stepsectionsData
             meal.recipe.steps = stepsData
+            meal.recipe.ingredientsections = ingredientsectionsData
             meal.recipe.ingredients = ingredientsData
             props.handleSuccessfulSubmit(meal)
         }
@@ -612,14 +814,19 @@ export default function RecipeForm(props) {
         >
             <h3>{props.edit ? `Edit ${props.meal.name} Recipe` : "Add a Recipe"}</h3>
             <h4>Ingredients</h4>
-            {ingredients.map((ingredient, index) => (
+            {ingredients.filter(ingredient => ingredient.ingredientsection === undefined).map((ingredient, index) => (
                 <div className="ingredient-wrapper" key={`ingredient-${index}`}>
                     <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
-                    <input type="text" 
+                    <input type="number" 
                         value={ingredient.amount}
                         placeholder="Amount"
                         onChange={event => handleIngredientChangeAmount(event, ingredient)}
                         required
+                    />
+                    <input type="text" 
+                        value={ingredient.unit}
+                        placeholder="Unit of Measurement (optional)"
+                        onChange={event => handleIngredientChangeUnit(event, ingredient)}
                     />
                     <input type="text" 
                         value={ingredient.name}
@@ -634,7 +841,48 @@ export default function RecipeForm(props) {
                     />
                 </div>
             ))}
-            <button type='button' disabled={loading} className='alt-button' onClick={() => setIngredients([...ingredients, { amount: "", name: "", category: "" }])}>Add Ingredient</button>
+            <button type='button' disabled={loading} className='alt-button' onClick={() => setIngredients([...ingredients, { amount: "", unit: "", name: "", category: "" }])}>Add Ingredient</button>
+            <div className='spacer-40' />
+            {ingredientsections.map((ingredientsection, index) => (
+                <div className="ingredientsection-wrapper" key={`ingredientsection-${index}`}>
+                    <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientsectionDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
+                    <input type="text" 
+                        value = {ingredientsection.title}
+                        placeholder = "Section Title"
+                        onChange={event => handleIngredientsectionChange(event, ingredientsection)}
+                        required
+                    />
+                    {ingredients.filter(ingredient => ingredient.ingredientsection === index).map((ingredient, ingredientIndex) => (
+                        <div className="ingredient-wrapper" key={`ingredient-${index}-${ingredientIndex}`}>
+                            <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
+                            <input type="number" 
+                                value={ingredient.amount}
+                                placeholder="Amount"
+                                onChange={event => handleIngredientChangeAmount(event, ingredient)}
+                                required
+                            />
+                            <input type="text" 
+                                value={ingredient.unit}
+                                placeholder="Unit of Measurement (optional)"
+                                onChange={event => handleIngredientChangeUnit(event, ingredient)}
+                            />
+                            <input type="text" 
+                                value={ingredient.name}
+                                placeholder="Ingredient"
+                                onChange={event => handleIngredientChangeName(event, ingredient)}
+                                required
+                            />
+                            <input type="text" 
+                                value={ingredient.category}
+                                placeholder="Category: produce, dairy, etc. (Optional)"
+                                onChange={event => handleIngredientChangeCategory(event, ingredient)}
+                            />
+                        </div>
+                    ))}
+                    <button type='button' disabled={loading} className='alt-button' onClick={() => setIngredients([...ingredients, { amount: "", unit: "", name: "", category: "", ingredientsection: index }])}>Add Ingredient</button>
+                </div>
+            ))}
+            <button type='button' disabled={loading} className='alt-button' onClick={() => setIngredientsections([...ingredientsections, { title: "" }])}>Add Section</button>
 
             <h4>Steps</h4>
             {steps.filter(step => step.stepsection === undefined).map((step, index) => (

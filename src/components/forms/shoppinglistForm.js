@@ -18,7 +18,12 @@ export default function ShoppinglistForm(props) {
     const [loading, setLoading] = useState(false)
 
     const handleIngredientChangeAmount = (event, ingredient) => {
-        ingredient.amount = event.target.value
+        ingredient.amount = isNaN(event.target.valueAsNumber) ? "" : event.target.valueAsNumber
+        setIngredients([...ingredients])
+    }
+
+    const handleIngredientChangeUnit = (event, ingredient) => {
+        ingredient.unit = event.target.value
         setIngredients([...ingredients])
     }
 
@@ -94,7 +99,8 @@ export default function ShoppinglistForm(props) {
                     body: JSON.stringify(ingredients.map(ingredient => {
                         return {
                             name: titleize(ingredient.name),
-                            amount: titleize(ingredient.amount),
+                            amount: ingredient.amount,
+                            unit: ingredient.unit.trim(),
                             category: titleize(ingredient.category),
                             shoppinglist_id: newData.id
                         }
@@ -195,8 +201,8 @@ export default function ShoppinglistForm(props) {
 
             const newIngredients = ingredients.filter(ingredient => !ingredient.id)
             const existingIngredients = ingredients.filter(ingredient => props.shoppinglist.shoppingingredients.filter(existingIngredient => existingIngredient.id === ingredient.id).length > 0)
-            const updatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount || existingIngredient.name !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name || existingIngredient.category !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
-            const nonUpdatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount && existingIngredient.name === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name && existingIngredient.category === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
+            const updatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount || existingIngredient.unit !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].unit || existingIngredient.name !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name || existingIngredient.category !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
+            const nonUpdatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount && existingIngredient.unit === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].unit && existingIngredient.name === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name && existingIngredient.category === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
             const deletedIngredients = props.shoppinglist.shoppingingredients.filter(existingIngredient => ingredients.filter(ingredient => ingredient.id === existingIngredient.id).length === 0)
             let ingredientsData = [...nonUpdatedIngredients]
             if (newIngredients.length > 0) {
@@ -206,7 +212,8 @@ export default function ShoppinglistForm(props) {
                     body: JSON.stringify(newIngredients.map(ingredient => {
                         return {
                             name: titleize(ingredient.name),
-                            amount: titleize(ingredient.amount),
+                            amount: ingredient.amount,
+                            unit: ingredient.unit.trim(),
                             category: titleize(ingredient.category),
                             shoppinglist_id: props.shoppinglist.id
                         }
@@ -246,7 +253,8 @@ export default function ShoppinglistForm(props) {
                         headers: { "content-type": "application/json" },
                         body: JSON.stringify({
                             name: titleize(ingredient.name),
-                            amount: titleize(ingredient.amount),
+                            amount: ingredient.amount,
+                            unit: ingredient.unit.trim(),
                             category: titleize(ingredient.category),
                             obtained: false
                         })
@@ -344,11 +352,16 @@ export default function ShoppinglistForm(props) {
                         {ingredients.map((ingredient, index) => (
                             <div className="ingredient-wrapper" key={`ingredient-${index}`}>
                                 <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
-                                <input type="text"
+                                <input type="number" 
                                     value={ingredient.amount}
                                     placeholder="Amount"
                                     onChange={event => handleIngredientChangeAmount(event, ingredient)}
                                     required
+                                />
+                                <input type="text" 
+                                    value={ingredient.unit}
+                                    placeholder="Unit of Measurement (optional)"
+                                    onChange={event => handleIngredientChangeUnit(event, ingredient)}
                                 />
                                 <input type="text"
                                     value={ingredient.name}
@@ -363,7 +376,7 @@ export default function ShoppinglistForm(props) {
                                 />
                             </div>
                         ))}
-                        <button type='button' disabled={loading} className='alt-button' onClick={() => setIngredients([...ingredients, { amount: "", name: "", category: "" }])}>Add Item</button>
+                        <button type='button' disabled={loading} className='alt-button' onClick={() => setIngredients([...ingredients, { amount: "", unit: "", name: "", category: "" }])}>Add Item</button>
                     </div>
                 )
                 : null

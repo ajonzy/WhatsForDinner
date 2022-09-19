@@ -132,7 +132,9 @@ export default function AddMealplan(props) {
                 <div className='page-wrapper add-mealplan-page-wrapper'>
                     {renderSection()}
                     <div className="spacer-40" />
-                    <button onClick={() => props.history.push("/mealplans")}>Cancel</button>
+                    <div className="options-wrapper">
+                        <button onClick={() => props.history.push("/mealplans")}>Cancel</button>
+                    </div>
                 </div>
             )
         )

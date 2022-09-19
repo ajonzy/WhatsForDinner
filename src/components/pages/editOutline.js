@@ -19,7 +19,9 @@ export default function EditOutline(props) {
                 <div className='page-wrapper edit-outline-page-wrapper'>
                     <GenerateMealplanForm data={outline} outlineEdit handleSuccessfulEdit={handleSuccessfulEdit} />
                     <div className="spacer-40" />
-                    <button onClick={() => props.history.push("/mealplanoutlines")}>Cancel</button>
+                    <div className="options-wrapper">
+                        <button onClick={() => props.history.push("/mealplanoutlines")}>Cancel</button>
+                    </div>
                 </div>
             )
             : (

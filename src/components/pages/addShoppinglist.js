@@ -16,7 +16,9 @@ export default function AddShoppinglist(props) {
         <div className='page-wrapper add-shoppinglist-wrapper'>
             <ShoppinglistForm handleSuccessfulAddShoppinglist={handleSuccessfulAddShoppinglist} />
             <div className="spacer-40" />
-            <button onClick={() => props.history.push("/shoppinglists")}>Cancel</button>
+            <div className="options-wrapper">
+                <button onClick={() => props.history.push("/shoppinglists")}>Cancel</button>
+            </div>
         </div>
     )
 }

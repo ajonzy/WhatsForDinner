@@ -17,7 +17,9 @@ export default function AddOutline(props) {
         <div className='page-wrapper add-outline-page-wrapper'>
             <GenerateMealplanForm outlineAdd handleBuildMealplan={handleSuccessfulAdd} />
             <div className="spacer-40" />
-            <button onClick={() => props.history.push("/mealplanoutlines")}>Cancel</button>
+            <div className="options-wrapper">
+                <button onClick={() => props.history.push("/mealplanoutlines")}>Cancel</button>
+            </div>
         </div>
     )
 }

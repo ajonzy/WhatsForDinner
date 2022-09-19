@@ -49,6 +49,38 @@ export default function Meal(props) {
         return stepElements
     }
 
+    const renderIngredients = () => {
+        const ingredientElements = []
+
+        const basicIngredients = meal.recipe.ingredients.filter(ingredient => !ingredient.ingredientsection_id)
+        basicIngredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id)
+        basicIngredients.forEach(ingredient => ingredientElements.push(
+            <div className="ingredient-wrapper" key={`ingredient-${ingredient.id}`}>
+                <p className='ingredient-amount'>{ingredient.amount}{ingredient.unit ? ` ${ingredient.unit}` : null}</p>
+                <p>{ingredient.name}</p>
+            </div>
+        ))
+
+        ingredientElements.push(<div className='spacer-40'key={`spacer`} />)
+
+        meal.recipe.ingredientsections.sort((ingredientsectionA, ingredientsectionB) => ingredientsectionA.id - ingredientsectionB.id).forEach(ingredientsection => {
+            ingredientsection.ingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id)
+            ingredientElements.push(
+                <div className="ingredientsection-wrapper" key={`ingredientsection-${ingredientsection.id}`}>
+                    <p className='ingredientsection-title'>{ingredientsection.title}</p>
+                    {ingredientsection.ingredients.map(ingredient => (
+                        <div className="ingredient-wrapper" key={`ingredient-${ingredient.id}`}>
+                            <p className='ingredient-amount'>{ingredient.amount}{ingredient.unit ? ingredient.unit : null}</p>
+                            <p>{ingredient.name}</p>
+                        </div>
+                    ))}
+                </div>
+            )
+        })
+
+        return ingredientElements
+    }
+
     const handleDelete = () => {
         setDeleteError("")
 
@@ -199,6 +231,44 @@ export default function Meal(props) {
             }
         }
 
+        if (meal.recipe.ingredientsections.length > 0) {
+            const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredientsection/add/multiple", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify(meal.recipe.ingredientsections.map(ingredientsection => {
+                    return {
+                        title: ingredientsection.title,
+                        recipe_id: newData.recipe.id
+                    }
+                }))
+            })
+            .then(response => response.json())
+            .catch(error => {
+                return { catchError: error }
+            })  
+            if (data.status === 400) {
+                setCopyError("An error occured... Please try again later.")
+                console.log(data)
+                setCopyLoading(false)
+                return false
+            }
+            else if (data.catchError) {
+                setCopyError("An error occured... Please try again later.")
+                setCopyLoading(false)
+                console.log("Error adding ingredientsection: ", data.catchError)
+                return false
+            }
+            else if (data.status === 200) {
+                newData.recipe.ingredientsections = data.data
+            }
+            else {
+                setCopyError("An error occured... Please try again later.")
+                console.log(data)
+                setCopyLoading(false)
+                return false
+            }
+        }
+
         if (meal.recipe.ingredients.length > 0) {
             const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
                 method: "POST",
@@ -207,7 +277,9 @@ export default function Meal(props) {
                     return {
                         name: ingredient.name,
                         amount: ingredient.amount,
+                        unit: ingredient.unit,
                         category: ingredient.category,
+                        ingredientsection_id: ingredient.ingredientsection_id,
                         recipe_id: newData.recipe.id
                     }
                 }))
@@ -331,12 +403,7 @@ export default function Meal(props) {
                                     ? (
                                         <div className="recipe-ingredients-wrapper">
                                             <h4>Ingredients</h4>
-                                            {meal.recipe.ingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id).map(ingredient => (
-                                                <div className="ingredient-wrapper" key={`ingredient-${ingredient.id}`}>
-                                                    <p className='ingredient-amount'>{ingredient.amount}</p>
-                                                    <p>{ingredient.name}</p>
-                                                </div>
-                                            ))}
+                                            {renderIngredients()}
                                         </div>
                                     )
                                     : null

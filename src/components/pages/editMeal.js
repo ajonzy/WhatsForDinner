@@ -20,7 +20,9 @@ export default function EditMeal(props) {
                 <div className='page-wrapper edit-meal-page-wrapper'>
                     <MealForm meal={meal} edit handleSuccessfulSubmit={handleSuccessfulSubmit} />
                     <div className="spacer-40" />
-                    <button onClick={() => props.history.push(`/meals/view/${meal.id}`)}>Cancel</button>
+                    <div className="options-wrapper">
+                        <button onClick={() => props.history.push(`/meals/view/${meal.id}`)}>Cancel</button>
+                    </div>
                 </div>
             )
             : (
