@@ -153,13 +153,38 @@ export default function sockets(getUser, setUser) {
             const shoppinglist = getUser().shoppinglists.filter(shoppinglist => shoppinglist.id === data.data.shoppinglist_id)[0]
             const sharedShoppinglist = getUser().shared_shoppinglists.filter(shoppinglist => shoppinglist.id === data.data.shoppinglist_id)[0]
             if (shoppinglist) {
-              shoppinglist.shoppingingredients.splice(shoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
-              setUser({...getUser()})
+              switch(data.type) {
+                case "add": {
+                  shoppinglist.shoppingingredients.push(data.data)
+                  break
+                }
+                case "update": {
+                  shoppinglist.shoppingingredients.splice(shoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
+                  break
+                }
+                case "delete": {
+                  shoppinglist.shoppingingredients.splice(shoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1)
+                  break
+                }
+              }
             }
             if (sharedShoppinglist) {
-              sharedShoppinglist.shoppingingredients.splice(sharedShoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
-              setUser({...getUser()})
+              switch(data.type) {
+                case "add": {
+                  sharedShoppinglist.shoppingingredients.push(data.data)
+                  break
+                }
+                case "update": {
+                  sharedShoppinglist.shoppingingredients.splice(sharedShoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1, data.data)
+                  break
+                }
+                case "delete": {
+                  sharedShoppinglist.shoppingingredients.splice(sharedShoppinglist.shoppingingredients.findIndex(ingredient => ingredient.id === data.data.id), 1)
+                  break
+                }
+              }
             }
+            setUser({...getUser()})
           })
 
     return socket

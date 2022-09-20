@@ -18,7 +18,7 @@ export default function ShoppinglistForm(props) {
     const [loading, setLoading] = useState(false)
 
     const handleIngredientChangeAmount = (event, ingredient) => {
-        ingredient.amount = isNaN(event.target.valueAsNumber) ? "" : event.target.valueAsNumber
+        ingredient.amount = event.target.value
         setIngredients([...ingredients])
     }
 
@@ -49,6 +49,9 @@ export default function ShoppinglistForm(props) {
 
         if (name === "") {
             setError("Please fill out all required fields.")
+        }
+        else if (!ingredients.every(ingredient => !isNaN(ingredient.amount.replace("/", "")))) {
+            setError("Ingredient amounts can only be a number or fraction.")
         }
         else {
             setLoading(true)
@@ -195,6 +198,9 @@ export default function ShoppinglistForm(props) {
 
         if (name === "") {
             setError("Please fill out all required fields.")
+        }
+        else if (!ingredients.every(ingredient => !isNaN(ingredient.amount.replace("/", "")))) {
+            setError("Ingredient amounts can only be a number or fraction.")
         }
         else {
             setLoading(true)
@@ -352,7 +358,7 @@ export default function ShoppinglistForm(props) {
                         {ingredients.map((ingredient, index) => (
                             <div className="ingredient-wrapper" key={`ingredient-${index}`}>
                                 <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
-                                <input type="number" 
+                                <input type="text" 
                                     value={ingredient.amount}
                                     placeholder="Amount"
                                     onChange={event => handleIngredientChangeAmount(event, ingredient)}

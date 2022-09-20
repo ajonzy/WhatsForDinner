@@ -97,7 +97,7 @@ export default function MealplanForm(props) {
             else if (responseData.catchError) {
                 setError("An error occured... Please try again later.")
                 setLoading(false)
-                console.log("Error adding mealplan: ", data.catchError)
+                console.log("Error adding mealplan: ", responseData.catchError)
                 return false
             }
             else if (responseData.status === 200) {
@@ -136,7 +136,7 @@ export default function MealplanForm(props) {
                 else if (responseData.catchError) {
                     setError("An error occured... Please try again later.")
                     setLoading(false)
-                    console.log("Error adding rule: ", data.catchError)
+                    console.log("Error adding rule: ", responseData.catchError)
                     return false
                 }
                 else if (responseData.status === 200) {

@@ -61,8 +61,8 @@ export default function AddMeal(props) {
                     : (
                         <div className='add-recipe-wrapper'>
                             <p className="not-found">Sorry, this meal does not exist...</p>
-                            <div className="spacer-30" />
                             <div className="options-wrapper">
+                                <div className="spacer-30" />
                                 <button onClick={() => props.history.push("/meals")}>Back to Meals</button>
                             </div>
                         </div>
@@ -75,8 +75,8 @@ export default function AddMeal(props) {
     return (
         <div className='page-wrapper add-meal-page-wrapper'>
             {renderSection()}
-            {section !== "recipe-check" ? <div className="spacer-40" /> : null }
             <div className="options-wrapper">
+                {section !== "recipe-check" ? <div className="spacer-40" /> : null }
                 {section !== "recipe-check" ? <button onClick={() => section === "meal-form" ? props.history.push("/meals") : finish()}>Cancel</button> : null }
             </div>
         </div>

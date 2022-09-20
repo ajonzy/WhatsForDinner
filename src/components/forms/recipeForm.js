@@ -7,6 +7,8 @@ import LoadingError from '../utils/loadingError'
 
 import titleize from '../../functions/titleize'
 
+import { UserContext } from '../app'
+
 export default function RecipeForm(props) {
     if (props.edit) {
         props.meal.recipe.steps.sort((stepA, stepB) => stepA.id - stepB.id)
@@ -15,6 +17,7 @@ export default function RecipeForm(props) {
         props.meal.recipe.ingredientsections.sort((ingredientsectionA, ingredientsectionB) => ingredientsectionA.id - ingredientsectionB.id)
     }
 
+    const { user } = useContext(UserContext)
     const [steps, setSteps] = useState(props.edit ? props.meal.recipe.steps.map(step => ({...step, stepsection: step.stepsection_id ? props.meal.recipe.stepsections.findIndex(stepsection => stepsection.id === step.stepsection_id) : undefined })) : [])
     const [stepsections, setStepsections] = useState(props.edit ? props.meal.recipe.stepsections.map(stepsection => ({...stepsection})) : [])
     const [ingredients, setIngredients] = useState(props.edit ? props.meal.recipe.ingredients.map(ingredient => ({...ingredient, ingredientsection: ingredient.ingredientsection_id ? props.meal.recipe.ingredientsections.findIndex(ingredientsection => ingredientsection.id === ingredient.ingredientsection_id) : undefined })) : [])
@@ -45,7 +48,7 @@ export default function RecipeForm(props) {
     }
 
     const handleIngredientChangeAmount = (event, ingredient) => {
-        ingredient.amount = isNaN(event.target.valueAsNumber) ? "" : event.target.valueAsNumber
+        ingredient.amount = event.target.value
         setIngredients([...ingredients])
     }
 
@@ -87,9 +90,12 @@ export default function RecipeForm(props) {
 
         if (
             !stepsections.every(stepsectionA => stepsections.filter(stepsectionB => stepsectionA.title === stepsectionB.title).length === 1) ||
-            !ingredientsections.every(ingredientsectionA => ingredientsections.filter(ingredientsectionB => ingredientsectionA.title === ingredientsectionB.title).length === 1)
+            !ingredientsections.every(ingredientsectionA => ingredientsections.filter(ingredientsectionB => ingredientsectionA.title === ingredientsectionB.title).length === 1) 
         ) {
             setError("Each section must have a unique title.")
+        }
+        else if (!ingredients.every(ingredient => !isNaN(ingredient.amount.replace("/", "")))) {
+            setError("Ingredient amounts can only be a number or fraction.")
         }
         else {
             setLoading(true)
@@ -295,6 +301,7 @@ export default function RecipeForm(props) {
             meal.recipe.steps = stepsData
             meal.recipe.ingredientsections = ingredientsectionsData
             meal.recipe.ingredients = ingredientsData
+            
             props.handleSuccessfulSubmit(meal)
         } 
     }
@@ -309,6 +316,9 @@ export default function RecipeForm(props) {
             !ingredientsections.every(ingredientsectionA => ingredientsections.filter(ingredientsectionB => ingredientsectionA.title === ingredientsectionB.title).length === 1)
         ) {
             setError("Each section must have a unique title.")
+        }
+        else if (!ingredients.every(ingredient => !isNaN(ingredient.amount.replace("/", "")))) {
+            setError("Ingredient amounts can only be a number or fraction.")
         }
         else {
             setLoading(true)
@@ -804,6 +814,7 @@ export default function RecipeForm(props) {
             meal.recipe.steps = stepsData
             meal.recipe.ingredientsections = ingredientsectionsData
             meal.recipe.ingredients = ingredientsData
+
             props.handleSuccessfulSubmit(meal)
         }
     }
@@ -817,9 +828,9 @@ export default function RecipeForm(props) {
             {ingredients.filter(ingredient => ingredient.ingredientsection === undefined).map((ingredient, index) => (
                 <div className="ingredient-wrapper" key={`ingredient-${index}`}>
                     <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
-                    <input type="number" 
+                    <input type="text" 
                         value={ingredient.amount}
-                        placeholder="Amount"
+                        placeholder="Amount: 1, 1/2, .5, etc."
                         onChange={event => handleIngredientChangeAmount(event, ingredient)}
                         required
                     />
@@ -855,9 +866,9 @@ export default function RecipeForm(props) {
                     {ingredients.filter(ingredient => ingredient.ingredientsection === index).map((ingredient, ingredientIndex) => (
                         <div className="ingredient-wrapper" key={`ingredient-${index}-${ingredientIndex}`}>
                             <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
-                            <input type="number" 
+                            <input type="text" 
                                 value={ingredient.amount}
-                                placeholder="Amount"
+                                placeholder="Amount: 1, 1/2, .5, etc."
                                 onChange={event => handleIngredientChangeAmount(event, ingredient)}
                                 required
                             />
