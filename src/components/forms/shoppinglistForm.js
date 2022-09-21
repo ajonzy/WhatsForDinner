@@ -13,7 +13,10 @@ export default function ShoppinglistForm(props) {
     const { user } = useContext(UserContext)
     const [name, setName] = useState(props.edit ? props.shoppinglist.name : "")
     const [updatesHidden, setUpdatesHidden] = useState(props.editShoppinglist ? props.shoppinglist.updates_hidden : false)
-    const [ingredients, setIngredients] = useState(props.editShoppingingredients ? props.shoppinglist.shoppingingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id).map(ingredient => ({...ingredient})) : [])
+    const [mealplan] = useState(props.editShoppingingredients && props.shoppinglist.mealplan_id ? user.mealplans.filter(mealplan => mealplan.id === props.shoppinglist.mealplan_id)[0] : {})
+    const [subshoppinglist] = useState(props.editShoppingingredients && props.shoppinglist.mealplan_id && Object.keys(mealplan.sub_shoppinglist).length > 0 ? mealplan.sub_shoppinglist : { shoppingingredients: [] })
+    const [existingIngredients] = useState(props.editShoppingingredients ? props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.ingredient_id).sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id).map(ingredient => ({...ingredient})) : [])
+    const [ingredients, setIngredients] = useState(props.editShoppingingredients ? props.shoppinglist.shoppingingredients.filter(ingredient => !ingredient.ingredient_id).concat(subshoppinglist.shoppingingredients).sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id).map(ingredient => ({...ingredient})) : [])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -205,11 +208,53 @@ export default function ShoppinglistForm(props) {
         else {
             setLoading(true)
 
+            let shoppinglist = props.shoppinglist.mealplan_id ? user.mealplans.filter(mealplan => mealplan.id === props.shoppinglist.mealplan_id)[0].sub_shoppinglist : props.shoppinglist
+            if (Object.keys(shoppinglist).length === 0) {
+                const data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppinglist/add", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({
+                        name: `${user.mealplans.filter(mealplan => mealplan.id === props.shoppinglist.mealplan_id)[0].name} Mealplan`, 
+                        created_on: user.mealplans.filter(mealplan => mealplan.id === props.shoppinglist.mealplan_id)[0].created_on, 
+                        updates_hidden: false, 
+                        is_sublist: true, 
+                        user_username: user.username, 
+                        user_id: user.id, 
+                        mealplan_id: user.mealplans.filter(mealplan => mealplan.id === props.shoppinglist.mealplan_id)[0].id
+                    })
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })  
+                if (data.status === 400) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+                else if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding sub shoppinglist: ", data.catchError)
+                    return false
+                }
+                else if (data.status === 200) {
+                    shoppinglist = data.data
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+            }
+
             const newIngredients = ingredients.filter(ingredient => !ingredient.id)
-            const existingIngredients = ingredients.filter(ingredient => props.shoppinglist.shoppingingredients.filter(existingIngredient => existingIngredient.id === ingredient.id).length > 0)
-            const updatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount || existingIngredient.unit !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].unit || existingIngredient.name !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name || existingIngredient.category !== props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
-            const nonUpdatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount && existingIngredient.unit === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].unit && existingIngredient.name === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name && existingIngredient.category === props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
-            const deletedIngredients = props.shoppinglist.shoppingingredients.filter(existingIngredient => ingredients.filter(ingredient => ingredient.id === existingIngredient.id).length === 0)
+            const existingIngredients = ingredients.filter(ingredient => shoppinglist.shoppingingredients.filter(existingIngredient => existingIngredient.id === ingredient.id).length > 0)
+            const updatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount !== shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount || existingIngredient.unit !== shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].unit || existingIngredient.name !== shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name || existingIngredient.category !== shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
+            const nonUpdatedIngredients = existingIngredients.filter(existingIngredient => existingIngredient.amount === shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].amount && existingIngredient.unit === shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].unit && existingIngredient.name === shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].name && existingIngredient.category === shoppinglist.shoppingingredients.filter(ingredient => ingredient.id === existingIngredient.id)[0].category)
+            const deletedIngredients = shoppinglist.shoppingingredients.filter(existingIngredient => ingredients.filter(ingredient => ingredient.id === existingIngredient.id).length === 0)
             let ingredientsData = [...nonUpdatedIngredients]
             if (newIngredients.length > 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppingingredient/add/multiple", {
@@ -221,7 +266,7 @@ export default function ShoppinglistForm(props) {
                             amount: ingredient.amount,
                             unit: ingredient.unit.trim(),
                             category: titleize(ingredient.category),
-                            shoppinglist_id: props.shoppinglist.id
+                            shoppinglist_id: shoppinglist.id
                         }
                     }))
                 })
@@ -317,9 +362,40 @@ export default function ShoppinglistForm(props) {
                 }
             }
 
-            props.shoppinglist.shoppingingredients = ingredientsData
-            props.handleSuccessfulSubmit(props.shoppinglist)
+            shoppinglist.shoppingingredients = ingredientsData
+            if (shoppinglist.is_sublist && ingredientsData.length === 0) {
+                const data = await fetch(`https://whatsforsupperapi.herokuapp.com/shoppinglist/delete/${shoppinglist.id}`, {
+                    method: "DELETE"
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })  
+                if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error deleting shoppinglist: ", data.catchError)
+                    return false
+                }
+                else if (data.status !== 200) {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                    return false
+                }
+            }
+
+            props.handleSuccessfulSubmit(shoppinglist)
         }
+    }
+
+    const renderExistingIngredients = () => {
+        return existingIngredients.map(ingredient => (
+            <div className="existing-ingredient-wrapper" key={`ingredient-${ingredient.id}`}>
+                <p className='ingredient-amount'>{ingredient.amount}{ingredient.unit ? ` ${ingredient.unit}` : null}</p>
+                <p className='ingredient-name'>{ingredient.name}</p>
+            </div>
+        ))
     }
 
     return (
@@ -355,6 +431,7 @@ export default function ShoppinglistForm(props) {
             {!props.editShoppinglist
                 ? (
                     <div className="ingredients-wrapper">
+                        {renderExistingIngredients()}
                         {ingredients.map((ingredient, index) => (
                             <div className="ingredient-wrapper" key={`ingredient-${index}`}>
                                 <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>

@@ -15,7 +15,7 @@ export default function EditShoppinglist(props) {
     }
 
     return (
-        (shoppinglist 
+        (shoppinglist && !shoppinglist.is_sublist
             ? (
                 <div className='page-wrapper edit-shoppinglist-page-wrapper'>
                     <ShoppinglistForm shoppinglist={shoppinglist} edit editShoppinglist handleSuccessfulSubmit={handleSuccessfulSubmit} />

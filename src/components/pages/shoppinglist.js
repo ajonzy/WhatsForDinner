@@ -9,8 +9,11 @@ import { UserContext } from '../app'
 export default function Shoppinglist(props) {
     const { user, setUser } = useContext(UserContext)
     const [personal_shoppinglist] = useState(user.shoppinglists.filter(shoppinglist => shoppinglist.id === parseInt(props.match.params.id))[0])
+    const [personal_subshoppinglist] = useState(personal_shoppinglist && personal_shoppinglist.mealplan_id && Object.keys(user.mealplans.filter(mealplan => mealplan.id === personal_shoppinglist.mealplan_id)[0].sub_shoppinglist).length > 0 ? user.mealplans.filter(mealplan => mealplan.id === personal_shoppinglist.mealplan_id)[0].sub_shoppinglist : undefined)
     const [shared_shoppinglist] = useState(user.shared_shoppinglists.filter(shoppinglist => shoppinglist.id === parseInt(props.match.params.id))[0])
+    const [shared_subshoppinglist] = useState(shared_shoppinglist && shared_shoppinglist.mealplan_id && Object.keys(user.shared_mealplans.filter(mealplan => mealplan.id === shared_shoppinglist.mealplan_id)[0].sub_shoppinglist).length > 0 ? user.shared_mealplans.filter(mealplan => mealplan.id === shared_shoppinglist.mealplan_id)[0].sub_shoppinglist : undefined)
     const [shoppinglist, setShoppinglist] = useState(personal_shoppinglist || shared_shoppinglist)
+    const [subshoppinglist, setSubshoppinglist] = useState(personal_subshoppinglist || shared_subshoppinglist || { shoppingingredients: [] })
     const [ingredientsSort, setIngredientsSort] = useState("arbitrary")
     const [confirm, setConfirm] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
@@ -99,10 +102,11 @@ export default function Shoppinglist(props) {
 
         ingredient.obtained = !ingredient.obtained
         setShoppinglist({...shoppinglist})
+        setSubshoppinglist({...subshoppinglist})
     }
 
     const renderIngredients = () => {
-        let ingredients = [...shoppinglist.shoppingingredients]
+        let ingredients = [...shoppinglist.shoppingingredients, ...subshoppinglist.shoppingingredients]
 
         const renderIngredient = ingredient => (
             <div className={`ingredient-wrapper ${ingredient.obtained ? "obtained" : "unobtained"}`} key={`ingredient-${ingredient.id}`} onClick={() => handleObtain(ingredient)}>
@@ -147,7 +151,7 @@ export default function Shoppinglist(props) {
     }
 
     return (
-        (shoppinglist 
+        (shoppinglist && !shoppinglist.is_sublist
             ? (
                 <div className='page-wrapper shoppinglist-page-wrapper'>
                     <h2 className='name'>{shoppinglist.name}</h2>
@@ -204,15 +208,24 @@ export default function Shoppinglist(props) {
                     <div className="shoppinglist-ingredients-wrapper">
                         {renderIngredients()}
                         <div className="spacer-30" />
-                        {personal_shoppinglist && !shoppinglist.mealplan_id ? <button className='alt-button' onClick={() => props.history.push(`/shoppinglists/items/edit/${shoppinglist.id}`)}>{shoppinglist.shoppingingredients.length > 0 ? "Edit Items" : "Add Items"}</button> : null}
+                        {personal_shoppinglist ? <button className='alt-button' onClick={() => props.history.push(`/shoppinglists/items/edit/${shoppinglist.id}`)}>{shoppinglist.shoppingingredients.filter(ingredient => !ingredient.ingredient_id).length > 0 ? "Edit Items" : "Add Items"}</button> : null}
                     </div>
                     
                     <div className="options-wrapper">
-                        {!shoppinglist.mealplan_id ? <h3>Shopping List Options</h3> : null}
+                        <h3>Shopping List Options</h3>
                         {personal_shoppinglist && !shoppinglist.mealplan_id
                             ? (
                                 <div className="edit-option-wrapper">
                                     <button className='alt-button' onClick={() => props.history.push(`/shoppinglists/edit/${shoppinglist.id}`)}>Edit Shopping List</button>
+                                    <div className='spacer-30' />
+                                </div>
+                            )
+                            : null
+                        }
+                        {shoppinglist.mealplan_id
+                            ? (
+                                <div className="view-option-wrapper">
+                                    <button className='alt-button' onClick={() => props.history.push(`/mealplans/view/${shoppinglist.mealplan_id}`)}>View Mealplan</button>
                                     <div className='spacer-30' />
                                 </div>
                             )

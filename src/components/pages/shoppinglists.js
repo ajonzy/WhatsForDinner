@@ -30,7 +30,7 @@ export default function Shoppinglists(props) {
             )
         }
 
-        const sharedShoppinglists = sharedShoppinglistsList.map(shoppinglist => (
+        const sharedShoppinglists = sharedShoppinglistsList.filter(shoppinglist => !shoppinglist.is_sublist).map(shoppinglist => (
             <div key={`shoppinglist-${shoppinglist.id}`} className="shoppinglist-wrapper-shared" onClick={() => props.history.push(`/shoppinglists/view/${shoppinglist.id}`)}>
                 <p className='shared-by'>Shared by: {shoppinglist.user_username}</p>
                 <p className='name'>{shoppinglist.name}</p>
@@ -38,7 +38,7 @@ export default function Shoppinglists(props) {
             </div>
         ))
 
-        const shoppinglists = shoppinglistsList.map(shoppinglist => (
+        const shoppinglists = shoppinglistsList.filter(shoppinglist => !shoppinglist.is_sublist).map(shoppinglist => (
             <div key={`shoppinglist-${shoppinglist.id}`} className="shoppinglist-wrapper" onClick={() => props.history.push(`/shoppinglists/view/${shoppinglist.id}`)}>
                 <p className='name'>{shoppinglist.name}</p>
                 <p className='created-on'>{shoppinglist.created_on}</p>

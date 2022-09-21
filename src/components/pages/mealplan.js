@@ -13,31 +13,67 @@ export default function Mealplan(props) {
     const [deleteLoading, setDeleteLoading] = useState(false)
     const [deleteError, setDeleteError] = useState("")
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         setDeleteError("")
 
         if (confirm) {
             setDeleteLoading(true)
-            fetch(`https://whatsforsupperapi.herokuapp.com/mealplan/delete/${mealplan.id}`, { method: "DELETE" })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 200) {
-                    user.mealplans = user.mealplans.filter(mealplan => mealplan.id !== data.data.id)
-                    user.shoppinglists = user.shoppinglists.filter(shoppinglist => shoppinglist.mealplan_id !== data.data.id)
-                    setUser({...user})
-                    props.history.push("/mealplans")
+
+            if (mealplan.sub_shoppinglist.id) {
+                const data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppinglist/add", { 
+                    method: "POST" ,
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({
+                        name: `${mealplan.name} Mealplan (Deleted)`, 
+                        created_on: mealplan.created_on, 
+                        updates_hidden: false, 
+                        is_sublist: false, 
+                        user_username: user.username, 
+                        user_id: user.id
+                    })
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    return { catchError: error }
+                })  
+                if (data.catchError) {
+                    setError("An error occured... Please try again later.")
+                    setLoading(false)
+                    console.log("Error adding shoppinglist: ", data.catchError)
+                    return false
                 }
-                else {
-                    setDeleteError("An error occured... Please try again later.")
+                else if (data.status !== 200) {
+                    setError("An error occured... Please try again later.")
                     console.log(data)
-                    setDeleteLoading(false)
+                    setLoading(false)
+                    return false
                 }
-            })
+
+                user.shoppinglists.push(data.data)
+            }
+
+            const data = await fetch(`https://whatsforsupperapi.herokuapp.com/mealplan/delete/${mealplan.id}`, { method: "DELETE" })
+            .then(response => response.json())
             .catch(error => {
-                setDeleteError("An error occured... Please try again later.")
-                setDeleteLoading(false)
-                console.log("Error deleting mealplan: ", error)
-            })
+                return { catchError: error }
+            })  
+            if (data.catchError) {
+                setError("An error occured... Please try again later.")
+                setLoading(false)
+                console.log("Error deleting mealplan: ", data.catchError)
+                return false
+            }
+            else if (data.status !== 200) {
+                setError("An error occured... Please try again later.")
+                console.log(data)
+                setLoading(false)
+                return false
+            }
+            
+            user.mealplans = user.mealplans.filter(mealplan => mealplan.id !== data.data.id)
+            user.shoppinglists = user.shoppinglists.filter(shoppinglist => shoppinglist.mealplan_id !== data.data.id)
+            setUser({...user})
+            props.history.push("/mealplans")
         }
         else {
             setConfirm(true)
@@ -105,6 +141,10 @@ export default function Mealplan(props) {
                             )
                             : null
                         }
+                        <div className="view-option-wrapper">
+                            <button className='alt-button' onClick={() => props.history.push(`/shoppinglists/view/${mealplan.shoppinglist.id}`)}>View Shopping List</button>
+                            <div className='spacer-30' />
+                        </div>
                         {personal_mealplan
                             ? (
                                 <div className="share-option-wrapper">
