@@ -10,6 +10,11 @@ export default function EditMeal(props) {
 
     const handleSuccessfulSubmit = data => {
         user.meals.splice(user.meals.findIndex(meal => meal.id === data.id), 1, data)
+        user.mealplans.forEach(mealplan => mealplan.meals.forEach(mealplanMeal => {
+            if (mealplanMeal.id === data.id) {
+                mealplan.meals.splice(findIndex(meal => meal.id === mealplanMeal.id), 1, data)
+            }
+        }))
         setUser({...user})
         props.history.push(`/meals/view/${data.id}`)
     }

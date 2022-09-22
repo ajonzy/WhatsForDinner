@@ -20,6 +20,7 @@ export default function Mealplan(props) {
             setDeleteLoading(true)
 
             if (mealplan.sub_shoppinglist.id) {
+                let newData = {}
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppinglist/add", { 
                     method: "POST" ,
                     headers: { "content-type": "application/json" },
@@ -37,19 +38,59 @@ export default function Mealplan(props) {
                     return { catchError: error }
                 })  
                 if (data.catchError) {
-                    setError("An error occured... Please try again later.")
-                    setLoading(false)
+                    setDeleteError("An error occured... Please try again later.")
+                    setDeleteLoading(false)
                     console.log("Error adding shoppinglist: ", data.catchError)
                     return false
                 }
-                else if (data.status !== 200) {
-                    setError("An error occured... Please try again later.")
+                else if (data.status === 200) {
+                    newData = data.data
+                }
+                else {
+                    setDeleteError("An error occured... Please try again later.")
                     console.log(data)
-                    setLoading(false)
+                    setDeleteLoading(false)
                     return false
                 }
 
-                user.shoppinglists.push(data.data)
+                let shoppingingredientsData = []
+                if (mealplan.sub_shoppinglist.shoppingingredients.length > 0) {
+                    const data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppingingredient/add/multiple", {
+                        method: "POST",
+                        headers: { "content-type": "application/json" },
+                        body: JSON.stringify(mealplan.sub_shoppinglist.shoppingingredients.map(ingredient => {
+                            return {
+                                name: ingredient.name,
+                                amount: ingredient.amount,
+                                unit: ingredient.unit,
+                                category: ingredient.category,
+                                shoppinglist_id: newData.id
+                            }
+                        }))
+                    })
+                    .then(response => response.json())
+                    .catch(error => {
+                        return { catchError: error }
+                    })  
+                    if (data.catchError) {
+                        setDeleteError("An error occured... Please try again later.")
+                        setDeleteLoading(false)
+                        console.log("Error adding shopping ingredient: ", data.catchError)
+                        return false
+                    }
+                    else if (data.status === 200) {
+                        shoppingingredientsData = data.data
+                    }
+                    else {
+                        setDeleteError("An error occured... Please try again later.")
+                        console.log(data)
+                        setDeleteLoading(false)
+                        return false
+                    }
+                }
+
+                newData.shoppingingredients = shoppingingredientsData
+                user.shoppinglists.push(newData)
             }
 
             const data = await fetch(`https://whatsforsupperapi.herokuapp.com/mealplan/delete/${mealplan.id}`, { method: "DELETE" })
@@ -58,15 +99,15 @@ export default function Mealplan(props) {
                 return { catchError: error }
             })  
             if (data.catchError) {
-                setError("An error occured... Please try again later.")
-                setLoading(false)
+                setDeleteError("An error occured... Please try again later.")
+                setDeleteLoading(false)
                 console.log("Error deleting mealplan: ", data.catchError)
                 return false
             }
             else if (data.status !== 200) {
-                setError("An error occured... Please try again later.")
+                setDeleteError("An error occured... Please try again later.")
                 console.log(data)
-                setLoading(false)
+                setDeleteLoading(false)
                 return false
             }
             

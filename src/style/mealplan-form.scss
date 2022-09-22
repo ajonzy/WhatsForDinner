@@ -67,6 +67,32 @@
                     color: $light;
                 }
             }
+
+            .multiplier-wrapper {
+                display: flex;
+                align-items: center;
+                width: auto;
+                margin: 0px 11px;
+
+                .icon-button {
+                    margin: 0px;
+                    padding: 0px;
+                    font-size: 28px;
+                }
+
+                .multiplier {
+                    font-weight: bold;
+                    font-size: 20px;
+                    color: $darkest;
+                    width: 20px;
+                    text-align: center;
+                    transition-delay: .4s;
+
+                    &.disabled {
+                        color: #cce7f4;
+                    }
+                }
+            }
         }
     }
 }

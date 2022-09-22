@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
-import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faTimesCircle, faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons'
 
 import LoadingError from '../utils/loadingError'
 
@@ -15,7 +15,7 @@ export default function ShoppinglistForm(props) {
     const [updatesHidden, setUpdatesHidden] = useState(props.editShoppinglist ? props.shoppinglist.updates_hidden : false)
     const [mealplan] = useState(props.editShoppingingredients && props.shoppinglist.mealplan_id ? user.mealplans.filter(mealplan => mealplan.id === props.shoppinglist.mealplan_id)[0] : {})
     const [subshoppinglist] = useState(props.editShoppingingredients && props.shoppinglist.mealplan_id && Object.keys(mealplan.sub_shoppinglist).length > 0 ? mealplan.sub_shoppinglist : { shoppingingredients: [] })
-    const [existingIngredients] = useState(props.editShoppingingredients ? props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.ingredient_id).sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id).map(ingredient => ({...ingredient})) : [])
+    const [existingMealplanIngredients] = useState(props.editShoppingingredients ? props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.ingredient_id).sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id).map(ingredient => ({...ingredient})) : [])
     const [ingredients, setIngredients] = useState(props.editShoppingingredients ? props.shoppinglist.shoppingingredients.filter(ingredient => !ingredient.ingredient_id).concat(subshoppinglist.shoppingingredients).sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id).map(ingredient => ({...ingredient})) : [])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
@@ -42,6 +42,11 @@ export default function ShoppinglistForm(props) {
 
     const handleIngredientDelete = index => {
         ingredients.splice(index, 1)
+        setIngredients([...ingredients])
+    }
+
+    const handleMultiplierChange = (ingredient, change) => {
+        ingredient.multiplier = ingredient.multiplier + change
         setIngredients([...ingredients])
     }
 
@@ -207,6 +212,46 @@ export default function ShoppinglistForm(props) {
         }
         else {
             setLoading(true)
+
+            const updatedMealplanIngredients = existingMealplanIngredients.filter(ingredient => props.shoppinglist.shoppingingredients.filter(ingredient => ingredient.ingredient_id).filter(existingIngredient => existingIngredient.id === ingredient.id)[0].multiplier !== ingredient.multiplier)
+            if (updatedMealplanIngredients.length > 0) {
+                for (let ingredient of updatedMealplanIngredients) {
+                    const data = await fetch(`https://whatsforsupperapi.herokuapp.com/shoppingingredient/update/${ingredient.id}`, {
+                        method: "PUT",
+                        headers: { "content-type": "application/json" },
+                        body: JSON.stringify({
+                            multiplier: ingredient.multiplier
+                        })
+                    })
+                    .then(response => response.json())
+                    .catch(error => {
+                        return { catchError: error }
+                    })  
+                    if (data.status === 400) {
+                        setError("An error occured... Please try again later.")
+                        console.log(data)
+                        setLoading(false)
+                        return false
+                    }
+                    else if (data.catchError) {
+                        setError("An error occured... Please try again later.")
+                        setLoading(false)
+                        console.log("Error updating ingredient: ", data.catchError)
+                        return false
+                    }
+                    else if (data.status === 200) {
+                        const mealIngredient = user.mealplans.map(mealplan => mealplan.meals.map(meal => meal.recipe.ingredients.map(mealIngredient => mealIngredient))).flat(2).filter(mealIngredient => mealIngredient.id === ingredient.ingredient_id)[0]
+                        mealIngredient.shoppingingredients.filter(shoppingingredient => shoppingingredient.id === ingredient.id)[0].multiplier = data.data.multiplier
+                        props.shoppinglist.shoppingingredients.splice(props.shoppinglist.shoppingingredients.findIndex(existingIngredient => existingIngredient.id === ingredient.id), 1, data.data)
+                    }
+                    else {
+                        setError("An error occured... Please try again later.")
+                        console.log(data)
+                        setLoading(false)
+                        return false
+                    }
+                }
+            }
 
             let shoppinglist = props.shoppinglist.mealplan_id ? user.mealplans.filter(mealplan => mealplan.id === props.shoppinglist.mealplan_id)[0].sub_shoppinglist : props.shoppinglist
             if (Object.keys(shoppinglist).length === 0) {
@@ -389,13 +434,25 @@ export default function ShoppinglistForm(props) {
         }
     }
 
-    const renderExistingIngredients = () => {
-        return existingIngredients.map(ingredient => (
-            <div className="existing-ingredient-wrapper" key={`ingredient-${ingredient.id}`}>
-                <p className='ingredient-amount'>{ingredient.amount}{ingredient.unit ? ` ${ingredient.unit}` : null}</p>
-                <p className='ingredient-name'>{ingredient.name}</p>
+    const renderExistingMealplanIngredients = () => {
+        return (
+            <div className="existing-ingredients-wrapper">
+                <h5>Mealplan Items</h5>
+                {
+                    existingMealplanIngredients.map(ingredient => (
+                        <div className="existing-ingredient-wrapper" key={`ingredient-${ingredient.id}`}>
+                            <p className='ingredient-amount'>{ingredient.amount}{ingredient.unit ? ` ${ingredient.unit}` : null}</p>
+                            <p className='ingredient-name'>{ingredient.name}</p>
+                            <div className="multiplier-wrapper">
+                                <button type='button' className='icon-button' disabled={loading || ingredient.multiplier <= 1} onClick={() => handleMultiplierChange(ingredient, -1)}><FontAwesomeIcon icon={faCaretLeft} /></button>
+                                <p className={`multiplier ${loading ? "disabled" : null}`}>x{ingredient.multiplier}</p>
+                                <button type='button' className='icon-button' disabled={loading || ingredient.multiplier >=9} onClick={() => handleMultiplierChange(ingredient, 1)}><FontAwesomeIcon icon={faCaretRight} /></button>
+                            </div>
+                        </div>
+                    ))
+                }
             </div>
-        ))
+        )
     }
 
     return (
@@ -431,7 +488,8 @@ export default function ShoppinglistForm(props) {
             {!props.editShoppinglist
                 ? (
                     <div className="ingredients-wrapper">
-                        {renderExistingIngredients()}
+                        {props.editShoppingingredients && props.shoppinglist.mealplan_id ? renderExistingMealplanIngredients() : null}
+                        {props.editShoppingingredients && props.shoppinglist.mealplan_id ? <h5>Added Items</h5> : null}
                         {ingredients.map((ingredient, index) => (
                             <div className="ingredient-wrapper" key={`ingredient-${index}`}>
                                 <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>

@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react'
+import { Fraction } from "fractional"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons'
 
@@ -8,10 +9,21 @@ import { UserContext } from '../app'
 
 export default function Shoppinglist(props) {
     const { user, setUser } = useContext(UserContext)
+
+    const getSubshoppinglist = (shoppinglist, mealplans, userShoppinglists) => {
+        if (shoppinglist && shoppinglist.mealplan_id) {
+            const subshoppinglist = mealplans.filter(mealplan => mealplan.id === shoppinglist.mealplan_id)[0].sub_shoppinglist
+            if (Object.keys(subshoppinglist).length > 0) {
+                return userShoppinglists.filter(shoppinglist => shoppinglist.id === subshoppinglist.id)[0]
+            }
+        }
+        return undefined
+    }
+
     const [personal_shoppinglist] = useState(user.shoppinglists.filter(shoppinglist => shoppinglist.id === parseInt(props.match.params.id))[0])
-    const [personal_subshoppinglist] = useState(personal_shoppinglist && personal_shoppinglist.mealplan_id && Object.keys(user.mealplans.filter(mealplan => mealplan.id === personal_shoppinglist.mealplan_id)[0].sub_shoppinglist).length > 0 ? user.mealplans.filter(mealplan => mealplan.id === personal_shoppinglist.mealplan_id)[0].sub_shoppinglist : undefined)
+    const [personal_subshoppinglist] = useState(getSubshoppinglist(personal_shoppinglist, user.mealplans, user.shoppinglists))
     const [shared_shoppinglist] = useState(user.shared_shoppinglists.filter(shoppinglist => shoppinglist.id === parseInt(props.match.params.id))[0])
-    const [shared_subshoppinglist] = useState(shared_shoppinglist && shared_shoppinglist.mealplan_id && Object.keys(user.shared_mealplans.filter(mealplan => mealplan.id === shared_shoppinglist.mealplan_id)[0].sub_shoppinglist).length > 0 ? user.shared_mealplans.filter(mealplan => mealplan.id === shared_shoppinglist.mealplan_id)[0].sub_shoppinglist : undefined)
+    const [shared_subshoppinglist] = useState(getSubshoppinglist(shared_shoppinglist, user.shared_mealplans, user.shared_shoppinglists))
     const [shoppinglist, setShoppinglist] = useState(personal_shoppinglist || shared_shoppinglist)
     const [subshoppinglist, setSubshoppinglist] = useState(personal_subshoppinglist || shared_subshoppinglist || { shoppingingredients: [] })
     const [ingredientsSort, setIngredientsSort] = useState("arbitrary")
@@ -105,12 +117,22 @@ export default function Shoppinglist(props) {
         setSubshoppinglist({...subshoppinglist})
     }
 
+    const calculateAmount = (amount, multiplier) => {
+        if (amount.includes("/")) {
+            amount = amount.split("/")
+            return new Fraction(amount[0], amount[1]).multiply(multiplier).toString()
+        }
+        else {
+            return amount * multiplier
+        }
+    }
+
     const renderIngredients = () => {
         let ingredients = [...shoppinglist.shoppingingredients, ...subshoppinglist.shoppingingredients]
 
         const renderIngredient = ingredient => (
             <div className={`ingredient-wrapper ${ingredient.obtained ? "obtained" : "unobtained"}`} key={`ingredient-${ingredient.id}`} onClick={() => handleObtain(ingredient)}>
-                <p className='ingredient-amount'>{ingredient.amount}{ingredient.unit ? ` ${ingredient.unit}` : null}</p>
+                <p className='ingredient-amount'>{calculateAmount(ingredient.amount, ingredient.multiplier)}{ingredient.unit ? ` ${ingredient.unit}` : null}</p>
                 <p className='ingredient-name'>{ingredient.name}</p>
             </div>
         )
@@ -208,7 +230,7 @@ export default function Shoppinglist(props) {
                     <div className="shoppinglist-ingredients-wrapper">
                         {renderIngredients()}
                         <div className="spacer-30" />
-                        {personal_shoppinglist ? <button className='alt-button' onClick={() => props.history.push(`/shoppinglists/items/edit/${shoppinglist.id}`)}>{shoppinglist.shoppingingredients.filter(ingredient => !ingredient.ingredient_id).length > 0 ? "Edit Items" : "Add Items"}</button> : null}
+                        {personal_shoppinglist ? <button className='alt-button' onClick={() => props.history.push(`/shoppinglists/items/edit/${shoppinglist.id}`)}>{shoppinglist.shoppingingredients.length > 0 ? "Edit Items" : "Add Items"}</button> : null}
                     </div>
                     
                     <div className="options-wrapper">

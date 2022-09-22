@@ -1,8 +1,13 @@
 .shoppinglist-form-wrapper {
+    h5 {
+        color: $darkest;
+        text-align: center;
+    }
+
     .existing-ingredient-wrapper {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        gap: 0px 10px;
         border: 1px solid $complementary-darkest;
         border-radius: 5px;
         margin-bottom: 10px;
@@ -15,6 +20,37 @@
 
         .ingredient-name {
             text-align: right;
+        }
+
+        .multiplier-wrapper {
+            grid-column: 1/-1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: auto;
+            margin: 0px 11px;
+            line-height: 0px;
+
+            .icon-button {
+                margin: 0px;
+                padding: 0px;
+                font-size: 28px;
+                color: $darkest;
+                text-align: center;
+            }
+
+            .multiplier {
+                font-weight: bold;
+                font-size: 20px;
+                color: $darkest;
+                width: 20px;
+                text-align: center;
+                transition-delay: .4s;
+
+                &.disabled {
+                    color: #cce7f4;
+                }
+            }
         }
     }
 

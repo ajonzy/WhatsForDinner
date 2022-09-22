@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import Modal from 'react-modal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleXmark, faHandPointer, faLock, faRotate, faUnlock, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCircleXmark, faHandPointer, faLock, faRotate, faUnlock, faCheck, faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons'
 
 import generateMeals from '../../functions/generateMeals'
 
@@ -11,7 +11,28 @@ import { UserContext } from '../app'
 
 export default function MealplanForm(props) {
     const { user } = useContext(UserContext)
-    const [meals, setMeals] = useState(props.meals.map(meal => ({...meal, locked: false})))
+
+    const getMealMultiplier = meal => {
+        if (props.edit && props.data.meals.map(mealplanMeal => mealplanMeal.id).includes(meal.id)) {
+            const ingredients = meal.recipe.ingredients
+
+            if (ingredients.length > 0) {
+                const shoppingingredients = ingredients.map(ingredient => ingredient.shoppingingredients.filter(shoppingingredient => shoppingingredient.shoppinglist_id === props.data.shoppinglist.id)[0])
+
+                if (shoppingingredients.length > 0) {
+                    const multipliers = shoppingingredients.map(shoppingingredient => shoppingingredient.multiplier).sort()
+                    const lowest = multipliers[0]
+                    const highest = multipliers[multipliers.length - 1]
+                    const multiplier = lowest === highest ? lowest : "-"
+                    return { lowest, highest, multiplier }
+                }
+            }
+        }
+        
+        return { lowest: 1, highest: 1, multiplier: 1 }
+    }
+
+    const [meals, setMeals] = useState(props.meals.map(meal => ({...meal, locked: false, multiplier: getMealMultiplier(meal) })))
     const [problem, setProblem] = useState(props.problem || false)
     const [data, setData] = useState(props.edit ? { name: props.data.name, number: props.meals.length, rules: props.data.rules.map(rule => ({ ...rule, type: rule.rule_type })) } : props.data)
     const [modalIsOpen, setIsOpen] = useState(false)
@@ -32,6 +53,7 @@ export default function MealplanForm(props) {
     const generateNewMeals = (lockedMeals, newMeals) => {
         lockedMeals.forEach(lockedMeal => newMeals.splice(lockedMeal.position, 0, lockedMeal))
         newMeals.forEach(meal => delete meal.position)
+        newMeals.forEach((meal, index) => newMeals.splice(index, 1, {...meal, multiplier: { lowest: 1, highest: 1, multiplier: 1 }}))
         setMeals(newMeals)
     }
 
@@ -63,6 +85,18 @@ export default function MealplanForm(props) {
         generateNewMeals(lockedMeals, newMeals)
     }
 
+    const handleMultiplierChange = (meal, change) => {
+        const newMultiplier = (
+            meal.multiplier.multiplier === "-" 
+                ? change === -1 
+                    ? meal.multiplier.lowest
+                    : meal.multiplier.highest
+                : meal.multiplier.multiplier + change
+        )
+        meals.splice(meals.findIndex(existingMeal => existingMeal.id === meal.id), 1, {...meal, multiplier: { highest: newMultiplier, lowest: newMultiplier, multiplier: newMultiplier }})
+        setMeals([...meals])
+    }
+
     const handleMealplanAdd = async event => {
         event.preventDefault()
 
@@ -72,6 +106,12 @@ export default function MealplanForm(props) {
             setLoading(true)
             let newData = {}
 
+            const getMultipliers = () => {
+                const multipliers = {}
+                meals.forEach(meal => multipliers[meal.id] = meal.multiplier.multiplier)
+                return multipliers
+            }
+
             let responseData = await fetch("https://whatsforsupperapi.herokuapp.com/mealplan/add", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
@@ -80,7 +120,8 @@ export default function MealplanForm(props) {
                     created_on: new Date().toLocaleDateString(),
                     user_username: user.username,
                     user_id: user.id,
-                    meals: meals.map(meal => meal.id)
+                    meals: meals.map(meal => meal.id),
+                    multipliers: getMultipliers()
                 })
             })
             .then(response => response.json())
@@ -161,6 +202,8 @@ export default function MealplanForm(props) {
             setLoading(true)
 
             const newMeals = meals.filter(meal => !props.meals.map(existingMeal => existingMeal.id).includes(meal.id))
+            const existingMeals = meals.filter(meal => props.meals.map(existingMeal => existingMeal.id).includes(meal.id))
+            const updatedMeals = existingMeals.filter(existingMeal => props.meals.map(meal => ({...meal, multiplier: getMealMultiplier(meal)})).filter(meal => meal.id === existingMeal.id)[0].multiplier.multiplier !== existingMeal.multiplier.multiplier)
             const deletedMeals = props.meals.filter(existingMeal => !meals.map(meal => meal.id).includes(existingMeal.id))
             let newData = {...props.data}
             if (newMeals.length > 0) {
@@ -170,7 +213,8 @@ export default function MealplanForm(props) {
                         headers: { "content-type": "application/json" },
                         body: JSON.stringify({
                             mealplan_id: props.data.id,
-                            meal_id: meal.id
+                            meal_id: meal.id,
+                            multiplier: meal.multiplier.multiplier
                         })
                     })
                     .then(response => response.json())
@@ -197,6 +241,48 @@ export default function MealplanForm(props) {
                         console.log(data)
                         setLoading(false)
                         return false
+                    }
+                }
+            }
+
+            if (updatedMeals.length > 0) {
+                for (let meal of updatedMeals) {
+                    for (let ingredient of meal.recipe.ingredients) {
+                        for (let shoppingingredient of ingredient.shoppingingredients.filter(shoppingingredient => shoppingingredient.shoppinglist_id === props.data.shoppinglist.id)) {
+                            const data = await fetch(`https://whatsforsupperapi.herokuapp.com/shoppingingredient/update/${shoppingingredient.id}`, {
+                                method: "PUT",
+                                headers: { "content-type": "application/json" },
+                                body: JSON.stringify({
+                                    multiplier: meal.multiplier.multiplier
+                                })
+                            })
+                            .then(response => response.json())
+                            .catch(error => {
+                                return { catchError: error }
+                            })  
+                            if (data.status === 400) {
+                                setError("An error occured... Please try again later.")
+                                console.log(data)
+                                setLoading(false)
+                                return false
+                            }
+                            else if (data.catchError) {
+                                setError("An error occured... Please try again later.")
+                                setLoading(false)
+                                console.log("Error adding meal: ", data.catchError)
+                                return false
+                            }
+                            else if (data.status === 200) {
+                                shoppingingredient.multiplier = meal.multiplier.multiplier
+                                newData.shoppinglist.shoppingingredients.splice(newData.shoppinglist.shoppingingredients.findIndex(existingShoppingingredient => existingShoppingingredient.id === shoppingingredient.id), 1, data.data)
+                            }
+                            else {
+                                setError("An error occured... Please try again later.")
+                                console.log(data)
+                                setLoading(false)
+                                return false
+                            }
+                        }
                     }
                 }
             }
@@ -322,6 +408,11 @@ export default function MealplanForm(props) {
                         <button type='button' className='icon-button' disabled={meal.locked || loading} onClick={() => handleRefresh(meal)}><FontAwesomeIcon icon={faRotate} /></button>
                         <button type='button' className='icon-button' disabled={meal.locked || loading} onClick={() => handleModalOpen(meal)}><FontAwesomeIcon icon={faHandPointer} /></button>
                         <button type='button' className='icon-button' disabled={meal.locked || loading} onClick={() => handleMealDelete(meal)}><FontAwesomeIcon icon={faCircleXmark} /></button>
+                        <div className="multiplier-wrapper">
+                            <button type='button' className='icon-button' disabled={meal.locked || loading || meal.multiplier.multiplier <= 1} onClick={() => handleMultiplierChange(meal, -1)}><FontAwesomeIcon icon={faCaretLeft} /></button>
+                            <p className={`multiplier ${meal.locked  || loading ? "disabled" : null}`}>x{meal.multiplier.multiplier}</p>
+                            <button type='button' className='icon-button' disabled={meal.locked || loading || meal.multiplier.multiplier >=9} onClick={() => handleMultiplierChange(meal, 1)}><FontAwesomeIcon icon={faCaretRight} /></button>
+                        </div>
                     </div>
                 </div>
             ))}
