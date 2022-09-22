@@ -109,7 +109,19 @@ export default function sockets(getUser, setUser) {
               switch(data.type) {
                 case "add": {
                   shoppinglists.push(data.data.shoppinglist)
-                  notifications.push(data.data.notification)
+                  if (data.data.shoppinglist.mealplan_id) {
+                    getUser().shared_mealplans.filter(mealplan => mealplan.id === data.data.shoppinglist.mealplan_id)[0].sub_shoppinglist = data.data.shoppinglist
+                  }
+                  else {
+                    notifications.push(data.data.notification)
+                  }
+                  break
+                }
+                case "delete": {
+                  shoppinglists.splice(shoppinglists.findIndex(shoppinglist => shoppinglist.id === data.data.shoppinglist.id), 1)
+                  if (data.data.shoppinglist.mealplan_id) {
+                    getUser().shared_mealplans.filter(mealplan => mealplan.id === data.data.shoppinglist.mealplan_id)[0].sub_shoppinglist = {}
+                  }
                   break
                 }
                 // TODO: Add possible update functionality

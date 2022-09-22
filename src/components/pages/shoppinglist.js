@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Fraction } from "fractional"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons'
@@ -21,9 +21,9 @@ export default function Shoppinglist(props) {
     }
 
     const [personal_shoppinglist] = useState(user.shoppinglists.filter(shoppinglist => shoppinglist.id === parseInt(props.match.params.id))[0])
-    const [personal_subshoppinglist] = useState(getSubshoppinglist(personal_shoppinglist, user.mealplans, user.shoppinglists))
+    const [personal_subshoppinglist, set_personal_subshoppinglist] = useState(getSubshoppinglist(personal_shoppinglist, user.mealplans, user.shoppinglists))
     const [shared_shoppinglist] = useState(user.shared_shoppinglists.filter(shoppinglist => shoppinglist.id === parseInt(props.match.params.id))[0])
-    const [shared_subshoppinglist] = useState(getSubshoppinglist(shared_shoppinglist, user.shared_mealplans, user.shared_shoppinglists))
+    const [shared_subshoppinglist, set_shared_subshoppinglist] = useState(getSubshoppinglist(shared_shoppinglist, user.shared_mealplans, user.shared_shoppinglists))
     const [shoppinglist, setShoppinglist] = useState(personal_shoppinglist || shared_shoppinglist)
     const [subshoppinglist, setSubshoppinglist] = useState(personal_subshoppinglist || shared_subshoppinglist || { shoppingingredients: [] })
     const [ingredientsSort, setIngredientsSort] = useState("arbitrary")
@@ -31,6 +31,12 @@ export default function Shoppinglist(props) {
     const [deleteLoading, setDeleteLoading] = useState(false)
     const [deleteError, setDeleteError] = useState("")
     const [problem, setProblem] = useState(false)
+
+    useEffect(() => {
+        set_personal_subshoppinglist(getSubshoppinglist(personal_shoppinglist, user.mealplans, user.shoppinglists))
+        set_shared_subshoppinglist(getSubshoppinglist(shared_shoppinglist, user.shared_mealplans, user.shared_shoppinglists))
+        setSubshoppinglist(personal_subshoppinglist || shared_subshoppinglist || { shoppingingredients: [] })
+    }, [user])
 
     const handleDelete = () => {
         setDeleteError("")
