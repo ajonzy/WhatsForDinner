@@ -91,6 +91,7 @@ export default function MealForm(props) {
                     difficulty,
                     description: titleize(description),
                     image_url,
+                    owner_username: user.username,
                     user_id: user.id
                 })
             })

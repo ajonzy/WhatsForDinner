@@ -124,6 +124,7 @@ export default function Meal(props) {
                 difficulty: meal.difficulty,
                 description: meal.description,
                 image_url: meal.image_url,
+                owner_username: meal.owner_username,
                 user_id: user.id
             })
         })
@@ -380,6 +381,7 @@ export default function Meal(props) {
                     <h2 className='name'>{meal.name}</h2>
                     {shared_meal ? <p className='shared-by'>Shared by: {meal.user_username}</p> : null}
                     {shared_mealplan_meal && !shared_meal ? <p className='shared-by'>Owned by: {meal.user_username}</p> : null}
+                    {meal.owner_username !== meal.user_username ? <p className='shared-by'>Created by: {meal.user_username}</p> : null}
                     {meal.difficulty > 0 ? <p className='difficulty'>Difficulty: <span>{"★".repeat(meal.difficulty)}</span></p> : null}
                     {meal.image_url ? <img src={meal.image_url} alt="" /> : null}
                     {meal.description ? <p className='description'>{meal.description}</p> : null}
