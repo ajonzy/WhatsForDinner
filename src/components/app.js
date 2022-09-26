@@ -32,6 +32,7 @@ import AddFriend from './pages/addFriend';
 import FriendRequests from './pages/friendRequests';
 import Friend from './pages/friend';
 import ShareItem from './pages/shareItem';
+import Settings from './pages/settings';
 
 import sockets from '../functions/sockets';
 
@@ -63,27 +64,36 @@ class App extends Component {
     return this.state.user
   }
 
-  logoutUser() {
+  logoutUser(type="single") {
     const token = Cookies.get("token")
     Cookies.remove("token")
     this.state.socket.off()
-    this.setState({
-      loading: true
-    })
-    fetch(`https://whatsforsupperapi.herokuapp.com/user/logout/single/${token}`, { method: "DELETE" })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 200) {
-        this.setState({ 
-          user: {},
-          loading: false 
-        })
-      }
-      else {
-        console.log(data)
-      }
-    })
-    .catch(error => console.log(error))
+
+    if (type === "single") {
+      this.setState({
+        loading: true
+      })
+
+      fetch(`https://whatsforsupperapi.herokuapp.com/user/logout/single/${token}`, { method: "DELETE" })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 200) {
+          this.setState({ 
+            user: {},
+            loading: false 
+          })
+        }
+        else {
+          console.log(data)
+        }
+      })
+      .catch(error => console.log(error))
+    }
+    else {
+      this.setState({ 
+        user: {}
+      })
+    }
   }
 
   setSocket(newSocket) {
@@ -173,6 +183,7 @@ class App extends Component {
                         <Route path="/friends/requests" component={FriendRequests} />
                         <Route path="/friends/view/:username" component={Friend} />
                         <Route path="/share/:type/:id" component={ShareItem} />
+                        <Route exact path="/settings" component={Settings} />
                       </Switch>
                     </CSSTransition>
                   </TransitionGroup>

@@ -1,0 +1,56 @@
+.settings-page-wrapper {
+    .user-info-wrapper, .settings-options-wrapper {
+        margin-bottom: 30px;
+    }
+
+    .user-info-wrapper, .settings-options-wrapper, .settings-actions-wrapper {
+        text-align: center;
+
+        span {
+            font-weight: bold;
+            color: $darkest;
+        }
+
+        p {
+            margin: 0px;
+        }
+
+        .user-info-options-wrapper {
+            margin-top: 10px;
+        }
+
+        .autodelete-wrapper {
+            display: grid;
+            grid-template-columns: 64px 1fr;
+            gap: 0px 10px;
+
+            p {
+                grid-column: 1/-1;
+            }
+
+            input {
+                text-align: center;
+            }
+
+            input, select {
+                transition-delay: .2s;
+            }
+
+            &.disabled {
+                color: $disabled;
+
+                input, select {
+                    color: $disabled;
+                    border-color: $disabled;
+                    opacity: 0.7;
+                }
+            }
+        }
+    }
+
+    .settings-options-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+}

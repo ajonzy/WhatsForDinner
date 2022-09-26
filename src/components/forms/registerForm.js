@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 
 import LoadingError from '../utils/loadingError'
 
+import { UserContext } from '../app'
+
 export default function RegisterForm(props) {
-    const [username, setUsername] = useState("")
+    const { user } = useContext(UserContext)
+    const [username, setUsername] = useState(props.edit ? user.username : "")
     const [password, setPassword] = useState("")
     const [passwordConfirm, setPasswordConfirm] = useState("")
-    const [email, setEmail] = useState("")
+    const [email, setEmail] = useState(props.edit ? user.email : "")
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -62,40 +65,124 @@ export default function RegisterForm(props) {
         }
     }
 
+    const handleChange = event => {
+        event.preventDefault()
+
+        setError("")
+
+        if (props.password && password !== passwordConfirm) {
+            setError("Password confirmation does not match.")
+        }
+        else if ((props.username && username === "") || (props.password && (password === "" || passwordConfirm === "")) || (props.email && email === "")) {
+            setError("Please fill out all fields.")
+        }
+        else {
+            setLoading(true)
+
+            const generateBody = () => {
+                if (props.username) {
+                    return { username: username.trim() }
+                }
+                if (props.password) {
+                    return { password: password.trim() }
+                }
+                if (props.email) {
+                    return { email: email.trim() }
+                }
+            }
+
+            fetch(`https://whatsforsupperapi.herokuapp.com/user/update/${user.id}`, {
+                method: "PUT",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify(generateBody())
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 400) {
+                    if (data.message.startsWith("Error")) {
+                        setError("An error occured... Please try again later.")
+                        console.log(data)
+                    }
+                    else {
+                        setError(data.message)
+                    }
+                    setLoading(false)
+                }
+                else if (data.status === 200) {
+                    props.handleSuccessfulChange(data.data)
+                }
+                else {
+                    setError("An error occured... Please try again later.")
+                    console.log(data)
+                    setLoading(false)
+                }
+            })
+            .catch(error => {
+                setError("An error occured... Please try again later.")
+                console.log("Error logging in: ", error)
+                setLoading(false)
+            })
+        }
+    }
+
     return (
         <form className='form-wrapper login-form-wrapper'
-            onSubmit={handleRegister}
+            onSubmit={props.edit ? handleChange : handleRegister}
         >
-            <h3>Register</h3>
-            <input 
-                type="text" 
-                placeholder='Username'
-                value={username}
-                onChange={event => setUsername(event.target.value)}
-                required
-            />
-            <input 
-                type="password" 
-                placeholder='Password'
-                value={password}
-                onChange={event => setPassword(event.target.value)}
-                required
-            />
-            <input 
-                type="password" 
-                placeholder='Confirm Password'
-                value={passwordConfirm}
-                onChange={event => setPasswordConfirm(event.target.value)}
-                required
-            />
-            <input 
-                type="email" 
-                placeholder='Email'
-                value={email}
-                onChange={event => setEmail(event.target.value)}
-                required
-            />
-            <button type="submit" disabled={loading}>Register</button>
+            {!props.edit ? <h3>Register</h3> : null}
+            {
+                !props.edit || props.username
+                ? (
+                    <input 
+                        type="text" 
+                        placeholder='Username'
+                        value={username}
+                        onChange={event => setUsername(event.target.value)}
+                        required
+                    />
+                )
+                : null
+            }
+            {
+                !props.edit || props.password
+                ? (
+                    <input 
+                        type="password" 
+                        placeholder='Password'
+                        value={password}
+                        onChange={event => setPassword(event.target.value)}
+                        required
+                    />
+                )
+                : null
+            }
+            {
+                !props.edit || props.password
+                ? (
+                    <input 
+                        type="password" 
+                        placeholder='Confirm Password'
+                        value={passwordConfirm}
+                        onChange={event => setPasswordConfirm(event.target.value)}
+                        required
+                    />
+                )
+                : null
+            }
+            {
+                !props.edit || props.email
+                ? (
+                    <input 
+                        type="email" 
+                        placeholder='Email'
+                        value={email}
+                        onChange={event => setEmail(event.target.value)}
+                        required
+                    />
+                )
+                : null
+            }
+            <button type="submit" disabled={loading}>{props.edit ? "Change" : "Register"}</button>
             <LoadingError loading={loading} error={error} />
         </form>
     )

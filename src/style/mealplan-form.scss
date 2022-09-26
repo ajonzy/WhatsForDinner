@@ -89,7 +89,7 @@
                     transition-delay: .4s;
 
                     &.disabled {
-                        color: #cce7f4;
+                        color: $disabled;
                     }
                 }
             }
