@@ -70,7 +70,7 @@ export default function Meal(props) {
                     <p className='ingredientsection-title'>{ingredientsection.title}</p>
                     {ingredientsection.ingredients.map(ingredient => (
                         <div className="ingredient-wrapper" key={`ingredient-${ingredient.id}`}>
-                            <p className='ingredient-amount'>{ingredient.amount}{ingredient.unit ? ingredient.unit : null}</p>
+                            <p className='ingredient-amount'>{ingredient.amount}{ingredient.unit ? ` ${ingredient.unit}` : null}</p>
                             <p>{ingredient.name}</p>
                         </div>
                     ))}

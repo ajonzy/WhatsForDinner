@@ -849,7 +849,7 @@ export default function RecipeForm(props) {
                     <AutosuggestInput
                         input={ingredient.category}
                         setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
-                        suggestions={[...user.meals.map(meal => meal.recipe.ingredients.filter((ingredient, index, self) => self.findIndex(existingIngredient => existingIngredient.category === ingredient.category) === index).map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.filter((ingredient, index, self) => self.findIndex(existingIngredient => existingIngredient.category === ingredient.category) === index).map(ingredient => ingredient.category)).flat()]}
+                        suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index)}
                         placeholder="Category: produce, dairy, etc. (Optional)"
                     />
                 </div>
@@ -888,7 +888,7 @@ export default function RecipeForm(props) {
                             <AutosuggestInput
                                 input={ingredient.category}
                                 setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
-                                suggestions={[...user.meals.map(meal => meal.recipe.ingredients.filter((ingredient, index, self) => self.findIndex(existingIngredient => existingIngredient.category === ingredient.category) === index).map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.filter((ingredient, index, self) => self.findIndex(existingIngredient => existingIngredient.category === ingredient.category) === index).map(ingredient => ingredient.category)).flat()]}
+                                suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index)}
                                 placeholder="Category: produce, dairy, etc. (Optional)"
                             />
                         </div>
