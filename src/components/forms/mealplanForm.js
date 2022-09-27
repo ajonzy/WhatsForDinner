@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleXmark, faHandPointer, faLock, faRotate, faUnlock, faCheck, faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons'
 
 import generateMeals from '../../functions/generateMeals'
+import titleize from '../../functions/titleize'
 
 import LoadingError from '../utils/loadingError'
 
