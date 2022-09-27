@@ -11,11 +11,11 @@ export default function Settings(props) {
     const [changeUsername, setChangeUsername] = useState(false)
     const [changePassword, setChangePassword] = useState(false)
     const [changeEmail, setChangeEmail] = useState(false)
-    const [defaultMealplanOutline, setDefaultMealplanOutline] = useState(user.settings.default_mealplan_outline)
+    const [defaultMealplanOutline, setDefaultMealplanOutline] = useState(user.settings.default_mealplan_outline || "None")
     const [autodeleteMealplans, setAutodeleteMealplans] = useState(user.settings.autodelete_mealplans)
     const [autodeleteMealplansScheduleNumber, setAutodeleteMealplansScheduleNumber] = useState(user.settings.autodelete_mealplans_schedule_number)
     const [autodeleteMealplansScheduleUnit, setAutodeleteMealplansScheduleUnit] = useState(user.settings.autodelete_mealplans_schedule_unit)
-    const [pluralMealplan, setPluralMealplan] = useState(user.settings.autodelete_mealplans_schedule_number > 1 ? "s" : "")
+    const [pluralMealplan, setPluralMealplan] = useState(user.settings.autodelete_mealplans_schedule_number !== 1 ? "s" : "")
     const [defaultShoppinglistSort, setDefaultShoppinglistSort] = useState(user.settings.default_shoppinglist_sort)
     const [autodeleteShoppinglists, setAutodeleteShoppinglists] = useState(user.settings.autodelete_shoppinglists)
     const [autodeleteShoppinglistsScheduleNumber, setAutodeleteShoppinglistsScheduleNumber] = useState(user.settings.autodelete_shoppinglists_schedule_number)
@@ -48,7 +48,7 @@ export default function Settings(props) {
 
     const handleNumberChange = (event, setter, pluralSetter) => {
             setter(isNaN(event.target.valueAsNumber) ? "" : event.target.valueAsNumber)
-            if (!isNaN(event.target.valueAsNumber) && event.target.valueAsNumber > 1) {
+            if (!isNaN(event.target.valueAsNumber) && event.target.valueAsNumber !== 1) {
                 pluralSetter("s")
             }
             else if (!isNaN(event.target.valueAsNumber) && event.target.valueAsNumber === 1) {
@@ -116,12 +116,12 @@ export default function Settings(props) {
                         value={defaultMealplanOutline}
                         onChange={event => {
                             if (event.target.value !== defaultMealplanOutline) {
-                                handleSettingsChange("default_mealplan_outline", event.target.value)
+                                handleSettingsChange("default_mealplan_outline", event.target.value === "None" ? null : parseInt(event.target.value))
                             }
                             setDefaultMealplanOutline(event.target.value)
                         }}
                     >
-                        <option value={null}>None</option>
+                        <option value="None">None</option>
                         {user.mealplanoutlines.map(outline => <option key={outline.id} value={outline.id}>{outline.name}</option>)}
                     </select>
                 </label>
@@ -179,10 +179,10 @@ export default function Settings(props) {
                             setDefaultShoppinglistSort(event.target.value)
                         }}
                     >
-                        <option value="Arbitrary">Arbitrary</option>
-                        <option value="Alphabetical">Alphabetical</option>
-                        <option value="Category">Category</option>
-                        <option value="Remaining">Remaining</option>
+                        <option value="arbitrary">Arbitrary</option>
+                        <option value="alphabetical">Alphabetical</option>
+                        <option value="category">Category</option>
+                        <option value="remaining">Remaining</option>
                     </select>
                 </label>
 

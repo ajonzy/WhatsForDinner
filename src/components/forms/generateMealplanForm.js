@@ -11,10 +11,15 @@ import { UserContext } from '../app'
 
 export default function GenerateMealplanForm(props) {
     const { user } = useContext(UserContext)
-    const [outline, setOutline] = useState("")
-    const [name, setName] = useState(props.edit ? props.mealplan.name : props.data ? props.data.name || "" : "")
-    const [number, setNumber] = useState(props.data ? props.data.number || "" : "")
-    const [rules, setRules] = useState(props.data ? props.data.rules ? props.data.rules.map(rule => ({...rule, type: rule.rule_type})) : [] : [])
+
+    const initialData = () => {
+        return user.mealplanoutlines.map(outline => ({...outline, number: parseInt(outline.number)})).filter(outline => outline.id === user.settings.default_mealplan_outline)[0] || { name: "", number: "", rules: [] }
+    }
+
+    const [outline, setOutline] = useState(initialData().name)
+    const [name, setName] = useState(props.edit ? props.mealplan.name : props.data ? props.data.name || initialData().name : initialData().name)
+    const [number, setNumber] = useState(props.data ? props.data.number || initialData().number : initialData().number)
+    const [rules, setRules] = useState(props.data ? props.data.rules ? props.data.rules.map(rule => ({...rule, type: rule.rule_type})) : initialData().rules : initialData().rules)
     const [saveOutline, setSaveOutline] = useState(false)
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)

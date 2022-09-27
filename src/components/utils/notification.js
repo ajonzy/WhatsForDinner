@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useSpring, animated, easings } from 'react-spring'
 
 import { UserContext } from '../app'
@@ -6,7 +6,7 @@ import { UserContext } from '../app'
 export default function Notification(props) {
     const { user, setUser } = useContext(UserContext)
     const [notification] = useState(props.notification)
-    const styleProps = useSpring({ to: { opacity: 1, transform: "translateY(-0%)" }, from: { opacity: 0, transform: "translateY(-100%)" }, config: { duration: 200, easing: easings.easeInOutBounce }})
+    const styleProps = useSpring({ to: { opacity: user.settings.allow_notifications ? 1 : 0, transform: "translateY(-0%)" }, from: { opacity: 0, transform: "translateY(-100%)" }, config: { duration: 200, easing: easings.easeInOutBounce }})
 
     const handleNotification = (notification, path) => {
         fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { method: "DELETE" })
@@ -23,6 +23,12 @@ export default function Notification(props) {
         user.notifications = []
         setUser({...user})
     }
+
+    useEffect(() => {
+        if (!user.settings.allow_notifications) {
+            handleNotifications()
+        }
+    })
 
     switch(notification.category) {
         case "friendrequest": {

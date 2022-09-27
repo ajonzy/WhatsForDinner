@@ -26,7 +26,7 @@ export default function Shoppinglist(props) {
     const [shared_subshoppinglist, set_shared_subshoppinglist] = useState(getSubshoppinglist(shared_shoppinglist, user.shared_mealplans, user.shared_shoppinglists))
     const [shoppinglist, setShoppinglist] = useState(personal_shoppinglist || shared_shoppinglist)
     const [subshoppinglist, setSubshoppinglist] = useState(personal_subshoppinglist || shared_subshoppinglist || { shoppingingredients: [] })
-    const [ingredientsSort, setIngredientsSort] = useState("arbitrary")
+    const [ingredientsSort, setIngredientsSort] = useState(user.settings.default_shoppinglist_sort)
     const [confirm, setConfirm] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
     const [deleteError, setDeleteError] = useState("")
@@ -187,7 +187,7 @@ export default function Shoppinglist(props) {
                     {shared_shoppinglist ? <p className='shared-by'>Shared by: {shoppinglist.user_username}</p> : null}
                     {shoppinglist.updates_hidden ? <p className='contains-gifts'>Contains Gifts</p> : null}
                     <h3>Items</h3>
-                    {shoppinglist.shoppingingredients.length > 0
+                    {shoppinglist.shoppingingredients.length > 0 || subshoppinglist.shoppingingredients.length > 0
                         ? (
                             <div className="shoppinglist-ingredients-options-wrapper">
                                 <p>Sort By</p>

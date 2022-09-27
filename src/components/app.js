@@ -35,6 +35,7 @@ import ShareItem from './pages/shareItem';
 import Settings from './pages/settings';
 
 import sockets from '../functions/sockets';
+import autodelete from '../functions/autodelete';
 
 import Loader from "../../static/assets/images/BeaneaterLoader.gif"
 
@@ -111,6 +112,13 @@ class App extends Component {
         }
         else if (data.status === 200) {
           const socket = sockets(this.getUser, this.setUser)
+
+          if (data.data.settings.autodelete_mealplans) {
+            data.data.mealplans = autodelete("mealplan", data.data)
+          }
+          if (data.data.settings.autodelete_shoppinglists) {
+            data.data.shoppinglists = autodelete("shoppinglist", data.data)
+          }
 
           this.setState({ 
             user: data.data,
