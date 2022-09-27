@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faTimesCircle, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 import TextareaAutosize from 'react-textarea-autosize'
 
+import AutosuggestInput from '../utils/autosuggestInput'
 import LoadingError from '../utils/loadingError'
 
 import { UserContext } from '../app'
@@ -467,10 +468,11 @@ export default function MealForm(props) {
                 <label>Categories (optional)</label>
                 {categories.map((category, index) => (
                     <div className="category-wrapper" key={`category-${index}`}>
-                        <input type="text"
-                            value={category}
+                        <AutosuggestInput
+                            input={category}
+                            setInput={newValue => setCategories(categories.map((existingCategory, existingIndex) => existingIndex === index ? newValue : existingCategory))}
+                            suggestions={user.categories.map(category => category.name)}
                             placeholder="Category name"
-                            onChange={event => setCategories(categories.map((existingCategory, existingIndex) => existingIndex === index ? event.target.value : existingCategory))}
                             required
                         />
                         

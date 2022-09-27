@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
 import { faTimesCircle, faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons'
 
+import AutosuggestInput from '../utils/autosuggestInput'
 import LoadingError from '../utils/loadingError'
 
 import { UserContext } from '../app'
@@ -35,8 +36,8 @@ export default function ShoppinglistForm(props) {
         setIngredients([...ingredients])
     }
 
-    const handleIngredientChangeCategory = (event, ingredient) => {
-        ingredient.category = event.target.value
+    const handleIngredientChangeCategory = (newValue, ingredient) => {
+        ingredient.category = newValue
         setIngredients([...ingredients])
     }
 
@@ -510,10 +511,11 @@ export default function ShoppinglistForm(props) {
                                     onChange={event => handleIngredientChangeName(event, ingredient)}
                                     required
                                 />
-                                <input type="text"
-                                    value={ingredient.category}
+                                <AutosuggestInput
+                                    input={ingredient.category}
+                                    setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
+                                    suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()]}
                                     placeholder="Category: produce, dairy, etc. (Optional)"
-                                    onChange={event => handleIngredientChangeCategory(event, ingredient)}
                                 />
                             </div>
                         ))}

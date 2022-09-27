@@ -3,6 +3,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
+import AutosuggestInput from '../utils/autosuggestInput'
 import LoadingError from '../utils/loadingError'
 
 import titleize from '../../functions/titleize'
@@ -62,8 +63,8 @@ export default function RecipeForm(props) {
         setIngredients([...ingredients])
     }
 
-    const handleIngredientChangeCategory = (event, ingredient) => {
-        ingredient.category = event.target.value
+    const handleIngredientChangeCategory = (newValue, ingredient) => {
+        ingredient.category = newValue
         setIngredients([...ingredients])
     }
 
@@ -845,10 +846,11 @@ export default function RecipeForm(props) {
                         onChange={event => handleIngredientChangeName(event, ingredient)}
                         required
                     />
-                    <input type="text" 
-                        value={ingredient.category}
+                    <AutosuggestInput
+                        input={ingredient.category}
+                        setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
+                        suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()]}
                         placeholder="Category: produce, dairy, etc. (Optional)"
-                        onChange={event => handleIngredientChangeCategory(event, ingredient)}
                     />
                 </div>
             ))}
@@ -883,10 +885,11 @@ export default function RecipeForm(props) {
                                 onChange={event => handleIngredientChangeName(event, ingredient)}
                                 required
                             />
-                            <input type="text" 
-                                value={ingredient.category}
+                            <AutosuggestInput
+                                input={ingredient.category}
+                                setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
+                                suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()]}
                                 placeholder="Category: produce, dairy, etc. (Optional)"
-                                onChange={event => handleIngredientChangeCategory(event, ingredient)}
                             />
                         </div>
                     ))}
