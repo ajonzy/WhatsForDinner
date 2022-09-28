@@ -35,5 +35,5 @@ export default function autodelete(type, user) {
         })
     })
 
-    return data.filter(item => !expiredData.map(expiredItem => expiredItem.id).includes(item.id))
+    return [...data.filter(item => !expiredData.map(expiredItem => expiredItem.id).includes(item.id)), ...user.shoppinglists.filter(shoppinglist => shoppinglist.mealplan_id)]
 }

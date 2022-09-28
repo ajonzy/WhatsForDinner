@@ -59,8 +59,8 @@ export default function ShoppinglistForm(props) {
         if (name === "") {
             setError("Please fill out all required fields.")
         }
-        else if (!ingredients.every(ingredient => !isNaN(ingredient.amount.replace("/", "")))) {
-            setError("Ingredient amounts can only be a number or fraction.")
+        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)|(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+))[-](([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)))$/))) {
+            setError("Ingredient amounts can only be a number, a fraction, or a range.")
         }
         else {
             setLoading(true)
@@ -208,8 +208,8 @@ export default function ShoppinglistForm(props) {
         if (name === "") {
             setError("Please fill out all required fields.")
         }
-        else if (!ingredients.every(ingredient => !isNaN(ingredient.amount.replace("/", "")))) {
-            setError("Ingredient amounts can only be a number or fraction.")
+        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)|(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+))[-](([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)))$/))) {
+            setError("Ingredient amounts can only be a number, a fraction, or a range.")
         }
         else {
             setLoading(true)

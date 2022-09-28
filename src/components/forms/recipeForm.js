@@ -95,8 +95,8 @@ export default function RecipeForm(props) {
         ) {
             setError("Each section must have a unique title.")
         }
-        else if (!ingredients.every(ingredient => !isNaN(ingredient.amount.replace("/", "")))) {
-            setError("Ingredient amounts can only be a number or fraction.")
+        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)|(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+))[-](([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)))$/))) {
+            setError("Ingredient amounts can only be a number, a fraction, or a range.")
         }
         else {
             setLoading(true)
@@ -318,8 +318,8 @@ export default function RecipeForm(props) {
         ) {
             setError("Each section must have a unique title.")
         }
-        else if (!ingredients.every(ingredient => !isNaN(ingredient.amount.replace("/", "")))) {
-            setError("Ingredient amounts can only be a number or fraction.")
+        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)|(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+))[-](([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)))$/))) {
+            setError("Ingredient amounts can only be a number, a fraction, or a range.")
         }
         else {
             setLoading(true)
@@ -831,7 +831,7 @@ export default function RecipeForm(props) {
                     <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
                     <input type="text" 
                         value={ingredient.amount}
-                        placeholder="Amount: 1, 1/2, .5, etc."
+                        placeholder="Amount: 1, 1/2, 1.5, 1 1/2, 1-2, etc."
                         onChange={event => handleIngredientChangeAmount(event, ingredient)}
                         required
                     />
@@ -870,7 +870,7 @@ export default function RecipeForm(props) {
                             <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
                             <input type="text" 
                                 value={ingredient.amount}
-                                placeholder="Amount: 1, 1/2, .5, etc."
+                                placeholder="Amount: 1, 1/2, 1.5, 1 1/2, 1-2, etc."
                                 onChange={event => handleIngredientChangeAmount(event, ingredient)}
                                 required
                             />

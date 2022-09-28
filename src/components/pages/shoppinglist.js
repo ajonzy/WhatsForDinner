@@ -124,13 +124,34 @@ export default function Shoppinglist(props) {
     }
 
     const calculateAmount = (amount, multiplier) => {
-        if (amount.includes("/")) {
-            amount = amount.split("/")
-            return new Fraction(amount[0], amount[1]).multiply(multiplier).toString()
+        const amountList = []
+
+        if (amount.includes("-")) {
+            amountList.push(...amount.split("-"))
         }
         else {
-            return amount * multiplier
+            amountList.push(amount)
         }
+
+        const result = []
+
+        amountList.forEach(amount => {
+            if (amount.includes(" ")) {
+                amount = amount.split(" ")
+                const fraction = amount[1].split("/")
+                fraction[0] = (parseInt(fraction[0]) + (parseInt(amount[0]) * parseInt(fraction[1]))).toString()
+                result.push(new Fraction(fraction[0], fraction[1]).multiply(multiplier).toString())
+            }
+            else if (amount.includes("/")) {
+                amount = amount.split("/")
+                result.push(new Fraction(amount[0], amount[1]).multiply(multiplier).toString())
+            }
+            else {
+                result.push(amount * multiplier)
+            }
+        })
+
+        return result.join("-")
     }
 
     const renderIngredients = () => {
