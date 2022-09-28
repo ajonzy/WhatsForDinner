@@ -91,6 +91,11 @@ export default function Meal(props) {
             .then(data => {
                 if (data.status === 200) {
                     user.meals = user.meals.filter(meal => meal.id !== data.data.id)
+                    user.mealplans.forEach(mealplan => {
+                        mealplan.meals = mealplan.meals.filter(meal => meal.id !== data.data.id)
+                        mealplan.shoppinglist.shoppingingredients = mealplan.shoppinglist.shoppingingredients.filter(shoppingingredient => !data.data.recipe.ingredients.map(ingredient => ingredient.id).includes(shoppingingredient.ingredient_id))
+                    })
+                    user.shoppinglists.filter(shoppinglist => !shoppinglist.is_sublist).forEach(shoppinglist => shoppinglist.shoppingingredients = shoppinglist.shoppingingredients.filter(shoppingingredient => !data.data.recipe.ingredients.map(ingredient => ingredient.id).includes(shoppingingredient.ingredient_id)))
                     setUser({...user})
                     props.history.push("/meals")
                 }
@@ -232,6 +237,7 @@ export default function Meal(props) {
             }
         }
 
+        let ingredientsectionsData = []
         if (meal.recipe.ingredientsections.length > 0) {
             const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredientsection/add/multiple", {
                 method: "POST",
@@ -261,6 +267,7 @@ export default function Meal(props) {
             }
             else if (data.status === 200) {
                 newData.recipe.ingredientsections = data.data
+                ingredientsectionsData = data.data
             }
             else {
                 setCopyError("An error occured... Please try again later.")
@@ -271,10 +278,17 @@ export default function Meal(props) {
         }
 
         if (meal.recipe.ingredients.length > 0) {
+            const formmattedIngredients = [...meal.recipe.ingredients.filter(ingredient => !ingredient.ingredientsection_id)]
+
+            meal.recipe.ingredientsections.forEach(ingredientsection => {
+                const ingredientsectionData = ingredientsectionsData.filter(ingredientsectionData => ingredientsectionData.title === ingredientsection.title)[0]
+                formmattedIngredients.push(...meal.recipe.ingredients.filter(ingredient => ingredient.ingredientsection_id === ingredientsection.id).map(ingredient => ({ ...ingredient, ingredientsection_id: ingredientsectionData.id })))
+            })
+
             const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
-                body: JSON.stringify(meal.recipe.ingredients.map(ingredient => {
+                body: JSON.stringify(formmattedIngredients.map(ingredient => {
                     return {
                         name: ingredient.name,
                         amount: ingredient.amount,
@@ -303,6 +317,7 @@ export default function Meal(props) {
             }
             else if (data.status === 200) {
                 newData.recipe.ingredients = data.data
+                newData.recipe.ingredientsections.forEach(section => section.ingredients.push(...data.data.filter(ingredient => ingredient.ingredientsection_id === section.id)))
             }
             else {
                 setCopyError("An error occured... Please try again later.")
