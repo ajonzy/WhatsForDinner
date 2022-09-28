@@ -93,6 +93,9 @@ export default function sockets(getUser, setUser) {
                   if (data.data.mealplan.shoppinglist) {
                     shoppinglists.push(data.data.mealplan.shoppinglist)
                   }
+                  if (data.data.mealplan.sub_shoppinglist) {
+                    shoppinglists.push(data.data.mealplan.sub_shoppinglist)
+                  }
                   notifications.push(data.data.notification)
                   break
                 }
