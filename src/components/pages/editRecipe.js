@@ -28,8 +28,8 @@ export default function EditRecipe(props) {
             : (
                 <div className='page-wrapper edit-recipe-page-wrapper'>
                     <p className="not-found">Sorry, this meal does not exist...</p>
-                    <div className="spacer-30" />
                     <div className="options-wrapper">
+                        <div className="spacer-30" />
                         <button onClick={() => props.history.push("/meals")}>Back to Meals</button>
                     </div>
                 </div>

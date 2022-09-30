@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
@@ -23,6 +23,9 @@ export default function GenerateMealplanForm(props) {
     const [saveOutline, setSaveOutline] = useState(false)
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
+
+    const initialState = useRef(true)
+    useEffect(() => initialState.current = false, [])
 
     const handleGenerate = () => {
         setError("")
@@ -410,6 +413,7 @@ export default function GenerateMealplanForm(props) {
     return (
         <form className='form-wrapper generate-mealplan-form-wrapper'
             onSubmit={handleSubmit}
+            autoComplete="off"
         >
             <h3>{renderHeaderText()}</h3>
             {user.mealplanoutlines.length > 0 && !props.outlineAdd && !props.outlineEdit ? <label>Mealplan Outline</label> : null}
@@ -438,6 +442,10 @@ export default function GenerateMealplanForm(props) {
                     setName(event.target.value)
                     setOutline("")
                 }}
+                autoCapitalize="on"
+                autoCorrect='off'
+                spellCheck="false"
+                autoFocus
                 required
             />
             {props.edit ? null : <label>Number of Meals</label>}
@@ -463,7 +471,7 @@ export default function GenerateMealplanForm(props) {
                     <div className="rules-wrapper">
                         {rules.map((rule, index) => (
                             <div className="rule-wrapper" key={`rule-${index}`}>
-                                <button type='button' className='icon-button' onClick={() => {
+                                <button type='button' disabled={loading} className='icon-button' onClick={() => {
                                     rules.splice(index, 1)
                                     setRules([...rules])
                                     setOutline("")
@@ -517,11 +525,13 @@ export default function GenerateMealplanForm(props) {
                                         setRules([...rules])
                                         setOutline("")
                                     }}
+                                    spellCheck="false"
+                                    autoFocus={!initialState.current}
                                     required
                                 />
                             </div>
                         ))}
-                        <button type='button' className='alt-button' onClick={() => {
+                        <button type='button' disabled={loading} className='alt-button' onClick={() => {
                             rules.push({
                                 type: "Category",
                                 rule: "At least",

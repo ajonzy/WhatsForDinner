@@ -18,8 +18,8 @@ export default function EditOutline(props) {
             ? (
                 <div className='page-wrapper edit-outline-page-wrapper'>
                     <GenerateMealplanForm data={outline} outlineEdit handleSuccessfulEdit={handleSuccessfulEdit} />
-                    <div className="spacer-40" />
                     <div className="options-wrapper">
+                        <div className="spacer-40" />
                         <button onClick={() => props.history.push("/mealplanoutlines")}>Cancel</button>
                     </div>
                 </div>
@@ -27,8 +27,8 @@ export default function EditOutline(props) {
             : (
                 <div className='page-wrapper edit-outline-page-wrapper'>
                     <p className="not-found">Sorry, this outline does not exist...</p>
-                    <div className="spacer-30" />
                     <div className="options-wrapper">
+                        <div className="spacer-30" />
                         <button onClick={() => props.history.push("/mealplanoutlines")}>Back to Mealplan Outlines</button>
                     </div>
                 </div>

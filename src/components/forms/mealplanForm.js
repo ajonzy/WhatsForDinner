@@ -37,9 +37,18 @@ export default function MealplanForm(props) {
     const [problem, setProblem] = useState(props.problem || false)
     const [data, setData] = useState(props.edit ? { name: props.data.name, number: props.meals.length, rules: props.data.rules.map(rule => ({ ...rule, type: rule.rule_type })) } : props.data)
     const [modalIsOpen, setIsOpen] = useState(false)
+    const [mealsList, setMealsList] = useState(user.meals)
     const [overidenMeal, setOveridenMeal] = useState({})
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
+
+    const handleFilter = event => {
+        setMealsList(user.meals.filter(meal => (
+            meal.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
+            meal.categories.map(category => category.name.toLowerCase()).filter(category => category.includes(event.target.value.toLowerCase())).length > 0 ||
+            (meal.difficulty > 0 ? meal.difficulty === parseInt(event.target.value) : false)
+        )))
+    }
 
     const handleLock = lockedMeal => {
         const meal = meals.filter(meal => meal.id === lockedMeal.id)[0]
@@ -368,8 +377,12 @@ export default function MealplanForm(props) {
                 <div className="mealplan-modal-wrapper">
                     <div className="options-wrapper">
                         <button type="button" onClick={() => setIsOpen(false)}>Close</button>
+                        <input type="text"
+                            placeholder='Search: meal names, category, difficulty'
+                            onChange={handleFilter}
+                        />
                     </div>
-                    {user.meals.filter(userMeal => !meals.map(meal => meal.id).includes(userMeal.id)).map(userMeal => (
+                    {mealsList.filter(userMeal => !meals.map(meal => meal.id).includes(userMeal.id)).map(userMeal => (
                         <div key={`modal-meal-${userMeal.id}`} className="modal-meal-wrapper">
                             <p className='name'>{userMeal.name}</p>
                             <button type='button' className='icon-button' onClick={() => handleMealOveride(userMeal)}><FontAwesomeIcon icon={faCheck} /></button>
@@ -383,6 +396,7 @@ export default function MealplanForm(props) {
     return (
         <form className='form-wrapper mealplan-form-wrapper'
             onSubmit={props.edit ? handleEdit : handleMealplanAdd}
+            autoComplete="off"
         >
             <h2 className='name'>{data.name}</h2>
             {renderModal()}
@@ -418,9 +432,9 @@ export default function MealplanForm(props) {
                 </div>
             ))}
             <div className="options-wrapper">
-                <button type='button' className='alt-button' onClick={() => handleRefresh()}>Refresh Meals</button>
-                <button type='button' className='alt-button' onClick={() => handleMealAdd()}>Add Meal</button>
-                <button type='button' className='alt-button' onClick={() => props.setSection("mealplan-form")}>Edit Rules</button>
+                <button type='button' className='alt-button' disabled={loading} onClick={() => handleRefresh()}>Refresh Meals</button>
+                <button type='button' className='alt-button' disabled={loading} onClick={() => handleMealAdd()}>Add Meal</button>
+                <button type='button' className='alt-button' disabled={loading} onClick={() => props.setSection("mealplan-form")}>Edit Rules</button>
             </div>
             <div className="spacer-40" />
             <button type="submit" disabled={loading}>{props.edit ? "Edit Meals" : "Create Mealplan"}</button>

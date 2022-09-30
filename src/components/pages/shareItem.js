@@ -30,8 +30,8 @@ export default function ShareItem(props) {
             : (
                 <div className='page-wrapper share-item-page-wrapper'>
                     <p className="not-found">Sorry, this {itemType} does not exist...</p>
-                    <div className="spacer-30" />
                     <div className="options-wrapper">
+                        <div className="spacer-30" />
                         <button onClick={() => props.history.push(`/${itemType}s`)}>Back to {titleize(itemType === "shoppinglist" ? "shopping list" : itemType)}s</button>
                     </div>
                 </div>

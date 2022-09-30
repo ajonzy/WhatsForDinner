@@ -138,6 +138,10 @@ export default function RegisterForm(props) {
                         placeholder='Username'
                         value={username}
                         onChange={event => setUsername(event.target.value)}
+                        autoCapitalize="none"
+                        autoCorrect='off'
+                        spellCheck="false"
+                        autoFocus
                         required
                     />
                 )
@@ -177,6 +181,9 @@ export default function RegisterForm(props) {
                         placeholder='Email'
                         value={email}
                         onChange={event => setEmail(event.target.value)}
+                        autoCapitalize="none"
+                        autoCorrect='off'
+                        spellCheck="false"
                         required
                     />
                 )

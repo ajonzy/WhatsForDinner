@@ -66,6 +66,10 @@ export default function LoginForm(props) {
                 placeholder='Username'
                 value={username}
                 onChange={event => setUsername(event.target.value)}
+                autoCapitalize="none"
+                autoCorrect='off'
+                spellCheck="false"
+                autoFocus
                 required
             />
             <input 

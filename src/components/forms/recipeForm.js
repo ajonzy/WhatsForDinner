@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
@@ -25,6 +25,9 @@ export default function RecipeForm(props) {
     const [ingredientsections, setIngredientsections] = useState(props.edit ? props.meal.recipe.ingredientsections.map(ingredientsection => ({...ingredientsection})) : [])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
+
+    const initialState = useRef(true)
+    useEffect(() => initialState.current = false, [])
 
     const handleStepChange = (event, step) => {
         step.text = event.target.value
@@ -95,7 +98,7 @@ export default function RecipeForm(props) {
         ) {
             setError("Each section must have a unique title.")
         }
-        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)|(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+))[-](([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)))$/))) {
+        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+)|((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+))[-]((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+)))$/))) { // Regular expression to check for: (a single number) | (a decimal number or simple fraction) | (a complex fraction) | (a range between any of the first 3 options)
             setError("Ingredient amounts can only be a number, a fraction, or a range.")
         }
         else {
@@ -318,7 +321,7 @@ export default function RecipeForm(props) {
         ) {
             setError("Each section must have a unique title.")
         }
-        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)|(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+))[-](([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)))$/))) {
+        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+)|((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+))[-]((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+)))$/))) {
             setError("Ingredient amounts can only be a number, a fraction, or a range.")
         }
         else {
@@ -823,27 +826,34 @@ export default function RecipeForm(props) {
     return (
         <form className='form-wrapper recipe-form-wrapper'
             onSubmit={props.edit ? handleEdit : handleAdd}
+            autoComplete="off"
         >
             <h3>{props.edit ? `Edit ${props.meal.name} Recipe` : "Add a Recipe"}</h3>
             <h4>Ingredients</h4>
-            {ingredients.filter(ingredient => ingredient.ingredientsection === undefined).map((ingredient, index) => (
+            {ingredients.map((ingredient, index) => ({...ingredient, index})).filter(ingredient => ingredient.ingredientsection === undefined).map((ingredient, index) => (
                 <div className="ingredient-wrapper" key={`ingredient-${index}`}>
-                    <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
+                    <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(ingredient.index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
                     <input type="text" 
                         value={ingredient.amount}
                         placeholder="Amount: 1, 1/2, 1.5, 1 1/2, 1-2, etc."
                         onChange={event => handleIngredientChangeAmount(event, ingredient)}
+                        spellCheck="false"
+                        autoFocus={!initialState.current}
                         required
                     />
                     <input type="text" 
                         value={ingredient.unit}
                         placeholder="Unit of Measurement (optional)"
                         onChange={event => handleIngredientChangeUnit(event, ingredient)}
+                        autoCapitalize="off"
+                        spellCheck="false"
                     />
                     <input type="text" 
                         value={ingredient.name}
                         placeholder="Ingredient"
                         onChange={event => handleIngredientChangeName(event, ingredient)}
+                        autoCapitalize="on"
+                        spellCheck="false"
                         required
                     />
                     <AutosuggestInput
@@ -851,6 +861,8 @@ export default function RecipeForm(props) {
                         setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
                         suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index)}
                         placeholder="Category: produce, dairy, etc. (Optional)"
+                        autoCapitalize="on"
+                        spellCheck="false"
                     />
                 </div>
             ))}
@@ -863,26 +875,35 @@ export default function RecipeForm(props) {
                         value = {ingredientsection.title}
                         placeholder = "Section Title"
                         onChange={event => handleIngredientsectionChange(event, ingredientsection)}
+                        autoCapitalize="on"
+                        spellCheck="false"
+                        autoFocus={!initialState.current}
                         required
                     />
-                    {ingredients.filter(ingredient => ingredient.ingredientsection === index).map((ingredient, ingredientIndex) => (
+                    {ingredients.map((ingredient, index) => ({...ingredient, index})).filter(ingredient => ingredient.ingredientsection === index).map((ingredient, ingredientIndex) => (
                         <div className="ingredient-wrapper" key={`ingredient-${index}-${ingredientIndex}`}>
-                            <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
+                            <button type='button' disabled={loading} className='icon-button' onClick={() => handleIngredientDelete(ingredient.index)}><FontAwesomeIcon icon={faTimesCircle} /></button>
                             <input type="text" 
                                 value={ingredient.amount}
                                 placeholder="Amount: 1, 1/2, 1.5, 1 1/2, 1-2, etc."
                                 onChange={event => handleIngredientChangeAmount(event, ingredient)}
+                                spellCheck="false"
+                                autoFocus={!initialState.current}
                                 required
                             />
                             <input type="text" 
                                 value={ingredient.unit}
                                 placeholder="Unit of Measurement (optional)"
                                 onChange={event => handleIngredientChangeUnit(event, ingredient)}
+                                autoCapitalize="off"
+                                spellCheck="false"
                             />
                             <input type="text" 
                                 value={ingredient.name}
                                 placeholder="Ingredient"
                                 onChange={event => handleIngredientChangeName(event, ingredient)}
+                                autoCapitalize="on"
+                                spellCheck="false"
                                 required
                             />
                             <AutosuggestInput
@@ -890,6 +911,8 @@ export default function RecipeForm(props) {
                                 setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
                                 suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index)}
                                 placeholder="Category: produce, dairy, etc. (Optional)"
+                                autoCapitalize="on"
+                                spellCheck="false"
                             />
                         </div>
                     ))}
@@ -906,6 +929,9 @@ export default function RecipeForm(props) {
                         placeholder="Step"
                         onChange={event => handleStepChange(event, step)}
                         minRows="6"
+                        autoCapitalize="on"
+                        spellCheck="true"
+                        autoFocus={!initialState.current}
                         required
                     />
                     <button type='button' disabled={loading} className='icon-button' onClick={() => handleStepDelete(step)}><FontAwesomeIcon icon={faTimesCircle} /></button>
@@ -920,6 +946,9 @@ export default function RecipeForm(props) {
                         value = {stepsection.title}
                         placeholder = "Section Title"
                         onChange={event => handleStepsectionChange(event, stepsection)}
+                        autoCapitalize="on"
+                        spellCheck="false"
+                        autoFocus={!initialState.current}
                         required
                     />
                     {steps.filter(step => step.stepsection === index).map((step, stepIndex) => (
@@ -929,6 +958,9 @@ export default function RecipeForm(props) {
                                 placeholder="Step"
                                 onChange={event => handleStepChange(event, step)}
                                 minRows="6"
+                                autoCapitalize="on"
+                                spellCheck="true"
+                                autoFocus={!initialState.current}
                                 required
                             />
                             <button type='button' disabled={loading} className='icon-button' onClick={() => handleStepDelete(step)}><FontAwesomeIcon icon={faTimesCircle} /></button>

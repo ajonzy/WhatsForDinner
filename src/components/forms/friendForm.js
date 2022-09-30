@@ -18,6 +18,9 @@ export default function FriendForm(props) {
         if (username === "") {
             setError("Please fill out all required fields.")
         }
+        else if (username === user.username) {
+            setError("You can't send a friend request to yourself!")
+        }
         else {
             setLoading(true)
 
@@ -61,12 +64,17 @@ export default function FriendForm(props) {
     return (
         <form className='form-wrapper friend-form-wrapper'
             onSubmit={handleSubmit}
+            autoComplete="off"
         >
             <h3>Send Friend Request</h3>
             <input type="text" 
                 value={username}
                 placeholder="Username"
                 onChange={event => setUsername(event.target.value)}
+                autoCapitalize="off"
+                autoCorrect='off'
+                spellCheck="false"
+                autoFocus
                 required
             />
             <div className='spacer-40' />

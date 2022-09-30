@@ -96,7 +96,7 @@ export default function Meal(props) {
                         mealplan.shoppinglist.shoppingingredients = mealplan.shoppinglist.shoppingingredients.filter(shoppingingredient => !data.data.recipe.ingredients.map(ingredient => ingredient.id).includes(shoppingingredient.ingredient_id))
                     })
                     user.shoppinglists.filter(shoppinglist => !shoppinglist.is_sublist).forEach(shoppinglist => shoppinglist.shoppingingredients = shoppinglist.shoppingingredients.filter(shoppingingredient => !data.data.recipe.ingredients.map(ingredient => ingredient.id).includes(shoppingingredient.ingredient_id)))
-                    setUser({...user})
+                    setUser({...user})                                                                                                             
                     props.history.push("/meals")
                 }
                 else {

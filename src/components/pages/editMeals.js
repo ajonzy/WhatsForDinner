@@ -20,8 +20,8 @@ export default function EditMeals(props) {
             ? (
                 <div className='page-wrapper edit-meals-page-wrapper'>
                     <MealplanForm meals={mealplan.meals} data={mealplan} edit handleSuccessfulEdit={handleSuccessfulEdit} />
-                    <div className="spacer-40" />
                     <div className="options-wrapper">
+                        <div className="spacer-40" />
                         <button onClick={() => props.history.push(`/mealplans/view/${mealplan.id}`)}>Cancel</button>
                     </div>
                 </div>
@@ -29,8 +29,8 @@ export default function EditMeals(props) {
             : (
                 <div className='page-wrapper edit-meals-page-wrapper'>
                     <p className="not-found">Sorry, this mealplan does not exist...</p>
-                    <div className="spacer-30" />
                     <div className="options-wrapper">
+                        <div className="spacer-30" />
                         <button onClick={() => props.history.push("/mealplans")}>Back to Mealplans</button>
                     </div>
                 </div>

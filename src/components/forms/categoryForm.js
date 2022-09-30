@@ -53,12 +53,16 @@ export default function CategoryForm(props) {
     return (
         <form className='form-wrapper category-form-wrapper'
             onSubmit={handleSubmit}
+            autoComplete="off"
         >
             <h3>Add a Meal Category</h3>
             <input type="text" 
                 value={name}
                 placeholder="Category name"
                 onChange={event => setName(event.target.value)}
+                autoCapitalize="on"
+                spellCheck="false"
+                autoFocus
                 required
             />
             <div className='spacer-40' />

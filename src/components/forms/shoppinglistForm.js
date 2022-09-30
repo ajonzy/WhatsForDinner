@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
 import { faTimesCircle, faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons'
@@ -20,6 +20,9 @@ export default function ShoppinglistForm(props) {
     const [ingredients, setIngredients] = useState(props.editShoppingingredients ? props.shoppinglist.shoppingingredients.filter(ingredient => !ingredient.ingredient_id).concat(subshoppinglist.shoppingingredients).sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id).map(ingredient => ({...ingredient})) : [])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
+
+    const initialState = useRef(true)
+    useEffect(() => initialState.current = false, [])
 
     const handleIngredientChangeAmount = (event, ingredient) => {
         ingredient.amount = event.target.value
@@ -59,7 +62,7 @@ export default function ShoppinglistForm(props) {
         if (name === "") {
             setError("Please fill out all required fields.")
         }
-        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)|(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+))[-](([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)))$/))) {
+        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+)|((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+))[-]((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+)))$/))) {
             setError("Ingredient amounts can only be a number, a fraction, or a range.")
         }
         else {
@@ -208,7 +211,7 @@ export default function ShoppinglistForm(props) {
         if (name === "") {
             setError("Please fill out all required fields.")
         }
-        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)|(([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+))[-](([0-9]+)|([0-9]+([./])[0-9]+)|([0-9]+[ ][0-9]+[/][0-9]+)))$/))) {
+        else if (!ingredients.every(ingredient => ingredient.amount.trim().match(/^((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+)|((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+))[-]((\d+)|(\d+([./])\d+)|(\d+[ ]\d+[/]\d+)))$/))) {
             setError("Ingredient amounts can only be a number, a fraction, or a range.")
         }
         else {
@@ -459,6 +462,7 @@ export default function ShoppinglistForm(props) {
     return (
         <form className='form-wrapper shoppinglist-form-wrapper'
             onSubmit={props.editShoppinglist ? handleEdit : props.editShoppingingredients ? handleEditIngredients : handleAdd}
+            autoComplete="off"
         >
             <h3>{props.editShoppinglist ? "Edit Shopping List" : props.editShoppingingredients ? props.shoppinglist.name : "Add a Shopping List"}</h3>
             {!props.editShoppingingredients
@@ -467,6 +471,9 @@ export default function ShoppinglistForm(props) {
                         value={name}
                         placeholder="Shopping list name"
                         onChange={event => setName(event.target.value)}
+                        autoCapitalize="on"
+                        spellCheck="false"
+                        autoFocus
                         required
                     />
                 )
@@ -498,17 +505,22 @@ export default function ShoppinglistForm(props) {
                                     value={ingredient.amount}
                                     placeholder="Amount"
                                     onChange={event => handleIngredientChangeAmount(event, ingredient)}
+                                    autoFocus={!initialState.current}
                                     required
                                 />
                                 <input type="text" 
                                     value={ingredient.unit}
                                     placeholder="Unit of Measurement (optional)"
                                     onChange={event => handleIngredientChangeUnit(event, ingredient)}
+                                    autoCapitalize="off"
+                                    spellCheck="false"
                                 />
                                 <input type="text"
                                     value={ingredient.name}
                                     placeholder="Name"
                                     onChange={event => handleIngredientChangeName(event, ingredient)}
+                                    autoCapitalize="on"
+                                    spellCheck="false"
                                     required
                                 />
                                 <AutosuggestInput
@@ -516,6 +528,8 @@ export default function ShoppinglistForm(props) {
                                     setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
                                     suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index)}
                                     placeholder="Category: produce, dairy, etc. (Optional)"
+                                    autoCapitalize="on"
+                                    spellCheck="false"
                                 />
                             </div>
                         ))}

@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react'
 
+import AutosuggestInput from '../utils/autosuggestInput'
 import LoadingError from '../utils/loadingError'
 
 import { UserContext } from '../app'
@@ -66,18 +67,24 @@ export default function ShareItemForm(props) {
     return (
         <form className='form-wrapper share-item-form-wrapper'
             onSubmit={handleShare}
+            autoComplete="off"
         >
             <h3>Share {titleize(props.itemType === "shoppinglist" ? "shopping list" : props.itemType)}</h3>
             <p className='name'>{props.item.name}</p>
             <h4>Share With</h4>
-            <input type="text" 
-                value={friend}
+            <AutosuggestInput
+                input={friend}
+                setInput={setFriend}
+                suggestions={user.friends.map(friend => friend.username)}
                 placeholder="Username"
-                onChange={event => setFriend(event.target.value)}
+                autoCapitalize="none"
+                autoCorrect='off'
+                spellCheck="false"
+                autoFocus
                 required
             />
             <div className="spacer-40" />
-            <button type="submit">Share</button>
+            <button type="submit" disabled={loading}>Share</button>
             <LoadingError loading={loading} error={error} />
         </form>
     )

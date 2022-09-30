@@ -127,8 +127,8 @@ export default function Friend(props) {
             : (
                 <div className='page-wrapper friend-page-wrapper'>
                     <p className="not-found">Sorry, this friend does not exist...</p>
-                    <div className="spacer-30" />
                     <div className="options-wrapper">
+                        <div className="spacer-30" />
                         <button onClick={() => props.history.push("/friends")}>Back to Friends List</button>
                     </div>
                 </div>

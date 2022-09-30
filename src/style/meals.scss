@@ -1,4 +1,15 @@
 .meals-page-wrapper {
+    h3 {
+        text-align: center;
+        line-height: 20px;
+
+        span {
+            font-size: 12px;
+            color: $darkest;
+            letter-spacing: 2px;
+        }
+    }
+
     .meals-wrapper {
         @include flex;
 

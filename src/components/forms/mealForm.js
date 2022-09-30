@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faTimesCircle, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 import TextareaAutosize from 'react-textarea-autosize'
@@ -19,6 +19,9 @@ export default function MealForm(props) {
     const [categories, setCategories] = useState(props.edit ? props.meal.categories.map(category => category.name) : [])
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
+
+    const initialState = useRef(true)
+    useEffect(() => initialState.current = false, [])
 
     const handleDifficultyChange = newDifficulty => {
         setDifficulty(newDifficulty === difficulty ? 0 : newDifficulty)
@@ -414,12 +417,16 @@ export default function MealForm(props) {
     return (
         <form className='form-wrapper meal-form-wrapper'
             onSubmit={props.edit ? handleEdit : handleAdd}
+            autoComplete="off"
         >
             <h3>{props.edit ? `Edit ${props.meal.name}` : "Add a Meal"}</h3>
             <input type="text" 
                 value={name}
                 placeholder="Meal name"
                 onChange={event => setName(event.target.value)}
+                autoCapitalize="on"
+                spellCheck="false"
+                autoFocus
                 required
             />
             <TextareaAutosize
@@ -427,6 +434,8 @@ export default function MealForm(props) {
                 placeholder="Description (optional)"
                 onChange={event => setDescription(event.target.value)}
                 minRows="6"
+                autoCapitalize="on"
+                spellCheck="true"
             />
             <div className="difficulty-wrapper">
                 <label>Difficuly (optional)</label>
@@ -473,6 +482,9 @@ export default function MealForm(props) {
                             setInput={newValue => setCategories(categories.map((existingCategory, existingIndex) => existingIndex === index ? newValue : existingCategory))}
                             suggestions={user.categories.map(category => category.name)}
                             placeholder="Category name"
+                            autoCapitalize="on"
+                            spellCheck="false"
+                            autoFocus={!initialState.current}
                             required
                         />
                         

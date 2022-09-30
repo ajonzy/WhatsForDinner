@@ -48,8 +48,8 @@ export default function EditShoppingingredients(props) {
             : (
                 <div className='page-wrapper edit-shoppingingredients-page-wrapper'>
                     <p className="not-found">Sorry, this shopping list does not exist...</p>
-                    <div className="spacer-30" />
                     <div className="options-wrapper">
+                        <div className="spacer-30" />
                         <button onClick={() => props.history.push("/shoppinglists")}>Back to Shopping Lists</button>
                     </div>
                 </div>

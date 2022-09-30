@@ -32,6 +32,10 @@ export default function AutosuggestInput(props) {
                 onFocus: () => getSuggestions(""),
                 onChange: (event, { newValue }) => props.setInput(newValue),
                 style: props.style ? props.style : {},
+                autoCapitalize: props.autoCapitalize || "on",
+                autoCorrect: props.autoCorrect || 'on',
+                spellCheck: props.spellcheck || true,
+                autoFocus: props.autoFocus || false,
                 required: props.required || false
             }}
         />

@@ -222,8 +222,8 @@ export default function Mealplan(props) {
             : (
                 <div className='page-wrapper mealplan-page-wrapper'>
                     <p className="not-found">Sorry, this mealplan does not exist...</p>
-                    <div className="spacer-30" />
                     <div className="options-wrapper">
+                        <div className="spacer-30" />
                         <button onClick={() => props.history.push("/mealplans")}>Back to Mealplans</button>
                     </div>
                 </div>
