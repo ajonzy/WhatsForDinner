@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Modal from 'react-modal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleXmark, faHandPointer, faLock, faRotate, faUnlock, faCheck, faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons'
@@ -35,12 +35,18 @@ export default function MealplanForm(props) {
 
     const [meals, setMeals] = useState(props.meals.map(meal => ({...meal, locked: false, multiplier: getMealMultiplier(meal) })))
     const [problem, setProblem] = useState(props.problem || false)
-    const [data, setData] = useState(props.edit ? { name: props.data.name, number: props.meals.length, rules: props.data.rules.map(rule => ({ ...rule, type: rule.rule_type })) } : props.data)
+    const [data, setData] = useState(props.edit ? { name: props.data.name, number: props.meals.length, rules: props.data.rules.map(rule => ({ ...rule, type: rule.rule_type || rule.type })) } : props.data)
     const [modalIsOpen, setIsOpen] = useState(false)
     const [mealsList, setMealsList] = useState(user.meals)
     const [overidenMeal, setOveridenMeal] = useState({})
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        if (props.recheckRules) {
+            generateMeals(user, data.number, data.rules, setProblem, meals)
+        }
+    }, [])
 
     const handleFilter = event => {
         setMealsList(user.meals.filter(meal => (

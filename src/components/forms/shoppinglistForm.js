@@ -526,7 +526,7 @@ export default function ShoppinglistForm(props) {
                                 <AutosuggestInput
                                     input={ingredient.category}
                                     setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
-                                    suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index)}
+                                    suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index && ingredient !== "")}
                                     placeholder="Category: produce, dairy, etc. (Optional)"
                                     autoCapitalize="on"
                                     spellCheck="false"

@@ -52,21 +52,25 @@ export default function RecipeForm(props) {
     }
 
     const handleIngredientChangeAmount = (event, ingredient) => {
+        ingredient = ingredients[ingredient.index]
         ingredient.amount = event.target.value
         setIngredients([...ingredients])
     }
 
     const handleIngredientChangeUnit = (event, ingredient) => {
+        ingredient = ingredients[ingredient.index]
         ingredient.unit = event.target.value
         setIngredients([...ingredients])
     }
 
     const handleIngredientChangeName = (event, ingredient) => {
+        ingredient = ingredients[ingredient.index]
         ingredient.name = event.target.value
         setIngredients([...ingredients])
     }
 
     const handleIngredientChangeCategory = (newValue, ingredient) => {
+        ingredient = ingredients[ingredient.index]
         ingredient.category = newValue
         setIngredients([...ingredients])
     }
@@ -84,7 +88,10 @@ export default function RecipeForm(props) {
     const handleIngredientsectionDelete = index => {
         ingredientsections.splice(index, 1)
         setIngredientsections([...ingredientsections])
-        setIngredients(ingredients.filter(ingredient => ingredient.ingredientsection !== index))
+
+        const remainingIngredients = ingredients.filter(ingredient => ingredient.ingredientsection !== index)
+        remainingIngredients.filter(ingredient => ingredient.ingredientsection > index).forEach(ingredient => ingredient.ingredientsection--)
+        setIngredients([...remainingIngredients])
     }
 
     const handleAdd = async event => {
@@ -859,7 +866,7 @@ export default function RecipeForm(props) {
                     <AutosuggestInput
                         input={ingredient.category}
                         setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
-                        suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index)}
+                        suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index && ingredient !== "")}
                         placeholder="Category: produce, dairy, etc. (Optional)"
                         autoCapitalize="on"
                         spellCheck="false"
@@ -909,7 +916,7 @@ export default function RecipeForm(props) {
                             <AutosuggestInput
                                 input={ingredient.category}
                                 setInput={newValue => handleIngredientChangeCategory(newValue, ingredient)}
-                                suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index)}
+                                suggestions={[...user.meals.map(meal => meal.recipe.ingredients.map(ingredient => ingredient.category)).flat(), ...user.shoppinglists.map(shoppinglist => shoppinglist.shoppingingredients.map(ingredient => ingredient.category)).flat()].filter((ingredient, index, self) => self.indexOf(ingredient) === index && ingredient !== "")}
                                 placeholder="Category: produce, dairy, etc. (Optional)"
                                 autoCapitalize="on"
                                 spellCheck="false"

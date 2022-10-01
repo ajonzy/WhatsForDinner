@@ -349,6 +349,81 @@ export default function GenerateMealplanForm(props) {
         }
     }
 
+    const handleRulesEdit = () => {
+        const newRules = rules.filter(rule => !props.data.rules.map(existingRule => existingRule.id).includes(rule.id))
+        const updatedRules = rules.filter(rule => props.data.rules.map(existingRule => existingRule.id).includes(rule.id)).filter(rule => {
+            const existingRule = props.data.rules.filter(existingRule => existingRule.id === rule.id)[0]
+            return rule.type !== existingRule.rule_type || rule.rule !== existingRule.rule || rule.amount !== existingRule.amount || titleize(rule.value) !== existingRule.value
+        })
+        const deletedRules = props.data.rules.filter(rule => !rules.map(existingRule => existingRule.id).includes(rule.id))
+
+        if (newRules.length > 0) {
+            newRules.forEach(rule => {
+                fetch("https://whatsforsupperapi.herokuapp.com/rule/add", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({
+                        rule_type: rule.type,
+                        rule: rule.rule,
+                        amount: rule.amount,
+                        value: titleize(rule.value),
+                        mealplan_id: props.data.id
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 200) {
+                        console.log(data)
+                    }
+                })
+                .catch(error => {
+                    console.log("Error adding rule: ", error)
+                })
+            })
+        }
+
+        if (updatedRules.length > 0) {
+            updatedRules.forEach(rule => {
+                fetch(`https://whatsforsupperapi.herokuapp.com/rule/update/${rule.id}`, {
+                    method: "PUT",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({
+                        rule_type: rule.type,
+                        rule: rule.rule,
+                        amount: rule.amount,
+                        value: titleize(rule.value)
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 200) {
+                        console.log(data)
+                    }
+                })
+                .catch(error => {
+                    console.log("Error updating rule: ", error)
+                })
+            })
+        }
+
+        if (deletedRules.length > 0) {
+            deletedRules.forEach(rule => {
+                fetch(`https://whatsforsupperapi.herokuapp.com/rule/delete/${rule.id}`, { method: "DELETE" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 200) {
+                        console.log(data)
+                    }
+                })
+                .catch(error => {
+                    console.log("Error deleting rule: ", error)
+                })
+            })
+        }
+
+        props.handleRulesChange(rules)
+    }
+
     const handleMealplanoutlineSelect = mealplanoutline => {
         if (mealplanoutline === "") {
             setName("")
@@ -369,6 +444,9 @@ export default function GenerateMealplanForm(props) {
         if (props.edit) {
             handleEdit()
         }
+        else if (props.editRules) {
+            handleRulesEdit()
+        }
         else if (props.outlineAdd) {
             handleOutlineAdd()
         }
@@ -384,6 +462,9 @@ export default function GenerateMealplanForm(props) {
         if (props.edit) {
             return `Edit ${props.mealplan.name}`
         }
+        else if (props.editRules) {
+            return `Edit ${props.data.name} Rules`
+        }
         else if (props.outlineAdd) {
             return "Add a Mealplan Outline"
         }
@@ -398,6 +479,9 @@ export default function GenerateMealplanForm(props) {
     const renderSubmitButtonText = () => {
         if (props.edit) {
             return "Edit Mealplan"
+        }
+        else if (props.editRules) {
+            return "Edit Mealplan Rules"
         }
         else if (props.outlineAdd) {
             return "Add Mealplan Outline"
@@ -416,8 +500,8 @@ export default function GenerateMealplanForm(props) {
             autoComplete="off"
         >
             <h3>{renderHeaderText()}</h3>
-            {user.mealplanoutlines.length > 0 && !props.outlineAdd && !props.outlineEdit ? <label>Mealplan Outline</label> : null}
-            {user.mealplanoutlines.length > 0 && !props.outlineAdd && !props.outlineEdit
+            {user.mealplanoutlines.length > 0 && !props.editRules && !props.outlineAdd && !props.outlineEdit ? <label>Mealplan Outline</label> : null}
+            {user.mealplanoutlines.length > 0 && !props.editRules && !props.outlineAdd && !props.outlineEdit
                 ? (
                     <select 
                         value={outline}
@@ -434,22 +518,27 @@ export default function GenerateMealplanForm(props) {
                 ) 
                 : null
             }
-            <label>Name</label>
-            <input type="text"
-                value = {name}
-                placeholder = "Mealplan Name"
-                onChange={event => {
-                    setName(event.target.value)
-                    setOutline("")
-                }}
-                autoCapitalize="on"
-                autoCorrect='off'
-                spellCheck="false"
-                autoFocus
-                required
-            />
-            {props.edit ? null : <label>Number of Meals</label>}
-            {props.edit
+            {!props.editRules ? <label>Name</label> : null}
+            {!props.editRules
+                ? (
+                    <input type="text"
+                        value = {name}
+                        placeholder = "Mealplan Name"
+                        onChange={event => {
+                            setName(event.target.value)
+                            setOutline("")
+                        }}
+                        autoCapitalize="on"
+                        autoCorrect='off'
+                        spellCheck="false"
+                        autoFocus
+                        required
+                    />
+                )
+                : null
+            }
+            {props.edit || props.editRules ? null : <label>Number of Meals</label>}
+            {props.edit || props.editRules
                 ? null
                 : (
                     <input type="number" 
@@ -513,6 +602,7 @@ export default function GenerateMealplanForm(props) {
                                                 setOutline("")
                                             }}
                                             min="1"
+                                            autoFocus={!initialState.current}
                                             required
                                         />
                                     )
@@ -526,7 +616,6 @@ export default function GenerateMealplanForm(props) {
                                         setOutline("")
                                     }}
                                     spellCheck="false"
-                                    autoFocus={!initialState.current}
                                     required
                                 />
                             </div>
@@ -541,8 +630,8 @@ export default function GenerateMealplanForm(props) {
                             setRules([...rules])
                             setOutline("")
                         }}>Add Rule</button>
-                        {outline === "" && !props.outlineAdd && !props.outlineEdit ? <div className="spacer-30" /> : null}
-                        {outline === "" && !props.outlineAdd && !props.outlineEdit
+                        {outline === "" && !props.editRules && !props.outlineAdd && !props.outlineEdit ? <div className="spacer-30" /> : null}
+                        {outline === "" && !props.editRules && !props.outlineAdd && !props.outlineEdit
                             ? (
                                 <label className='checkbox'>
                                     Save Mealplan Outline
