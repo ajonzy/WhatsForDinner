@@ -160,22 +160,27 @@ export default function Shoppinglist(props) {
         const renderIngredient = ingredient => (
             <div className={`ingredient-wrapper ${ingredient.obtained ? "obtained" : "unobtained"}`} key={`ingredient-${ingredient.id}`} onClick={() => handleObtain(ingredient)}>
                 <p className='ingredient-amount'>{calculateAmount(ingredient.amount, ingredient.multiplier)}{ingredient.unit ? ` ${ingredient.unit}` : null}</p>
-                <p className='ingredient-name'>{ingredient.name}</p>
+                <p className='ingredient-name'>{ingredient.name}<br/><span>{ingredient.multiple && ingredient.meal_name ? `(${ingredient.meal_name})` : null}</span></p>
             </div>
         )
+
+        const sortDuplicateIngredients = () => {
+            const ingredientNames = ingredients.map(ingredient => ingredient.name).filter((ingredient, index, self) => self.indexOf(ingredient) === index && ingredient !== "")
+            return ingredientNames.map(ingredientName => ingredients.filter(ingredient => ingredient.name === ingredientName).map((ingredient, _, ingredients) => ({...ingredient, multiple: ingredients.length > 1 ? true : false}))).flat()
+        }
 
         switch(ingredientsSort) {
             case "arbitrary": {
                 ingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id)
-                return ingredients.map(ingredient => renderIngredient(ingredient))
+                return sortDuplicateIngredients().map(ingredient => renderIngredient(ingredient))
             }
             case "alphabetical": {
                 ingredients.sort((ingredientA, ingredientB) => ingredientA.name < ingredientB.name ? -1 : 1)
-                return ingredients.map(ingredient => renderIngredient(ingredient))
+                return sortDuplicateIngredients().map(ingredient => renderIngredient(ingredient))
             }
             case "remaining": {
                 ingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id)
-                return ingredients.filter(ingredient => !ingredient.obtained).map(ingredient => renderIngredient(ingredient))
+                return sortDuplicateIngredients().filter(ingredient => !ingredient.obtained).map(ingredient => renderIngredient(ingredient))
             }
             case "category": {
                 ingredients.sort((ingredientA, ingredientB) => ingredientA.id - ingredientB.id)
@@ -192,7 +197,7 @@ export default function Shoppinglist(props) {
                 return categories.map(category => (
                     <div className="shoppinglist-category-wrapper" key={`category-${category}`}>
                         <p className='category-name'>{category === "" ? "Uncategorized" : category}</p>
-                        {ingredients.filter(ingredient => ingredient.category === category).map(ingredient => renderIngredient(ingredient))}
+                        {sortDuplicateIngredients().filter(ingredient => ingredient.category === category).map(ingredient => renderIngredient(ingredient))}
                     </div>
                 ))
             }

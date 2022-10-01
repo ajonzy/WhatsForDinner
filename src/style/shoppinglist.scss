@@ -72,10 +72,16 @@
 
             .ingredient-name {
                 text-align: right;
+
+                span {
+                    color: $darkest;
+                    font-weight: bold;
+                }
             }
 
             &.obtained {
                 text-decoration: line-through;
+                opacity: .3;
             }
         }
     }
