@@ -24,6 +24,9 @@ export default function RegisterForm(props) {
         else if (username === "" || password === "" || passwordConfirm === "" || email === "") {
             setError("Please fill out all fields.")
         }
+        else if (password.length < 8) {
+            setError("Passwords must be at least 8 characters long.")
+        }
         else {
             setLoading(true)
 
@@ -75,6 +78,9 @@ export default function RegisterForm(props) {
         }
         else if ((props.username && username === "") || (props.password && (password === "" || passwordConfirm === "")) || (props.email && email === "")) {
             setError("Please fill out all fields.")
+        }
+        else if (props.password && password.length < 8) {
+            setError("Passwords must be at least 8 characters long.")
         }
         else {
             setLoading(true)

@@ -174,7 +174,7 @@ export default function MealplanForm(props) {
                     body: JSON.stringify({
                         rule_type: rule.type,
                         rule: rule.rule,
-                        amount: rule.amount,
+                        amount: rule.amount || 0,
                         value: titleize(rule.value),
                         mealplan_id: newData.id
                     })

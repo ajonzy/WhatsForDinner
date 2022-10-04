@@ -55,7 +55,7 @@ export default function AddMealplan(props) {
                 body: JSON.stringify({
                     rule_type: rule.type,
                     rule: rule.rule,
-                    amount: rule.amount,
+                    amount: rule.amount || 0,
                     value: titleize(rule.value),
                     mealplanoutline_id: newData.id
                 })
