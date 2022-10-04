@@ -8,7 +8,7 @@ import RegisterForm from '../forms/registerForm'
 import sockets from '../../functions/sockets'
 
 export default function Auth(props) {
-    const [form, setForm] = useState("login")
+    const [form, setForm] = useState(props.location.search === "?register" ? "register" : "login")
     const { getUser, setUser, setSocket } = useContext(UserContext)
 
     const handleSuccessfulAuth = data => {

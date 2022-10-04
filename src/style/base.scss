@@ -5,6 +5,7 @@ body {
 
 * {
     box-sizing: border-box;
+    text-shadow: 0 0 $lightest;
     transition: .2s ease-in-out;
 }
 
@@ -48,6 +49,7 @@ button {
     &.fancy-button {
         font-family: 'Bad Script', cursive;
         font-weight: bold;
+        font-size: 14px;
     }
 
     &.icon-button {

@@ -5,6 +5,7 @@ import Cookies from "js-cookie"
 
 import Navbar from './utils/navbar';
 import Notifications from './utils/notifications';
+import Welcome from './pages/welcome';
 import Auth from './pages/auth';
 import Home from './pages/home';
 import Meals from './pages/meals';
@@ -145,7 +146,7 @@ class App extends Component {
         setSocket: this.setSocket
       }}>
         <div className='app'>
-          <Navbar />
+          <Navbar loading={this.state.loading} />
           {this.state.loading
             ? <img src={Loader} alt="Loading" />
             : (
@@ -160,6 +161,9 @@ class App extends Component {
                       key={this.props.location.key}
                     >
                       <Switch location={this.props.location}>
+                        <Route path="/welcome" component={Welcome} />
+
+                        {Cookies.get("visited") === "true" ? null : <Redirect from="/" to="/welcome" />}
                         {this.state.user.id ? <Redirect exact from="/auth" to="/" /> : null}
                         <Route path="/auth" component={Auth} />
 

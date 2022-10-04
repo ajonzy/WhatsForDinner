@@ -212,7 +212,7 @@ export default function Shoppinglist(props) {
                     <p className='created-on'>{shoppinglist.created_on}</p>
                     {shared_shoppinglist ? <p className='shared-by'>Shared by: {shoppinglist.user_username}</p> : null}
                     {shoppinglist.updates_hidden ? <p className='contains-gifts'>Contains Gifts</p> : null}
-                    <h3>Items</h3>
+                    <h3>Items<br/><span>({shoppinglist.shoppingingredients.filter(ingredient => !ingredient.obtained).length + subshoppinglist.shoppingingredients.filter(ingredient => !ingredient.obtained).length}/{shoppinglist.shoppingingredients.length + subshoppinglist.shoppingingredients.length})</span></h3>
                     {shoppinglist.shoppingingredients.length > 0 || subshoppinglist.shoppingingredients.length > 0
                         ? (
                             <div className="shoppinglist-ingredients-options-wrapper">

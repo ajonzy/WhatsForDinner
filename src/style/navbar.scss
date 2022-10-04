@@ -1,4 +1,5 @@
 .navbar-wrapper {
+    min-height: 41.6px;
     max-width: 800px;
     display: flex;
     justify-content: center;
@@ -11,6 +12,17 @@
         font-size: 21px;
         font-family: 'Dancing Script', cursive;
         color: $complementary-darkest;
+        text-shadow: 0 0 $complementary-darkest;
+    }
+
+    .initial-auth {
+        text-align: right;
+
+        a {
+            color: $darkest;
+            font-weight: bold;
+            font-size: 14px;
+        }
     }
 
     .user-menu-wrapper {
