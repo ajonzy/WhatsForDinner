@@ -117,7 +117,10 @@ export default function RecipeForm(props) {
             if (stepsections.length > 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/stepsection/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(stepsections.map(stepsection => {
                         return {
                             title: titleize(stepsection.title),
@@ -171,7 +174,10 @@ export default function RecipeForm(props) {
 
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/step/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(formattedSteps.map(step => {
                         return {
                             number: step.number,
@@ -212,7 +218,10 @@ export default function RecipeForm(props) {
             if (ingredientsections.length > 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredientsection/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(ingredientsections.map(ingredientsection => {
                         return {
                             title: titleize(ingredientsection.title),
@@ -258,7 +267,10 @@ export default function RecipeForm(props) {
 
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(formmattedIngredients.map(ingredient => {
                         return {
                             name: titleize(ingredient.name),
@@ -345,7 +357,10 @@ export default function RecipeForm(props) {
             if (newStepsections.length > 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/stepsection/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(newStepsections.map(stepsection => {
                         return {
                             title: titleize(stepsection.title),
@@ -384,7 +399,10 @@ export default function RecipeForm(props) {
                 for (let stepsection of updatedStepsections) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/stepsection/update/${stepsection.id}`, {
                         method: "PUT",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify({
                             title: titleize(stepsection.title)
                         })
@@ -420,7 +438,8 @@ export default function RecipeForm(props) {
             if (deletedStepsections.length > 0) {
                 for (let stepsection of deletedStepsections) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/stepsection/delete/${stepsection.id}`, {
-                        method: "DELETE"
+                        method: "DELETE",
+                        headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
                     })
                     .then(response => response.json())
                     .catch(error => {
@@ -480,7 +499,10 @@ export default function RecipeForm(props) {
 
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/step/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(formattedSteps.map(step => {
                         return {
                             number: step.number,
@@ -521,7 +543,10 @@ export default function RecipeForm(props) {
                 for (let step of updatedSteps) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/step/update/${step.id}`, {
                         method: "PUT",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify({
                             number: step.number,
                             text: capitalize(step.text).trim()
@@ -558,7 +583,8 @@ export default function RecipeForm(props) {
             if (deletedSteps.length > 0) {
                 for (let step of deletedSteps) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/step/delete/${step.id}`, {
-                        method: "DELETE"
+                        method: "DELETE",
+                        headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
                     })
                     .then(response => response.json())
                     .catch(error => {
@@ -588,7 +614,10 @@ export default function RecipeForm(props) {
             if (newIngredientsections.length > 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredientsection/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(newIngredientsections.map(ingredientsection => {
                         return {
                             title: titleize(ingredientsection.title),
@@ -627,7 +656,10 @@ export default function RecipeForm(props) {
                 for (let ingredientsection of updatedIngredientsections) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/ingredientsection/update/${ingredientsection.id}`, {
                         method: "PUT",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify({
                             title: titleize(ingredientsection.title)
                         })
@@ -663,7 +695,8 @@ export default function RecipeForm(props) {
             if (deletedIngredientsections.length > 0) {
                 for (let ingredientsection of deletedIngredientsections) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/ingredientsection/delete/${ingredientsection.id}`, {
-                        method: "DELETE"
+                        method: "DELETE",
+                        headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
                     })
                     .then(response => response.json())
                     .catch(error => {
@@ -700,7 +733,10 @@ export default function RecipeForm(props) {
             if (newIngredients.length > 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(newIngredients.map(ingredient => {
                         return {
                             name: titleize(ingredient.name),
@@ -743,7 +779,10 @@ export default function RecipeForm(props) {
                 for (let ingredient of updatedIngredients) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/ingredient/update/${ingredient.id}`, {
                         method: "PUT",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify({
                             name: titleize(ingredient.name),
                             amount: ingredient.amount,
@@ -783,7 +822,8 @@ export default function RecipeForm(props) {
             if (deletedIngredients.length > 0) {
                 for (let ingredient of deletedIngredients) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/ingredient/delete/${ingredient.id}`, {
-                        method: "DELETE"
+                        method: "DELETE",
+                        headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
                     })
                     .then(response => response.json())
                     .catch(error => {

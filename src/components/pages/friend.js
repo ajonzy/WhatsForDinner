@@ -16,7 +16,10 @@ export default function Friend(props) {
 
         if (confirm) {
             setDeleteLoading(true)
-            fetch(`https://whatsforsupperapi.herokuapp.com/user/friend/delete/${user.id}/${friend.user_id}`, { method: "DELETE" })
+            fetch(`https://whatsforsupperapi.herokuapp.com/user/friend/delete/${user.id}/${friend.user_id}`, { 
+                method: "DELETE",
+                headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 200) {

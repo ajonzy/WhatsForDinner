@@ -21,7 +21,10 @@ export default function Outlines(props) {
 
     const handleDelete = outline => {
         if (confirm && confirmId === outline.id) {
-            fetch(`https://whatsforsupperapi.herokuapp.com/mealplanoutline/delete/${outline.id}`, { method: "DELETE" })
+            fetch(`https://whatsforsupperapi.herokuapp.com/mealplanoutline/delete/${outline.id}`, { 
+                method: "DELETE",
+                headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.status !== 200) {

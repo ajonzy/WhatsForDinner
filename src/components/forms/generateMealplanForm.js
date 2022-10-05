@@ -55,7 +55,10 @@ export default function GenerateMealplanForm(props) {
 
             fetch(`https://whatsforsupperapi.herokuapp.com/mealplan/update/${props.mealplan.id}`, {
                 method: "PUT",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     name: titleize(name)
                 })
@@ -102,7 +105,10 @@ export default function GenerateMealplanForm(props) {
 
             let responseData = await fetch("https://whatsforsupperapi.herokuapp.com/mealplanoutline/add", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     name: titleize(name),
                     number,
@@ -136,7 +142,10 @@ export default function GenerateMealplanForm(props) {
             for (let rule of rules) {
                 responseData = await fetch("https://whatsforsupperapi.herokuapp.com/rule/add", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify({
                         rule_type: rule.type,
                         rule: rule.rule,
@@ -191,7 +200,10 @@ export default function GenerateMealplanForm(props) {
 
             const data = await fetch(`https://whatsforsupperapi.herokuapp.com/mealplanoutline/update/${props.data.id}`, {
                 method: "PUT",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     name: titleize(name),
                     number
@@ -240,7 +252,10 @@ export default function GenerateMealplanForm(props) {
                 for (let rule of newRules) {
                     const data = await fetch("https://whatsforsupperapi.herokuapp.com/rule/add", {
                         method: "POST",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify({
                             rule_type: rule.type,
                             rule: rule.rule,
@@ -283,7 +298,10 @@ export default function GenerateMealplanForm(props) {
                     console.log(rule)
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/rule/update/${rule.id}`, {
                         method: "PUT",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify({
                             rule_type: rule.type,
                             rule: rule.rule,
@@ -322,7 +340,10 @@ export default function GenerateMealplanForm(props) {
 
             if (deletedRules.length > 0) {
                 for (let rule of deletedRules) {
-                    const data = await fetch(`https://whatsforsupperapi.herokuapp.com/rule/delete/${rule.id}`, { method: "DELETE" })
+                    const data = await fetch(`https://whatsforsupperapi.herokuapp.com/rule/delete/${rule.id}`, { 
+                        method: "DELETE" ,
+                        headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+                    })
                     .then(response => response.json())
                     .catch(error => {
                         return { catchError: error }
@@ -361,7 +382,10 @@ export default function GenerateMealplanForm(props) {
             newRules.forEach(rule => {
                 fetch("https://whatsforsupperapi.herokuapp.com/rule/add", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify({
                         rule_type: rule.type,
                         rule: rule.rule,
@@ -386,7 +410,10 @@ export default function GenerateMealplanForm(props) {
             updatedRules.forEach(rule => {
                 fetch(`https://whatsforsupperapi.herokuapp.com/rule/update/${rule.id}`, {
                     method: "PUT",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify({
                         rule_type: rule.type,
                         rule: rule.rule,
@@ -408,7 +435,10 @@ export default function GenerateMealplanForm(props) {
 
         if (deletedRules.length > 0) {
             deletedRules.forEach(rule => {
-                fetch(`https://whatsforsupperapi.herokuapp.com/rule/delete/${rule.id}`, { method: "DELETE" })
+                fetch(`https://whatsforsupperapi.herokuapp.com/rule/delete/${rule.id}`, { 
+                    method: "DELETE" ,
+                    headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status !== 200) {

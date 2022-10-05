@@ -89,7 +89,10 @@ export default function MealForm(props) {
             let newData = {}
             let data = await fetch("https://whatsforsupperapi.herokuapp.com/meal/add", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     name: titleize(name),
                     difficulty,
@@ -132,7 +135,10 @@ export default function MealForm(props) {
             if (newCategories.length > 0) {
                 data = await fetch("https://whatsforsupperapi.herokuapp.com/category/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(newCategories.map(category => {
                         return {
                             name: titleize(category),
@@ -171,7 +177,10 @@ export default function MealForm(props) {
             if (categoryData.length > 0) {
                 data = await fetch("https://whatsforsupperapi.herokuapp.com/category/attach/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(categoryData.map(category => {
                         return {
                             meal_id: newData.id,
@@ -255,7 +264,10 @@ export default function MealForm(props) {
             let newData = {}
             let data = await fetch(`https://whatsforsupperapi.herokuapp.com/meal/update/${props.meal.id}`, {
                 method: "PUT",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     name: titleize(name),
                     difficulty,
@@ -298,7 +310,10 @@ export default function MealForm(props) {
             if (newCategories.length > 0) {
                 data = await fetch("https://whatsforsupperapi.herokuapp.com/category/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(newCategories.map(category => {
                         return {
                             name: titleize(category),
@@ -337,7 +352,10 @@ export default function MealForm(props) {
             if (categoryData.length > 0) {
                 data = await fetch("https://whatsforsupperapi.herokuapp.com/category/attach/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(categoryData.map(category => {
                         return {
                             meal_id: newData.id,
@@ -375,7 +393,10 @@ export default function MealForm(props) {
             if (removedCategories.length > 0) {
                 data = await fetch("https://whatsforsupperapi.herokuapp.com/category/unattach/multiple", {
                     method: "DELETE",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(removedCategories.map(category => {
                         return {
                             meal_id: newData.id,

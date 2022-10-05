@@ -86,7 +86,10 @@ export default function Meal(props) {
 
         if (confirm) {
             setDeleteLoading(true)
-            fetch(`https://whatsforsupperapi.herokuapp.com/meal/delete/${meal.id}`, { method: "DELETE" })
+            fetch(`https://whatsforsupperapi.herokuapp.com/meal/delete/${meal.id}`, { 
+                method: "DELETE",
+                headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 200) {
@@ -123,7 +126,10 @@ export default function Meal(props) {
         let newData = {}
         let data = await fetch("https://whatsforsupperapi.herokuapp.com/meal/add", {
             method: "POST",
-            headers: { "content-type": "application/json" },
+            headers: { 
+                authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                "content-type": "application/json" 
+            },
             body: JSON.stringify({
                 name: meal.name,
                 difficulty: meal.difficulty,
@@ -162,7 +168,10 @@ export default function Meal(props) {
         if (meal.recipe.stepsections.length > 0) {
             const data = await fetch("https://whatsforsupperapi.herokuapp.com/stepsection/add/multiple", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify(meal.recipe.stepsections.map(stepsection => {
                     return {
                         title: stepsection.title,
@@ -200,7 +209,10 @@ export default function Meal(props) {
         if (meal.recipe.steps.length > 0) {
             const data = await fetch("https://whatsforsupperapi.herokuapp.com/step/add/multiple", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify(meal.recipe.steps.map(step => {
                     return {
                         number: step.number,
@@ -241,7 +253,10 @@ export default function Meal(props) {
         if (meal.recipe.ingredientsections.length > 0) {
             const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredientsection/add/multiple", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify(meal.recipe.ingredientsections.map(ingredientsection => {
                     return {
                         title: ingredientsection.title,
@@ -287,7 +302,10 @@ export default function Meal(props) {
 
             const data = await fetch("https://whatsforsupperapi.herokuapp.com/ingredient/add/multiple", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify(formmattedIngredients.map(ingredient => {
                     return {
                         name: ingredient.name,
@@ -329,7 +347,10 @@ export default function Meal(props) {
 
         let unshareData = {}
         if (shared_meal) {
-            data = await fetch(`https://whatsforsupperapi.herokuapp.com/meal/unshare/${meal.id}/${user.id}`, { method: "DELETE" })
+            data = await fetch(`https://whatsforsupperapi.herokuapp.com/meal/unshare/${meal.id}/${user.id}`, { 
+                method: "DELETE",
+                headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+            })
             .then(response => response.json())
             .catch(error => {
                 return { catchError: error }
@@ -364,7 +385,10 @@ export default function Meal(props) {
 
         if (confirm) {
             setDeleteLoading(true)
-            fetch(`https://whatsforsupperapi.herokuapp.com/meal/unshare/${meal.id}/${user.id}`, { method: "DELETE" })
+            fetch(`https://whatsforsupperapi.herokuapp.com/meal/unshare/${meal.id}/${user.id}`, { 
+                method: "DELETE",
+                headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 200) {

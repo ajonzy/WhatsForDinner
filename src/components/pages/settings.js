@@ -27,7 +27,10 @@ export default function Settings(props) {
     const handleSettingsChange = (setting, newValue) => {
         fetch(`https://whatsforsupperapi.herokuapp.com/settings/update/${user.settings.id}`, { 
             method: "PUT",
-            headers: { "content-type": "application/json" },
+            headers: { 
+                authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                "content-type": "application/json" 
+            },
             body: JSON.stringify({
                 [setting]: newValue
             }) 
@@ -63,7 +66,10 @@ export default function Settings(props) {
     }
 
     const handleLogoutAll = () => {
-        fetch(`https://whatsforsupperapi.herokuapp.com/user/logout/all/${user.id}`, { method: "DELETE" })
+        fetch(`https://whatsforsupperapi.herokuapp.com/user/logout/all/${user.id}`, { 
+            method: "DELETE",
+            headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+        })
         .then(response => response.json())
         .then(data => {
             if (data.status !== 200) {

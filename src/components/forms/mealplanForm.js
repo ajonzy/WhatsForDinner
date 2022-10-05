@@ -130,7 +130,10 @@ export default function MealplanForm(props) {
 
             let responseData = await fetch("https://whatsforsupperapi.herokuapp.com/mealplan/add", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     name: data.name,
                     created_on: new Date().toLocaleDateString(),
@@ -170,7 +173,10 @@ export default function MealplanForm(props) {
             for (let rule of data.rules) {
                 responseData = await fetch("https://whatsforsupperapi.herokuapp.com/rule/add", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify({
                         rule_type: rule.type,
                         rule: rule.rule,
@@ -226,7 +232,10 @@ export default function MealplanForm(props) {
                 for (let meal of newMeals) {
                     const data = await fetch("https://whatsforsupperapi.herokuapp.com/mealplan/meal/add", {
                         method: "POST",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify({
                             mealplan_id: props.data.id,
                             meal_id: meal.id,
@@ -267,7 +276,10 @@ export default function MealplanForm(props) {
                         for (let shoppingingredient of ingredient.shoppingingredients.filter(shoppingingredient => shoppingingredient.shoppinglist_id === props.data.shoppinglist.id)) {
                             const data = await fetch(`https://whatsforsupperapi.herokuapp.com/shoppingingredient/update/${shoppingingredient.id}`, {
                                 method: "PUT",
-                                headers: { "content-type": "application/json" },
+                                headers: { 
+                                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                                    "content-type": "application/json" 
+                                },
                                 body: JSON.stringify({
                                     multiplier: meal.multiplier.multiplier
                                 })
@@ -307,7 +319,10 @@ export default function MealplanForm(props) {
                 for (let meal of deletedMeals) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/mealplan/meal/delete`, {
                         method: "DELETE",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify({
                             mealplan_id: props.data.id,
                             meal_id: meal.id

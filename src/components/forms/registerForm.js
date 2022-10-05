@@ -32,7 +32,10 @@ export default function RegisterForm(props) {
 
             fetch("https://whatsforsupperapi.herokuapp.com/user/add", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     username: username.trim(),
                     password: password.trim(),
@@ -99,7 +102,10 @@ export default function RegisterForm(props) {
 
             fetch(`https://whatsforsupperapi.herokuapp.com/user/update/${user.id}`, {
                 method: "PUT",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify(generateBody())
             })
             .then(response => response.json())

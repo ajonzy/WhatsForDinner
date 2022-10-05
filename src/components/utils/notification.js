@@ -9,7 +9,10 @@ export default function Notification(props) {
     const styleProps = useSpring({ to: { opacity: user.settings.allow_notifications ? 1 : 0, transform: "translateY(-0%)" }, from: { opacity: 0, transform: "translateY(-100%)" }, config: { duration: 200, easing: easings.easeInOutBounce }})
 
     const handleNotification = (notification, path) => {
-        fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { method: "DELETE" })
+        fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/single/${notification.id}`, { 
+            method: "DELETE",
+            headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+        })
         const notifications = user.notifications
         notifications.splice(notifications.findIndex(existingNotification => existingNotification.id === notification.id), 1)
         setUser({...user})
@@ -19,7 +22,10 @@ export default function Notification(props) {
     }
 
     const handleNotifications = () => {
-        fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/all/${user.id}`, { method: "DELETE" })
+        fetch(`https://whatsforsupperapi.herokuapp.com/notification/delete/all/${user.id}`, { 
+            method: "DELETE",
+            headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+        })
         user.notifications = []
         setUser({...user})
     }

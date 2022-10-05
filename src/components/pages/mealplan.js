@@ -23,7 +23,10 @@ export default function Mealplan(props) {
                 let newData = {}
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppinglist/add", { 
                     method: "POST" ,
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify({
                         name: `${mealplan.name} Mealplan (Deleted)`, 
                         created_on: mealplan.created_on, 
@@ -57,7 +60,10 @@ export default function Mealplan(props) {
                 if (mealplan.sub_shoppinglist.shoppingingredients.length > 0) {
                     const data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppingingredient/add/multiple", {
                         method: "POST",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify(mealplan.sub_shoppinglist.shoppingingredients.map(ingredient => {
                             return {
                                 name: ingredient.name,
@@ -93,7 +99,10 @@ export default function Mealplan(props) {
                 user.shoppinglists.push(newData)
             }
 
-            const data = await fetch(`https://whatsforsupperapi.herokuapp.com/mealplan/delete/${mealplan.id}`, { method: "DELETE" })
+            const data = await fetch(`https://whatsforsupperapi.herokuapp.com/mealplan/delete/${mealplan.id}`, { 
+                method: "DELETE",
+                headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+            })
             .then(response => response.json())
             .catch(error => {
                 return { catchError: error }
@@ -126,7 +135,10 @@ export default function Mealplan(props) {
 
         if (confirm) {
             setDeleteLoading(true)
-            fetch(`https://whatsforsupperapi.herokuapp.com/mealplan/unshare/${mealplan.id}/${user.id}`, { method: "DELETE" })
+            fetch(`https://whatsforsupperapi.herokuapp.com/mealplan/unshare/${mealplan.id}/${user.id}`, { 
+                method: "DELETE",
+                headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 200) {

@@ -26,7 +26,10 @@ export default function FriendForm(props) {
 
             fetch("https://whatsforsupperapi.herokuapp.com/user/friend/request", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     user_id: user.id,
                     friend_username: username

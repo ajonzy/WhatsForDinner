@@ -43,8 +43,10 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
+        'AUTH_USERNAME': JSON.stringify(process.env.AUTH_USERNAME),
+        'AUTH_PASSWORD': JSON.stringify(process.env.AUTH_PASSWORD),
         'CLOUDINARY_NAME': JSON.stringify(process.env.CLOUDINARY_NAME),
-        'CLOUDINARY_UPLOAD_PRESET': JSON.stringify(process.env.CLOUDINARY_UPLOAD_PRESET),
+        'CLOUDINARY_UPLOAD_PRESET': JSON.stringify(process.env.CLOUDINARY_UPLOAD_PRESET)
       }
     }),
     new SplitChunksPlugin({

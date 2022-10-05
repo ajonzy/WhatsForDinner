@@ -43,7 +43,10 @@ export default function Shoppinglist(props) {
 
         if (confirm) {
             setDeleteLoading(true)
-            fetch(`https://whatsforsupperapi.herokuapp.com/shoppinglist/delete/${shoppinglist.id}`, { method: "DELETE" })
+            fetch(`https://whatsforsupperapi.herokuapp.com/shoppinglist/delete/${shoppinglist.id}`, { 
+                method: "DELETE",
+                headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 200) {
@@ -73,7 +76,10 @@ export default function Shoppinglist(props) {
 
         if (confirm) {
             setDeleteLoading(true)
-            fetch(`https://whatsforsupperapi.herokuapp.com/shoppinglist/unshare/${shoppinglist.id}/${user.id}`, { method: "DELETE" })
+            fetch(`https://whatsforsupperapi.herokuapp.com/shoppinglist/unshare/${shoppinglist.id}/${user.id}`, { 
+                method: "DELETE",
+                headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 200) {
@@ -101,7 +107,10 @@ export default function Shoppinglist(props) {
     const handleObtain = ingredient => {
         fetch(`https://whatsforsupperapi.herokuapp.com/shoppingingredient/update/${ingredient.id}`, {
             method: "PUT",
-            headers: { "content-type": "application/json" },
+            headers: { 
+                authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                "content-type": "application/json" 
+            },
             body: JSON.stringify({
                 obtained: !ingredient.obtained
             })

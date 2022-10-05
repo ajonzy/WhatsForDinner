@@ -71,7 +71,10 @@ export default function ShoppinglistForm(props) {
             let newData = []
             let data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppinglist/add", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     name: titleize(name),
                     updates_hidden: updatesHidden,
@@ -110,7 +113,10 @@ export default function ShoppinglistForm(props) {
             if (ingredients.length > 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppingingredient/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(ingredients.map(ingredient => {
                         return {
                             name: titleize(ingredient.name),
@@ -167,7 +173,10 @@ export default function ShoppinglistForm(props) {
             let newData = []
             let data = await fetch(`https://whatsforsupperapi.herokuapp.com/shoppinglist/update/${props.shoppinglist.id}`, {
                 method: "PUT",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     name: titleize(name),
                     updates_hidden: updatesHidden
@@ -222,7 +231,10 @@ export default function ShoppinglistForm(props) {
                 for (let ingredient of updatedMealplanIngredients) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/shoppingingredient/update/${ingredient.id}`, {
                         method: "PUT",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify({
                             multiplier: ingredient.multiplier
                         })
@@ -261,7 +273,10 @@ export default function ShoppinglistForm(props) {
             if (Object.keys(shoppinglist).length === 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppinglist/add", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify({
                         name: `${user.mealplans.filter(mealplan => mealplan.id === props.shoppinglist.mealplan_id)[0].name} Mealplan`, 
                         created_on: user.mealplans.filter(mealplan => mealplan.id === props.shoppinglist.mealplan_id)[0].created_on, 
@@ -308,7 +323,10 @@ export default function ShoppinglistForm(props) {
             if (newIngredients.length > 0) {
                 const data = await fetch("https://whatsforsupperapi.herokuapp.com/shoppingingredient/add/multiple", {
                     method: "POST",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify(newIngredients.map(ingredient => {
                         return {
                             name: titleize(ingredient.name),
@@ -350,7 +368,10 @@ export default function ShoppinglistForm(props) {
                 for (let ingredient of updatedIngredients) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/shoppingingredient/update/${ingredient.id}`, {
                         method: "PUT",
-                        headers: { "content-type": "application/json" },
+                        headers: { 
+                            authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                            "content-type": "application/json" 
+                        },
                         body: JSON.stringify({
                             name: titleize(ingredient.name),
                             amount: ingredient.amount,
@@ -390,7 +411,8 @@ export default function ShoppinglistForm(props) {
             if (deletedIngredients.length > 0) {
                 for (let ingredient of deletedIngredients) {
                     const data = await fetch(`https://whatsforsupperapi.herokuapp.com/shoppingingredient/delete/${ingredient.id}`, {
-                        method: "DELETE"
+                        method: "DELETE",
+                        headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
                     })
                     .then(response => response.json())
                     .catch(error => {
@@ -414,7 +436,8 @@ export default function ShoppinglistForm(props) {
             shoppinglist.shoppingingredients = ingredientsData
             if (shoppinglist.is_sublist && ingredientsData.length === 0) {
                 const data = await fetch(`https://whatsforsupperapi.herokuapp.com/shoppinglist/delete/${shoppinglist.id}`, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
                 })
                 .then(response => response.json())
                 .catch(error => {

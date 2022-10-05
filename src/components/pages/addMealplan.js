@@ -20,7 +20,10 @@ export default function AddMealplan(props) {
 
         let responseData = await fetch("https://whatsforsupperapi.herokuapp.com/mealplanoutline/add", {
             method: "POST",
-            headers: { "content-type": "application/json" },
+            headers: { 
+                authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                "content-type": "application/json" 
+            },
             body: JSON.stringify({
                 name,
                 number,
@@ -51,7 +54,10 @@ export default function AddMealplan(props) {
         for (let rule of rules) {
             responseData = await fetch("https://whatsforsupperapi.herokuapp.com/rule/add", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     rule_type: rule.type,
                     rule: rule.rule,

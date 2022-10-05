@@ -33,7 +33,10 @@ export default function Categories(props) {
             else {
                 fetch(`https://whatsforsupperapi.herokuapp.com/category/update/${category.id}`, {
                     method: "PUT",
-                    headers: { "content-type": "application/json" },
+                    headers: { 
+                        authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                        "content-type": "application/json" 
+                    },
                     body: JSON.stringify({
                         name: edit
                     })
@@ -74,7 +77,10 @@ export default function Categories(props) {
 
     const handleDelete = category => {
         if (confirm && confirmId === category.id) {
-            fetch(`https://whatsforsupperapi.herokuapp.com/category/delete/${category.id}`, { method: "DELETE" })
+            fetch(`https://whatsforsupperapi.herokuapp.com/category/delete/${category.id}`, { 
+                method: "DELETE",
+                headers: { authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64") }
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.status !== 200) {

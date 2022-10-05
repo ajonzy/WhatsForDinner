@@ -25,7 +25,10 @@ export default function CategoryForm(props) {
 
             fetch("https://whatsforsupperapi.herokuapp.com/category/add", {
                 method: "POST",
-                headers: { "content-type": "application/json" },
+                headers: { 
+                    authorization: "Basic " + Buffer.from(process.env.AUTH_USERNAME + ":" + process.env.AUTH_PASSWORD).toString("base64"),
+                    "content-type": "application/json" 
+                },
                 body: JSON.stringify({
                     name: titleize(name),
                     user_id: user.id
