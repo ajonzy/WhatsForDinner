@@ -1,7 +1,7 @@
 import { io } from "socket.io-client"
 
 export default function sockets(getUser, setUser) {
-    const socket = io("https://whatsforsupperapi.herokuapp.com/")
+    const socket = io("https://whatsforsupperapi.vercel.app/")
 
           socket.on("friend-request-update", data => {
             if (getUser().id === data.data.friend.id) {
